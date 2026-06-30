@@ -1,0 +1,1 @@
+ALTER TABLE public.plans ADD COLUMN price_usd text NOT NULL DEFAULT '';

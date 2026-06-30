@@ -1,0 +1,1 @@
+UPDATE public.site_settings SET value='sales@tiasoftwaresolutions.com' WHERE key='email';
