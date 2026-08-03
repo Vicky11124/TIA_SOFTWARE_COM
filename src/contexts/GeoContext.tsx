@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-type Geo = "UK" | "US";
+type Geo = "UK" | "US" | "AU";
 
 interface GeoContextType {
   geo: Geo;
@@ -28,8 +28,8 @@ export const GeoProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("tia_geo", g);
   };
 
-  const currency = geo === "UK" ? "GBP" : "USD";
-  const currencySymbol = geo === "UK" ? "£" : "$";
+  const currency = geo === "UK" ? "GBP" : geo === "AU" ? "AUD" : "USD";
+  const currencySymbol = geo === "UK" ? "£" : geo === "AU" ? "A$" : "$";
 
   return (
     <GeoContext.Provider value={{ geo, setGeo, currency, currencySymbol }}>

@@ -71,7 +71,7 @@ const AdminPlans = () => {
           <div key={p.id} className="glass-card p-4 flex items-center gap-4">
             <div className="flex-1">
               <div className="font-medium flex items-center gap-2">
-                {p.name} — 🇬🇧 £{p.price} / 🇺🇸 ${p.price_usd || "—"}
+                {p.name} — 🇬🇧 £{p.price} / 🇺🇸 ${p.price_usd || "—"} / 🇦🇺 A${p.price_usd ? (parseFloat(p.price_usd) * 1.4271213560678033).toFixed(2) : "—"}
                 {p.is_popular && <Star size={14} className="text-primary fill-primary" />}
               </div>
               <div className="text-sm text-muted-foreground">{p.features.length} features</div>

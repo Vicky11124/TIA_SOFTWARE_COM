@@ -35,7 +35,7 @@ const AdminBanners = () => {
 
   const emptyBanner: Omit<Banner, "id"> = {
     title: "", subtitle: "", highlight: "", description: "",
-    image_url: "", cta_text: "Book Now", cta_link: "https://wa.me/447418378044",
+    image_url: "", cta_text: "Book Now", cta_link: "https://wa.me/447451255217",
     sort_order: banners.length, is_active: true,
   };
 

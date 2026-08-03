@@ -2,7 +2,15 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Palette, PartyPopper, Megaphone, Layout, Film, Sparkles, Camera, CalendarDays, ArrowRight, Headphones } from "lucide-react";
 
-const services = [
+type ServiceItem = {
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  title: string;
+  desc: string;
+  slug: string;
+  highlight?: boolean;
+};
+
+const services: ServiceItem[] = [
   { icon: Headphones, title: "Virtual Assistance", desc: "Admin, customer support & business tasks", slug: "virtual-assistance", highlight: true },
   { icon: Palette, title: "Branding Essentials", desc: "Logo, identity & business cards", slug: "branding-essentials" },
   { icon: Megaphone, title: "Digital Marketing", desc: "Social ads & campaign creatives", slug: "digital-marketing" },
@@ -50,16 +58,16 @@ const ServicesHighlight = () => {
               <Link
                 to={`/services/${service.slug}`}
                 className={`glass-card p-7 hover-lift group cursor-pointer block h-full ${
-                  (service as any).highlight ? "ring-2 ring-primary/50 bg-primary/5" : ""
+                  service.highlight ? "ring-2 ring-primary/50 bg-primary/5" : ""
                 }`}
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-colors duration-300 ${
-                  (service as any).highlight ? "bg-primary/20 group-hover:bg-primary/30" : "bg-accent group-hover:bg-primary/10"
+                  service.highlight ? "bg-primary/20 group-hover:bg-primary/30" : "bg-accent group-hover:bg-primary/10"
                 }`}>
                   <service.icon size={24} className="text-primary" />
                 </div>
                 <h3 className="text-lg font-bold mb-2 text-foreground">{service.title}</h3>
-                {(service as any).highlight && (
+                {service.highlight && (
                   <span className="inline-block text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full mb-2">★ Featured</span>
                 )}
                 <p className="text-sm text-muted-foreground mb-4">{service.desc}</p>

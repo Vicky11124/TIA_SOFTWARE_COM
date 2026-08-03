@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const defaults: Record<string, string> = {
-  whatsapp_number: "447418378044",
+  whatsapp_number: "447451255217",
   email: "sales@tiasoftwaresolutions.com",
-  phone: "+44 7520 641068",
+  phone: "+44 7451 255217",
   address: "London, United Kingdom",
   instagram_url: "https://www.instagram.com/tiasoftwaresolutions/",
   facebook_url: "https://www.facebook.com/profile.php?id=61578643118286",

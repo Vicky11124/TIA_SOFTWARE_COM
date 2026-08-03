@@ -95,7 +95,7 @@ const AdminBlogs = () => {
       }
       setBlogs(data || []);
       setIsLocalStorageFallback(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching blogs:", err);
       // Fallback
       setIsLocalStorageFallback(true);
@@ -158,8 +158,8 @@ const AdminBlogs = () => {
       const { data } = supabase.storage.from("blogs").getPublicUrl(path);
       setUploading(false);
       return data.publicUrl;
-    } catch (e: any) {
-      toast.error("Upload failed: " + e.message);
+    } catch (e: unknown) {
+      toast.error("Upload failed: " + (e instanceof Error ? e.message : String(e)));
       setUploading(false);
       return null;
     }
@@ -206,8 +206,8 @@ const AdminBlogs = () => {
       setShowForm(false);
       setEditing(null);
       fetchBlogs();
-    } catch (e: any) {
-      toast.error("Database save failed: " + e.message);
+    } catch (e: unknown) {
+      toast.error("Database save failed: " + (e instanceof Error ? e.message : String(e)));
     }
   };
 
@@ -228,8 +228,8 @@ const AdminBlogs = () => {
       if (error) throw error;
       toast.success("Blog deleted successfully");
       fetchBlogs();
-    } catch (e: any) {
-      toast.error("Delete failed: " + e.message);
+    } catch (e: unknown) {
+      toast.error("Delete failed: " + (e instanceof Error ? e.message : String(e)));
     }
   };
 

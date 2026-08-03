@@ -14,8 +14,19 @@ import serviceStoriesReels from "@/assets/service-stories-reels.webp";
 import serviceSeasonal from "@/assets/service-seasonal.webp";
 import serviceEvents from "@/assets/service-events.webp";
 import serviceVA from "@/assets/service-virtual-assistance.webp";
+import { type LucideIcon } from "lucide-react";
 
-const serviceCategories = [
+type ServiceCategory = {
+  icon: LucideIcon;
+  title: string;
+  slug: string;
+  image: string;
+  items: string[];
+  desc: string;
+  highlight?: boolean;
+};
+
+const serviceCategories: ServiceCategory[] = [
   {
     icon: Headphones,
     title: "Virtual Assistance Services",
@@ -162,7 +173,7 @@ const Services = () => {
                 <Link
                   to={`/services/${cat.slug}`}
                   className={`glass-card overflow-hidden group block hover-lift ${
-                    (cat as any).highlight ? "ring-2 ring-primary/50" : ""
+                    cat.highlight ? "ring-2 ring-primary/50" : ""
                   }`}
                 >
                   <div className={`grid md:grid-cols-2 ${i % 2 === 1 ? "md:direction-rtl" : ""}`}>

@@ -99,6 +99,14 @@ const Plans = () => {
   }, []);
 
   const getPrice = (plan: Plan) => {
+    if (geo === "AU" && plan.price_usd) {
+      const usdVal = parseFloat(plan.price_usd);
+      if (!isNaN(usdVal)) {
+        // Exchange rate from user screenshot: 199.99 USD = 285.41 AUD
+        // 285.41 / 199.99 = 1.4271213560678033
+        return (usdVal * 1.4271213560678033).toFixed(2);
+      }
+    }
     return geo === "US" && plan.price_usd ? plan.price_usd : plan.price;
   };
 

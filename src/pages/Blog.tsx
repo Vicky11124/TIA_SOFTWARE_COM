@@ -29,7 +29,7 @@ const getLocalBlogs = (): Blog[] => {
     if (data) {
       const parsed = JSON.parse(data);
       // Filter for published ones only
-      return parsed.filter((b: any) => b.status === "published");
+      return parsed.filter((b: Blog & { status?: string }) => b.status === "published");
     }
   } catch (e) {
     console.error("Local storage error:", e);

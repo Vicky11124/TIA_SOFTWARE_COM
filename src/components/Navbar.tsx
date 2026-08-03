@@ -92,6 +92,14 @@ const Navbar = () => {
           >
             US
           </button>
+          <button
+            onClick={() => setGeo("AU")}
+            className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full transition-all ${
+              geo === "AU" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            AU
+          </button>
         </div>
 
         {/* Desktop */}

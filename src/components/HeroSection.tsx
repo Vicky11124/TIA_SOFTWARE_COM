@@ -1,4 +1,4 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import heroBg from "@/assets/hero-bg.webp";
 import { ArrowRight } from "lucide-react";
@@ -51,12 +51,12 @@ const HeroSection = () => {
 
           <div className="flex flex-wrap gap-4">
             <Button variant="hero" size="lg" className="px-8 py-6 text-base" asChild>
-              <a href="https://wa.me/447418378044" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
                 Book Now <ArrowRight className="ml-2" size={18} />
               </a>
             </Button>
             <Button variant="hero-outline" size="lg" className="px-8 py-6 text-base" asChild>
-              <a href="https://wa.me/447418378044" target="_blank" rel="noopener noreferrer">
+              <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
                 WhatsApp Us
               </a>
             </Button>

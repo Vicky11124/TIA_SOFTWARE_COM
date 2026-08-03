@@ -5,7 +5,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Check, Headphones, ClipboardList, Phone, Megaphone, ShoppingCart, BarChart3, CalendarDays, Calculator, Star, Users, Zap, Shield, Clock, Target } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Headphones, ClipboardList, Phone, Megaphone, ShoppingCart, BarChart3, CalendarDays, Calculator, Star, Users, Zap, Shield, Clock, Target, Sparkles } from "lucide-react";
 import serviceBranding from "@/assets/service-branding.webp";
 import serviceMarketing from "@/assets/service-marketing.webp";
 import serviceCreative from "@/assets/service-creative.webp";
@@ -19,6 +19,9 @@ import vaHero from "@/assets/va-hero.webp";
 import vaCustomerSupport from "@/assets/va-customer-support.webp";
 import vaDigitalMarketing from "@/assets/va-digital-marketing.webp";
 import vaAccounting from "@/assets/va-accounting.webp";
+import aboutTeam from "@/assets/about-team.webp";
+import showcaseWork from "@/assets/showcase-work.webp";
+import banner2 from "@/assets/banner-2.webp";
 
 const vaSubServices = [
   {
@@ -98,6 +101,7 @@ const serviceData: Record<string, {
   features: string[];
   process: { step: string; desc: string }[];
   deliverables: string[];
+  detailedContent: string[];
 }> = {
   "branding-essentials": {
     title: "Branding Essentials",
@@ -120,6 +124,13 @@ const serviceData: Record<string, {
       { step: "Delivery", desc: "All files in multiple formats, ready for use." },
     ],
     deliverables: ["Logo files (SVG, PNG, PDF)", "Brand style guide", "Business card templates", "Social media kit", "Stationery designs"],
+    detailedContent: [
+      "Branding is far more than a simple combination of logos, color palettes, and fonts; it is the living soul of your business and the primary medium through which you build trust with your audience. In today’s hyper-competitive and saturated digital environment, having a clear, unified, and compelling brand presence is the difference between standing out and fading into the background. At TIA Software Solutions, we understand that a successful brand must tell a cohesive story. We begin our branding process by diving deep into your target audience, your core values, and your business goals to establish a solid foundation for your unique market positioning.",
+      "Our branding essentials package covers every critical asset required to construct a memorable and impactful brand identity. We craft bespoke, modern logos that serve as the visual anchor of your company, offering multiple distinct concepts and refining them based on your feedback. We also design professional business cards, letterheads, envelopes, and social media brand kits that present a unified front to clients across all touchpoints. By establishing a professional, premium visual standard from the outset, we help your business build immediate credibility, making a powerful and lasting first impression on potential clients and partners.",
+      "A crucial, often overlooked component of branding is consistency. A disjointed visual presentation—where your website looks entirely different from your social media profiles or print materials—erodes trust and confuses customers. To prevent this, we provide a comprehensive Brand Guidelines document. This acts as a stylesheet and rulebook for your brand, outlining exact color codes (HEX, RGB, CMYK), typography hierarchies, and spacing rules. This guide ensures that anyone who creates content for your business in the future, from internal staff to external agencies, can maintain the visual integrity and voice of your brand.",
+      "We believe that branding is an ongoing relationship between your business and your community. Our design philosophy is grounded in creating identities that are not only beautiful today but also scalable for tomorrow as your service list and business footprint expand. Whether you are a brand new startup looking to make your mark or an established corporation seeking a modern refresh, TIA Software Solutions provides the strategic thinking and creative execution needed to elevate your brand. Let us help you craft a timeless, professional identity that resonates with your customers and drives business loyalty.",
+      "Ultimately, investing in a professional brand identity yields long-term financial dividends. A polished brand commands premium pricing, reduces customer acquisition costs, and inspires confidence in investors and top-tier talent. By choosing TIA Software Solutions as your creative partner, you receive a collaborative, client-focused experience where your vision is translated into stunning, developer-ready assets. We combine artistic innovation with commercial strategy to deliver branding that does not just look spectacular, but actively converts browsers into lifelong advocates."
+    ]
   },
   "digital-marketing": {
     title: "Digital Marketing",
@@ -142,6 +153,13 @@ const serviceData: Record<string, {
       { step: "Optimize", desc: "Continuous monitoring and optimization." },
     ],
     deliverables: ["Monthly analytics reports", "Ad creatives & copy", "SEO audit document", "Content calendar", "Campaign dashboard"],
+    detailedContent: [
+      "In the modern business landscape, having a stellar product or service is only half the battle; the other half is ensuring that your target audience can actually find you. Digital marketing is the engine that drives visibility, engagement, and revenue in an increasingly online world. At TIA Software Solutions, we reject cookie-cutter marketing strategies. We recognize that every business has unique goals, distinct audiences, and specific budgets. Our digital marketing solutions are built from the ground up, utilizing data-driven methodologies and real-time testing to ensure your advertising campaigns achieve maximum efficiency and return on investment.",
+      "Our comprehensive digital marketing approach spans multiple channels, including social media advertising, search engine optimization (SEO), and search engine marketing (SEM). We create highly targeted paid campaigns on platforms like Facebook, Instagram, LinkedIn, and Google Ads, laser-focusing on demographics, behaviors, and search intent that align with your ideal customer profile. By constantly A/B testing ad creatives, copy, and audience segments, we minimize ad waste and drive high-quality leads directly to your landing pages. This active campaign management ensures that your marketing budget is working as hard as possible for you.",
+      "Beyond paid advertising, we emphasize the power of organic growth through technical SEO and content strategy. High search engine rankings are a vital source of sustainable, long-term traffic that doesn't cost you per click. We optimize your website’s speed, mobile responsiveness, meta tags, and internal linking structure to make it highly attractive to search engines. Simultaneously, we construct a content strategy that establishes your business as an industry authority, creating informative blogs, social media calendars, and newsletters that educate your audience and address their pain points.",
+      "At TIA Software Solutions, we believe that transparency is paramount in digital marketing. We don't hide behind confusing jargon or vanity metrics. Every month, we deliver detailed analytics reports that clearly outline your campaign's performance, including key indicators like click-through rates, acquisition costs, conversion numbers, and overall return on ad spend (ROAS). This continuous monitoring allows us to pivot quickly and optimize live campaigns based on actual market data. Partner with us to scale your digital presence, build a robust customer acquisition pipeline, and achieve measurable, sustained business growth.",
+      "Furthermore, our digital marketing team remains at the absolute forefront of industry trends, algorithm updates, and emerging technologies. As consumer habits shift and advertising platforms evolve, we proactively adjust your marketing funnel to capture new opportunities before your competitors do. By choosing TIA Software Solutions, you gain a dedicated growth partner committed to translating clicks into customers and impressions into revenue, allowing you to focus on the operational excellence of your business."
+    ]
   },
   "creative-design": {
     title: "Creative Design",
@@ -164,6 +182,13 @@ const serviceData: Record<string, {
       { step: "Deliver", desc: "Final files in all required formats." },
     ],
     deliverables: ["Social media graphics", "Print-ready files", "Editable templates", "Brand-consistent designs", "Source files"],
+    detailedContent: [
+      "Human beings are visual creatures; we process images significantly faster than we read text. In the fast-paced digital ecosystem, where users swipe through hundreds of posts daily, the first fraction of a second is all you have to capture their attention. Creative design is the art of turning that momentary glance into deep interest and engagement. At TIA Software Solutions, we produce striking, high-fidelity graphics that stand out in crowded feeds. We blend creative artistry with strategic marketing principles to ensure that every visual asset we design is not only beautiful, but also aligned with your business objectives.",
+      "Our creative design services cater to all your digital and physical marketing needs. Whether you need thumb-stopping social media graphics for your daily feed, promotional materials for an upcoming corporate event, or holiday-themed seasonal templates, we deliver customized layouts that speak your brand’s language. Our team has extensive experience designing complex infographics, structured layout designs, brochures, and flyers that translate complicated data into clean, digestible visual assets. We ensure that your message is communicated clearly and effectively, matching your established brand style guides perfectly.",
+      "A major challenge for modern brands is maintaining a professional and consistent visual standard across different marketing channels. If your Instagram graphics look completely different from your website banners or printed flyers, your brand can feel disjointed and untrustworthy. Our team solves this by working with a unified design system. We establish guidelines for color, layout hierarchy, and typography before we begin, ensuring that every asset we deliver is instantly recognizable as yours. This deliberate approach reinforces your brand memory and builds long-term customer trust.",
+      "Collaborating with TIA Software Solutions means having an entire creative department at your fingertips. Our design process is highly iterative and collaborative: we start by understanding your campaign goals, draft multiple initial concepts, and refine them based on your direct feedback. We deliver clean, developer-ready, and print-ready files in all required formats, along with source files for future edits. Let us elevate your marketing materials with custom, high-end graphic design that grabs attention, communicates value, and drives conversions.",
+      "In addition to digital graphics, we specialize in offline promotional collateral, ensuring a seamless offline-to-online experience. From exhibition backdrops and pop-up banners to product packaging and corporate stationery, we ensure your physical branding matches the premium quality of your online presence. Our meticulous attention to detail, typography selection, and color consistency guarantees that your print materials look flawless when they come off the press. Experience the power of professional design that strengthens your brand authority and leaves a premium impression."
+    ]
   },
   "ui-ux-design": {
     title: "UI/UX Design",
@@ -186,6 +211,13 @@ const serviceData: Record<string, {
       { step: "Handoff", desc: "Developer-ready specs and assets." },
     ],
     deliverables: ["Figma design files", "Interactive prototype", "UI component library", "Style guide", "Developer documentation"],
+    detailedContent: [
+      "In today’s digital-first economy, your website or mobile application is often the primary touchpoint for your clients. A beautiful interface might attract users initially, but if the navigation is confusing, slow, or frustrating, they will leave within seconds. UI/UX design is the science and art of ensuring your digital products are both visually stunning and incredibly easy to navigate. At TIA Software Solutions, we employ a user-centered design approach. We research user behaviors, define intuitive pathways, and build interfaces that minimize friction, maximize user satisfaction, and boost conversion rates.",
+      "Our design workflow begins with comprehensive discovery and wireframing. Before we design high-fidelity graphics, we map out the information architecture and create low-fidelity wireframes. This step allows us to test the structural layout and user flow, ensuring that information is organized logically and that users can accomplish tasks—such as signing up, buying a product, or finding contact info—with the fewest possible clicks. By solving usability issues early in the wireframing phase, we save valuable time and reduce development costs later in the project lifecycle.",
+      "Once the structural framework is locked in, our UI designers step in to create pixel-perfect, high-fidelity mockups. We design clean, responsive layouts that adapt beautifully to desktops, tablets, and smartphones. We place a massive emphasis on modern typography, balanced white space, smooth micro-interactions, and accessible color contrast. Using tools like Figma, we compile these components into a dedicated Design System. This reusable library of buttons, cards, headers, and form elements ensures visual consistency across your application and serves as a single source of truth for developers.",
+      "At TIA Software Solutions, we don't just hand over static image files; we provide fully interactive, clickable prototypes. These prototypes simulate the final application, allowing you and your team to experience the user journey firsthand before writing a single line of code. We also write comprehensive handoff documentation for developers, ensuring a smooth transition and reducing misunderstandings. Partner with us to build digital products that delight your users, represent your brand with premium aesthetics, and drive long-term business success.",
+      "We also prioritize accessibility and inclusivity in all our user experience designs. We ensure that our interfaces comply with Web Content Accessibility Guidelines (WCAG), making your product usable for individuals of all abilities. From screen reader compatibility to keyboard navigation, we design with empathy and technical precision. By partnering with TIA Software Solutions, you are not just getting a web design; you are getting a highly polished, inclusive digital experience that commands respect, builds trust, and drives customer loyalty."
+    ]
   },
   "video-motion-graphics": {
     title: "Video & Motion Graphics",
@@ -208,6 +240,13 @@ const serviceData: Record<string, {
       { step: "Delivery", desc: "Optimized for each platform." },
     ],
     deliverables: ["Video files (MP4, MOV)", "Platform-optimized versions", "Thumbnail designs", "Storyboard", "Source files"],
+    detailedContent: [
+      "The digital audience's attention span is shorter than ever, making dynamic video content the most powerful medium for engagement online. A static post can easily be scrolled past, but a well-timed animation or a compelling video intro instantly hooks the viewer's eye and keeps them engaged. Motion graphics and video production tell complex stories in seconds, conveying emotions and detail that static images simply cannot match. At TIA Software Solutions, we create premium video assets and animations designed to captivate your audience and elevate your brand's digital presence.",
+      "Our video and motion graphics team offers a wide spectrum of creative services. We design animated logos, custom brand intros, explainer videos, product demonstrations, and highly engaging social media ads. Whether you need a short-form video for Instagram Reels, a product tutorial for YouTube, or a corporate video for your website, we tailor our visuals, pacing, and sound to suit your platform and target demographic. We ensure that the visual style and tone are perfectly aligned with your parent brand identity.",
+      "Every video project we undertake follows a rigorous, professional production process. We begin with scriptwriting and storyboarding, mapping out the visual flow and narration before we start animating or editing. This careful pre-production step ensures that our creative team and our clients are completely aligned on the vision. Once approved, we move to high-fidelity design, fluid animation, professional video editing, and color grading. We finish the project by integrating premium background music, sound effects, and voiceovers to create a polished final product.",
+      "We optimize all our video deliverables for their specific platforms, providing vertical, square, and widescreen formats to ensure compatibility with various social media channels and devices. We also provide source files, storyboard layouts, and custom thumbnails to help you get the most value out of your video assets. Partner with TIA Software Solutions to transform your message into captivating motion content that stops the scroll, drives brand awareness, and converts viewers into loyal customers.",
+      "Additionally, video content is highly favored by modern search engine and social media algorithms, making it a crucial component of any modern marketing strategy. A high-quality explainer video on your landing page can increase conversion rates by up to 80%, while social videos generate 1200% more shares than text and images combined. By leveraging TIA Software Solutions’ expertise in video and motion graphics, you are investing in a high-yield marketing asset that boosts SEO rankings, increases session duration, and builds a modern, forward-thinking image for your business."
+    ]
   },
   "stories-reels-assets": {
     title: "Stories & Reels Assets",
@@ -230,6 +269,13 @@ const serviceData: Record<string, {
       { step: "Deliver", desc: "Ready-to-use files with editables." },
     ],
     deliverables: ["Story template pack", "Reel cover designs", "Highlight icon set", "Editable files", "Brand usage guide"],
+    detailedContent: [
+      "Short-form video has completely revolutionized the way brands interact with their audiences. Platforms like Instagram, TikTok, and YouTube Shorts have made vertical video the fastest-growing content medium, driving unparalleled organic reach and customer engagement. To stay relevant in this fast-paced environment, businesses must publish high-quality, scroll-stopping vertical content consistently. At TIA Software Solutions, we design premium Stories and Reels assets that help your brand stand out in busy feeds, build a dedicated following, and turn casual viewers into paying customers.",
+      "We specialize in creating cohesive, branded templates and design assets tailored specifically for vertical screens. Our services include designing custom Instagram Story templates, high-impact Reel covers, aesthetic Story Highlight icons, and custom interactive assets like branded stickers, polls, and quiz backgrounds. By providing eye-catching visual frames and typography overlays, we help you maintain a polished, professional brand appearance even when you are publishing spontaneous, behind-the-scenes content on the go.",
+      "A common mistake brands make is treating short-form video as an afterthought, leading to messy, unbranded feeds that look unprofessional. Our team ensures that your Reels and Stories look cohesive and fit perfectly within your brand identity. We design custom templates using your exact brand colors, logos, and fonts, giving you a distinct visual signature. This consistency makes your content instantly recognizable as your users swipe through their stories, increasing brand recall and establishing a premium digital presence.",
+      "We provide our Stories and Reels assets in highly flexible, user-friendly formats, including fully editable Figma or Canva templates. This allows your team to easily swap text, images, and videos in seconds, ensuring you can react to trending topics and publish content rapidly without waiting on design departments. Partner with TIA Software Solutions to equip your social media team with premium, high-converting assets that drive engagement, expand your reach, and grow your brand community.",
+      "Furthermore, we understand the psychology of short-form video. The first three seconds of a Reel or TikTok are critical; if you don't capture the viewer's attention immediately, they will swipe away. That’s why we focus heavily on creating high-contrast, text-on-screen layouts and eye-catching animated headers that hook the user instantly. Our template kits are designed to structure information logically, guiding viewers toward a clear call-to-action (CTA) such as 'Link in Bio' or 'Comment below.' Boost your social media conversion rates with assets built specifically for performance."
+    ]
   },
   "seasonal-festive": {
     title: "Seasonal & Festive Designs",
@@ -252,6 +298,13 @@ const serviceData: Record<string, {
       { step: "Optimize", desc: "Post-campaign analysis for improvement." },
     ],
     deliverables: ["Festive greeting designs", "Social media campaign kit", "Email templates", "Print-ready materials", "Seasonal brand assets"],
+    detailedContent: [
+      "The holidays and major cultural festivals represent the busiest shopping and engagement periods of the year. During these high-intent seasons, consumers are actively looking for deals, gifts, and connections, making it a critical time for brands to stay top-of-mind. However, generic stock images or standard holiday greetings can feel lazy and fail to resonate with your audience. At TIA Software Solutions, we craft custom, high-end seasonal and festive designs that celebrate these key moments with your audience, creating deep emotional connections and driving seasonal sales.",
+      "Our seasonal design services cover a wide array of holidays and cultural celebrations, including Diwali, Christmas, New Year, Eid, Thanksgiving, and more. We design custom greeting cards, festive social media templates, seasonal website banners, email newsletters, and promotional gift cards. Whether you want to send a heartfelt message to your clients, run a holiday discount campaign, or temporarily dress up your website and social media profiles with festive styling, we create stunning visual assets that capture the joy and spirit of the occasion.",
+      "We believe that seasonal designs should be culturally authentic and highly professional. We combine festive symbolism and traditional color palettes with your existing brand guidelines, ensuring that the holiday designs still look distinctly like your brand. This careful balance prevents your marketing from looking generic and reinforces your brand authority. By showcasing your company's personality and values during important holidays, you humanize your brand and build stronger, more personal relationships with your customer base.",
+      "Because holiday marketing campaigns require careful timing, we work ahead of the curve. We collaborate with you to create a seasonal design calendar, ensuring all greeting cards, promotional banners, and social assets are designed, approved, and delivered well before the holidays arrive. This structured planning allows you to run stress-free campaigns and capture maximum consumer attention during peak seasons. Let TIA Software Solutions help you celebrate every occasion with premium, customized festive graphics.",
+      "Ultimately, seasonal campaigns are a powerful driver of brand loyalty. Sending a beautiful, custom digital greeting card to your active clients during key holidays shows that you value their business beyond transaction metrics. Additionally, customized holiday banners on your website create a sense of urgency and excitement for seasonal promotions, directly boosting conversion rates. Partner with TIA Software Solutions to deliver authentic, professional, and visually stunning festive campaigns that delight your customers and grow your business."
+    ]
   },
   "event-launch-graphics": {
     title: "Event & Launch Graphics",
@@ -274,6 +327,13 @@ const serviceData: Record<string, {
       { step: "Support", desc: "Day-of support and post-event content." },
     ],
     deliverables: ["Event poster & banner designs", "Digital invitations", "Social media kit", "Venue signage files", "Post-event graphics"],
+    detailedContent: [
+      "Launching a new product, opening a new office, or hosting a corporate event is a major milestone for any business. However, the success of these events depends entirely on your ability to build anticipation, create buzz, and drive attendance or sales. High-quality visual communication is key to making your launch feel like a must-attend event. At TIA Software Solutions, we create premium event and launch graphics designed to generate excitement, capture leads, and ensure that your brand looks professional and polished from the initial announcement to the post-event recap.",
+      "We design a comprehensive suite of launch assets, including digital invitations, RSVP cards, event announcement posts, countdown teasers, and promotional banners. If you are hosting a physical event, we also design matching print collateral, such as venue signage, roll-up banners, badges, backdrops, and presentation slides. We ensure that every piece of material—whether viewed on a smartphone screen or printed on a large-scale backdrop—maintains a cohesive visual theme, creating an immersive brand experience for your attendees.",
+      "A successful launch requires a clear timeline and a structured narrative. We design graphics that correspond to each phase of your launch funnel, starting with mysterious teaser designs to spark curiosity, followed by detailed announcement graphics to drive registrations, and concluding with live-event assets and post-event thank you messages. This narrative consistency keeps your audience engaged over a longer period, building momentum and increasing the overall return on investment for your event.",
+      "Collaborating with TIA Software Solutions means you get a dedicated team that understands the high-stakes, fast-paced nature of launches. We deliver all digital files optimized for various screen resolutions and provide print-ready, high-resolution vector files with proper crop marks for local printers. Let us handle the design heavy lifting for your next big announcement, so you can focus on delivering a successful event. Contact us today to start planning your custom launch graphic assets.",
+      "Additionally, a polished launch presentation is critical when speaking to investors, media, or prospective clients. We design bespoke slide decks and digital brochures that present your value proposition clearly and powerfully. By integrating premium typography, custom icons, and high-impact data visualization, we ensure your message is memorable. Partnering with TIA Software Solutions guarantees that your business makes a world-class statement during its most critical moments, positioning your brand as a market leader from day one."
+    ]
   },
 };
 
@@ -348,7 +408,7 @@ const VirtualAssistancePage = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button variant="hero" size="lg" className="px-8" asChild>
-                <a href="https://wa.me/447418378044" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
                   Get Started Today <ArrowRight className="ml-2" size={18} />
                 </a>
               </Button>
@@ -533,7 +593,7 @@ const VirtualAssistancePage = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="hero" size="lg" className="px-10" asChild>
-                <a href="https://wa.me/447418378044" target="_blank" rel="noopener noreferrer">
+                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
                   Contact Us on WhatsApp <ArrowRight className="ml-2" size={18} />
                 </a>
               </Button>
@@ -592,16 +652,15 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-24 pb-16 overflow-hidden">
+      <section className="relative pt-24 pb-20 overflow-hidden">
         <img
           src={service.image}
           alt={service.title}
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
-          loading="lazy"
-          width={1200}
-          height={800}
+          className="absolute inset-0 w-full h-full object-cover opacity-15"
+          width={1920}
+          height={1080}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-background" />
         <div className="container relative z-10">
           <Link
             to="/services"
@@ -613,55 +672,98 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="max-w-3xl"
           >
-            <span className="text-sm font-medium text-primary tracking-widest uppercase mb-3 block">
-              {service.subtitle}
-            </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6">
-              <span className="gradient-text">{service.title}</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-6">
+              <Sparkles size={16} /> Premium Agency Service
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4">
+              <span className="gradient-text">{service.title}</span> Services
             </h1>
+            <p className="text-xl md:text-2xl font-semibold text-foreground/80 mb-4">
+              {service.subtitle}
+            </p>
+            <p className="text-lg text-muted-foreground max-w-2xl mb-8">
+              {service.description}
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Button variant="hero" size="lg" className="px-8" asChild>
+                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+                  Get Started Today <ArrowRight className="ml-2" size={18} />
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" className="px-8" asChild>
+                <Link to="/contact">Contact Us</Link>
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Description + image */}
-      <section className="section-padding">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      {/* Sub-services / In-Depth alternate cards */}
+      {service.detailedContent && (
+        <section className="section-padding">
+          <div className="container">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
             >
-              <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                {service.description}
-              </p>
-              <Button variant="hero" size="lg" className="px-8" asChild>
-                <a href="https://wa.me/447418378044" target="_blank" rel="noopener noreferrer">
-                  Get a Quote <ArrowRight className="ml-2" size={18} />
-                </a>
-              </Button>
+              <span className="text-sm font-medium text-primary tracking-widest uppercase mb-3 block">
+                Deep Dive
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Our <span className="gradient-text">{service.title} Solutions</span>
+              </h2>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="rounded-2xl overflow-hidden"
-            >
-              <img
-                src={service.image}
-                alt={service.title}
-                className="w-full h-auto rounded-2xl"
-                loading="lazy"
-                width={1200}
-                height={800}
-              />
-            </motion.div>
+
+            <div className="space-y-16">
+              {service.detailedContent.map((sub, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05, duration: 0.6 }}
+                  className="glass-card overflow-hidden"
+                >
+                  <div className={`grid lg:grid-cols-2 ${i % 2 === 1 ? "lg:[direction:rtl]" : ""}`}>
+                    <div className="relative h-64 lg:h-auto overflow-hidden">
+                      <img
+                        src={
+                          i === 0 ? service.image :
+                          i === 1 ? banner2 :
+                          i === 2 ? showcaseWork :
+                          i === 3 ? aboutTeam : vaAccounting
+                        }
+                        alt={service.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy"
+                        width={1200}
+                        height={800}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-background/30 to-transparent" />
+                    </div>
+                    <div className={`p-8 lg:p-12 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
+                      <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mb-5">
+                        <Sparkles size={28} className="text-primary" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-4">
+                        {i === 0 ? "Strategic Overview" :
+                         i === 1 ? "Custom Implementation" :
+                         i === 2 ? "Cohesive Consistency" :
+                         i === 3 ? "Collaborative Philosophy" : "Commercial Value & Outcomes"}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">{sub}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Features */}
       <section className="section-padding bg-secondary/20">
@@ -693,6 +795,43 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
                   <Check size={16} className="text-primary" />
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="section-padding bg-secondary/30">
+        <div className="container">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="text-sm font-medium text-primary tracking-widest uppercase mb-3 block">
+              Why Choose Us
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Why Choose <span className="gradient-text">TIA Software Solutions</span>?
+            </h2>
+          </motion.div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {whyChooseUs.map((item, i) => (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="glass-card p-6 text-center hover-lift"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <item.icon size={28} className="text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -738,35 +877,89 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
         </div>
       </section>
 
-      {/* Deliverables */}
+      {/* Benefits + Who Can Benefit */}
       <section className="section-padding bg-secondary/20">
-        <div className="container max-w-3xl text-center">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="text-sm font-medium text-primary tracking-widest uppercase mb-3 block">
+                Benefits
+              </span>
+              <h2 className="text-3xl font-bold mb-8">
+                Benefits of Our <span className="gradient-text">{service.title}</span>
+              </h2>
+              <div className="space-y-4">
+                {[
+                  "Maximize your brand's digital visibility and reach",
+                  "Save time and operational costs with expert outsourcing",
+                  "Ensure premium design and execution quality standards",
+                  "Gain scalable, tailored solutions for your business size",
+                  "Translate clicks and impressions into measurable revenue",
+                ].map((b) => (
+                  <div key={b} className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <Check size={16} className="text-primary" />
+                    </div>
+                    <p className="text-muted-foreground">{b}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="text-sm font-medium text-primary tracking-widest uppercase mb-3 block">
+                Who Can Benefit
+              </span>
+              <h2 className="text-3xl font-bold mb-8">
+                Perfect For <span className="gradient-text">Your Business</span>
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                {whoCanBenefit.map((item) => (
+                  <div key={item} className="glass-card p-4 flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                    <span className="text-sm font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+
+
+      {/* CTA */}
+      <section className="section-padding bg-primary/5">
+        <div className="container text-center max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="text-sm font-medium text-primary tracking-widest uppercase mb-3 block">
-              What You Get
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mb-10">
-              <span className="gradient-text">Deliverables</span>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Ready to <span className="gradient-text">Get Started</span>?
             </h2>
-            <div className="flex flex-wrap justify-center gap-3">
-              {service.deliverables.map((d) => (
-                <span
-                  key={d}
-                  className="glass-card px-5 py-3 text-sm font-medium text-foreground"
-                >
-                  {d}
-                </span>
-              ))}
+            <p className="text-lg text-muted-foreground mb-8">
+              Let TIA Software Solutions take care of your tasks while you focus on scaling your business. Contact us today for reliable {service.title}!
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button variant="hero" size="lg" className="px-10" asChild>
+                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+                  Contact Us on WhatsApp <ArrowRight className="ml-2" size={18} />
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" className="px-10" asChild>
+                <Link to="/plans">View Our Plans</Link>
+              </Button>
             </div>
-            <Button variant="hero" size="lg" className="mt-12 px-10" asChild>
-              <a href="https://wa.me/447418378044" target="_blank" rel="noopener noreferrer">
-                Start Your Project <ArrowRight className="ml-2" size={18} />
-              </a>
-            </Button>
           </motion.div>
         </div>
       </section>

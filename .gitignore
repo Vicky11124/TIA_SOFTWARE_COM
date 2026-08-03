@@ -9,23 +9,67 @@ lerna-debug.log*
 
 # Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Build output
 dist
 dist-ssr
+build
+*.tsbuildinfo
 
-# Environments
+# Environments / Secrets
 .env
 .env.local
-.env.*.local
+.env.development
+.env.development.local
+.env.test.local
 .env.production
+.env.production.local
+.env.staging
+.env.*
 *.local
+
+# Prewarm / cache files
+.prewarm
+
+# Vite / bundler cache
+.vite
+.cache
+
+# Testing
+coverage
+*.lcov
+playwright-report
+test-results
+
+# Lock files (keep only one)
+bun.lockb
+bun.lock
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Supabase local
+.supabase
+
+# Gemini / AI tooling
+.gemini

@@ -39,7 +39,7 @@ CREATE TABLE public.banners (
   description TEXT NOT NULL DEFAULT '',
   image_url TEXT NOT NULL DEFAULT '',
   cta_text TEXT NOT NULL DEFAULT 'Book Now',
-  cta_link TEXT NOT NULL DEFAULT 'https://wa.me/447418378044',
+  cta_link TEXT NOT NULL DEFAULT 'https://wa.me/447451255217',
   sort_order INTEGER NOT NULL DEFAULT 0,
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
