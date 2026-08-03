@@ -303,13 +303,32 @@ export class MockProvider implements AIProvider {
       detectedBusiness = "Interior Design";
     } else if (lastUserLower.includes("police")) {
       detectedBusiness = "Police Website";
+    } else if (lastUserLower.includes("real estate") || lastUserLower.includes("property")) {
+      detectedBusiness = "Real Estate Agency";
+    } else if (lastUserLower.includes("gym") || lastUserLower.includes("fitness") || lastUserLower.includes("trainer")) {
+      detectedBusiness = "Fitness & Gym";
+    } else if (lastUserLower.includes("law") || lastUserLower.includes("legal") || lastUserLower.includes("attorney") || lastUserLower.includes("lawyer")) {
+      detectedBusiness = "Law Firm";
+    } else if (lastUserLower.includes("construction") || lastUserLower.includes("builder")) {
+      detectedBusiness = "Construction Company";
+    } else if (lastUserLower.includes("cleaning")) {
+      detectedBusiness = "Cleaning Services";
     } else {
-      const match = lastUserLower.match(/(?:for a|for|my|own a|own|about a|about)\s+([^.,?!]+)/i);
-      if (match) {
-        const potential = match[1].trim();
-        const words = potential.split(/\s+/);
+      // If we are currently missing businessType and they answered with a short phrase (not a question or command)
+      const isQuestion = lastUserLower.includes("?") || lastUserLower.includes("do you") || lastUserLower.includes("can you") || lastUserLower.includes("how much") || lastUserLower.includes("where");
+      if (!nextState.businessType && !isQuestion) {
+        const words = lastUserMessage.trim().split(/\s+/);
         if (words.length <= 4 && !words.includes("website") && !words.includes("app") && !words.includes("site") && !words.includes("stuff")) {
           detectedBusiness = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+        }
+      } else {
+        const match = lastUserLower.match(/(?:for a|for|my|own a|own|about a|about)\s+([^.,?!]+)/i);
+        if (match) {
+          const potential = match[1].trim();
+          const words = potential.split(/\s+/);
+          if (words.length <= 4 && !words.includes("website") && !words.includes("app") && !words.includes("site") && !words.includes("stuff")) {
+            detectedBusiness = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+          }
         }
       }
     }
@@ -443,6 +462,16 @@ export class MockProvider implements AIProvider {
       industryTips = "For food establishments, visitors appreciate interactive online menus, maps directories, and seamless table reservations to optimize conversions.";
     } else if (bizType.includes("Police")) {
       industryTips = "For community and public service hubs, users look for online enquiry forms, latest announcements dashboards, and contact support lines.";
+    } else if (bizType.includes("Real Estate")) {
+      industryTips = "For real estate agencies, visitors convert best when they can search listings, view high-quality property pictures, filter by location or price, and contact agents directly.";
+    } else if (bizType.includes("Gym") || bizType.includes("Fitness")) {
+      industryTips = "For fitness centers, clients look for class timetables, trainer bios, membership pricing options, and online registration sheets.";
+    } else if (bizType.includes("Law") || bizType.includes("Legal")) {
+      industryTips = "For legal firms, clients seek practice area summaries, lawyer bios, case results, client reviews, and direct consultation booking portals.";
+    } else if (bizType.includes("Construction")) {
+      industryTips = "For construction companies, customers look for portfolio galleries of past builds, lists of services, safety certifications, and request-a-quote estimators.";
+    } else if (bizType.includes("Cleaning")) {
+      industryTips = "For cleaning services, customers look for service lists, service areas, customer testimonials, and an online quote calculator.";
     }
 
     // Next missing question logic

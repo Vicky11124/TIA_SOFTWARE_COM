@@ -95,4 +95,18 @@ describe("MockProvider Conversational Flow", () => {
     expect(res.lead_state.pages).toBe("5 pages");
     expect(res.lead_state.budget).toBe("Recommended: Basic Plan (£199.99/mo)");
   });
+
+  it("should extract business type directly (e.g. real estate)", async () => {
+    const state: LeadState = {
+      service: "Website",
+      businessType: null,
+      pages: null,
+      features: [],
+      budget: null,
+      timeline: null,
+    };
+
+    const res = await runChat(provider, [{ role: "user", content: "real estate" }], state);
+    expect(res.lead_state.businessType).toBe("Real Estate Agency");
+  });
 });
