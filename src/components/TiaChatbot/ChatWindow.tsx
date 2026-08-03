@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Send, Trash2, X, RefreshCw, Sparkles } from "lucide-react";
+import { Send, RefreshCw, X, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
 import MessageItem, { Message } from "./MessageItem";
-import LeadCaptureForm from "./LeadCaptureForm";
-import { getActiveProvider, detectBuyingIntent } from "@/services/aiProvider";
+import ProgressIndicator from "./ProgressIndicator";
+import ProjectSummaryCard from "./ProjectSummaryCard";
+import ContactFormInline from "./ContactFormInline";
+import { getActiveProvider, LeadState, ChatJSONResponse } from "@/services/aiProvider";
 import { Button } from "@/components/ui/button";
 
 interface ChatWindowProps {
@@ -15,58 +17,118 @@ const WELCOME_MESSAGE: Message = {
   role: "model",
   content: `👋 Welcome to TIA Software Solutions!
 
-I'm TIA AI.
+I'm TIA AI, your digital project consultant. 
 
-I can help you with:
-• Website Development
-• Mobile App Development
-• Digital Marketing
-• SEO
-• Branding
-• UI/UX Design
-• AI Automation
+I can help you design, build, and scale:
+• Websites & E-commerce Stores
+• Mobile Applications
+• Digital SEO & Marketing Ads
+• Branding & custom AI integrations
 
-How can I help you today?`,
+Are you planning to build a new Website, develop an App, or start marketing your business?`,
 };
 
 const SUGGESTED_PROMPTS = [
-  "I need a website",
-  "Website pricing",
-  "SEO services",
-  "Mobile app development",
-  "Branding",
-  "Book a consultation",
-  "Contact your team",
+  "I need a Website",
+  "I want a Mobile App",
+  "Digital Marketing & SEO",
+  "Branding & Logo Design",
 ];
+
+const INITIAL_LEAD_STATE: LeadState = {
+  service: null,
+  businessType: null,
+  pages: null,
+  features: [],
+  budget: null,
+  timeline: null,
+};
+
+const parsePartialJSON = (jsonStr: string) => {
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (parsed && typeof parsed === "object") {
+      return {
+        response: parsed.assistant_response || "",
+        state: parsed.lead_state || null,
+        score: typeof parsed.lead_score === "number" ? parsed.lead_score : null,
+      };
+    }
+  } catch (e) {
+    // Continue to partial parse
+  }
+
+  let response = "";
+  // Match "assistant_response": "..."
+  const match = jsonStr.match(/"assistant_response"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)"/);
+  if (match) {
+    response = match[1];
+  } else {
+    // If not closed yet, match what's currently in progress
+    const partialMatch = jsonStr.match(/"assistant_response"\s*:\s*"([^"\\]*(?:\\.[^"\\]*)*)$/);
+    if (partialMatch) {
+      response = partialMatch[1];
+    }
+  }
+
+  // Unescape common JSON escapes
+  response = response
+    .replace(/\\n/g, "\n")
+    .replace(/\\"/g, '"')
+    .replace(/\\t/g, "\t")
+    .replace(/\\\\/g, "\\");
+
+  return { response, state: null, score: null };
+};
 
 const ChatWindow = ({ onClose }: ChatWindowProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [showLeadForm, setShowLeadForm] = useState(false);
+  
+  // Conversational Lead capture states
+  const [leadState, setLeadState] = useState<LeadState>(INITIAL_LEAD_STATE);
+  const [leadScore, setLeadScore] = useState(0);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(true);
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Load chat history on mount
+  // Hydrate states on mount
   useEffect(() => {
-    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (saved) {
+    const savedMsgs = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedMsgs) {
       try {
-        setMessages(JSON.parse(saved));
+        setMessages(JSON.parse(savedMsgs));
       } catch (e) {
         setMessages([WELCOME_MESSAGE]);
       }
     } else {
       setMessages([WELCOME_MESSAGE]);
     }
+
+    const savedState = localStorage.getItem("tia_lead_state");
+    if (savedState) {
+      try {
+        setLeadState(JSON.parse(savedState));
+      } catch (e) {}
+    }
+
+    const savedScore = localStorage.getItem("tia_lead_score");
+    if (savedScore) {
+      const score = Number(savedScore) || 0;
+      setLeadScore(score);
+      if (score >= 100) {
+        setShowContactForm(true);
+      }
+    }
   }, []);
 
-  // Save messages to local storage
   const saveMessages = (newMsgs: Message[]) => {
     setMessages(newMsgs);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newMsgs));
   };
 
-  // Scroll to bottom
   const scrollToBottom = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -75,11 +137,15 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping, showLeadForm]);
+  }, [messages, isTyping, showContactForm]);
 
   const handleClearChat = () => {
     saveMessages([WELCOME_MESSAGE]);
-    setShowLeadForm(false);
+    setLeadState(INITIAL_LEAD_STATE);
+    setLeadScore(0);
+    setShowContactForm(false);
+    localStorage.removeItem("tia_lead_state");
+    localStorage.removeItem("tia_lead_score");
     setIsTyping(false);
   };
 
@@ -90,51 +156,58 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     const updatedMessages = [...messages, userMsg];
     saveMessages(updatedMessages);
     setInputValue("");
-
-    // Check for buying intent or lead request
-    if (detectBuyingIntent(text)) {
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        setShowLeadForm(true);
-      }, 1000);
-      return;
-    }
-
-    // Call AI provider
     setIsTyping(true);
-    const provider = getActiveProvider();
 
-    // Add empty placeholder for streaming message
+    const provider = getActiveProvider();
+    
+    // Add placeholder message for bot stream
     const botPlaceholderMsg: Message = { role: "model", content: "" };
-    const messagesWithPlaceholder = [...updatedMessages, botPlaceholderMsg];
-    setMessages(messagesWithPlaceholder);
+    setMessages([...updatedMessages, botPlaceholderMsg]);
 
     let streamText = "";
 
     try {
-      await provider.streamChat(updatedMessages, {
+      await provider.streamChat(updatedMessages, leadState, {
         onChunk: (chunk) => {
           streamText += chunk;
+          const parsed = parsePartialJSON(streamText);
           setMessages((prev) => {
             const next = [...prev];
             if (next.length > 0) {
-              next[next.length - 1] = { role: "model", content: streamText };
+              next[next.length - 1] = { role: "model", content: parsed.response };
             }
             return next;
           });
         },
-        onFinish: (fullText) => {
+        onFinish: (result: ChatJSONResponse) => {
           setIsTyping(false);
-          const finalMessages = [...updatedMessages, { role: "model", content: fullText }];
+
+          // Save conversational output
+          const finalMessages = [
+            ...updatedMessages,
+            { role: "model", content: result.assistant_response },
+          ];
           saveMessages(finalMessages);
+
+          // Update Lead State & Score
+          setLeadState(result.lead_state);
+          setLeadScore(result.lead_score);
+          
+          localStorage.setItem("tia_lead_state", JSON.stringify(result.lead_state));
+          localStorage.setItem("tia_lead_score", String(result.lead_score));
+
+          if (result.lead_score >= 100) {
+            setShowContactForm(true);
+          }
         },
         onError: (err) => {
-          console.error("AI Error:", err);
+          console.error("Gemini stream error", err);
           setIsTyping(false);
-          const errorMsg = {
-            role: "model" as const,
-            content: "Sorry, I ran into an issue connecting to my brain. Please contact our team at sales@tiasoftwaresolutions.com or +44 7451 255217 for assistance!",
+          
+          // Revert template on error
+          const errorMsg: Message = {
+            role: "model",
+            content: "Sorry, I ran into a connection issue. Please contact our sales team at sales@tiasoftwaresolutions.com or call +44 7451 255217!",
           };
           saveMessages([...updatedMessages, errorMsg]);
         },
@@ -143,6 +216,24 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       setIsTyping(false);
       console.error(e);
     }
+  };
+
+  const handleContactSuccess = (name: string, email: string, phone: string) => {
+    setShowContactForm(false);
+    
+    // Increment leadScore slightly beyond 100 to flag complete
+    setLeadScore(105);
+    localStorage.setItem("tia_lead_score", "105");
+
+    const finalModelResponse: Message = {
+      role: "model",
+      content: `Thanks ${name}! 🎉 
+
+Your quotation inquiry has been successfully sent to our expert developers. We will prepare your custom proposal and contact you at **${email}** (or **${phone || "phone"}**) within 24 hours.
+
+If you have any other questions in the meantime, feel free to ask!`,
+    };
+    saveMessages([...messages, finalModelResponse]);
   };
 
   return (
@@ -158,10 +249,10 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
           </div>
           <div>
             <h3 className="font-bold text-sm leading-tight flex items-center gap-1">
-              TIA AI <span className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded font-medium">Agent</span>
+              TIA AI <span className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded font-medium">Consultant</span>
             </h3>
             <span className="text-[10px] text-white/80 flex items-center gap-1">
-              Online • Sales Assistant
+              Online • 24/7 Digital Advisor
             </span>
           </div>
         </div>
@@ -183,7 +274,24 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
         </div>
       </div>
 
-      {/* Message Area */}
+      {/* Progress Phase Header */}
+      <ProgressIndicator score={leadScore} />
+
+      {/* Sticky Project Profile Panel */}
+      {leadScore > 0 && (
+        <div className="bg-background/80 border-b border-border/40 px-4 py-1.5 flex flex-col">
+          <button
+            onClick={() => setSummaryOpen((s) => !s)}
+            className="flex items-center justify-between text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors py-0.5"
+          >
+            <span>ACTIVE PROJECT PROFILE ({leadScore >= 100 ? "100%" : `${leadScore}%`} COMPLETE)</span>
+            {summaryOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+          {summaryOpen && <ProjectSummaryCard leadState={leadState} />}
+        </div>
+      )}
+
+      {/* Message Stream */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin flex flex-col bg-background/50"
@@ -205,25 +313,16 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
           </div>
         )}
 
-        {showLeadForm && (
-          <LeadCaptureForm
-            onSubmitSuccess={() => {
-              setShowLeadForm(false);
-              saveMessages([
-                ...messages,
-                {
-                  role: "model",
-                  content: "Thanks for submitting your request! An expert from our team will contact you very soon. What else can I help you with?",
-                },
-              ]);
-            }}
-            onCancel={() => setShowLeadForm(false)}
+        {showContactForm && (
+          <ContactFormInline
+            leadState={leadState}
+            onSubmitSuccess={handleContactSuccess}
           />
         )}
       </div>
 
-      {/* Suggested Chips */}
-      {!showLeadForm && (
+      {/* Suggestion Prompt Chips */}
+      {!showContactForm && (
         <div className="px-4 py-2 flex gap-2 overflow-x-auto whitespace-nowrap bg-background/20 border-t border-border/40 select-none scrollbar-none">
           {SUGGESTED_PROMPTS.map((prompt) => (
             <button
@@ -237,7 +336,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
         </div>
       )}
 
-      {/* Input Form */}
+      {/* Footer Input Bar */}
       <div className="p-3 border-t border-border bg-card">
         <form
           onSubmit={(e) => {
@@ -248,16 +347,16 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
         >
           <input
             type="text"
-            disabled={showLeadForm}
+            disabled={showContactForm}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             className="flex-1 min-w-0 bg-background border border-border rounded-xl px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-shadow disabled:opacity-50"
-            placeholder={showLeadForm ? "Please complete the form..." : "Ask TIA AI..."}
-            maxLength={500}
+            placeholder={showContactForm ? "Submit form to continue..." : "Ask TIA AI..."}
+            maxLength={400}
           />
           <Button
             type="submit"
-            disabled={!inputValue.trim() || isTyping || showLeadForm}
+            disabled={!inputValue.trim() || isTyping || showContactForm}
             size="icon"
             className="w-8 h-8 rounded-xl shrink-0 bg-primary hover:bg-primary/95 text-primary-foreground shadow-sm transition-transform duration-200"
           >

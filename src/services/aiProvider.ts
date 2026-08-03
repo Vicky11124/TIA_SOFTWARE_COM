@@ -1,5 +1,21 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export interface LeadState {
+  service: string | null;
+  businessType: string | null;
+  pages: string | null;
+  features: string[];
+  budget: string | null;
+  timeline: string | null;
+}
+
+export interface ChatJSONResponse {
+  assistant_response: string;
+  lead_state: LeadState;
+  lead_score: number;
+  missing: string[];
+}
+
 export interface ChatMessage {
   role: "user" | "model" | "system";
   content: string;
@@ -7,20 +23,24 @@ export interface ChatMessage {
 
 export interface StreamCallbacks {
   onChunk: (text: string) => void;
-  onFinish: (fullText: string) => void;
+  onFinish: (response: ChatJSONResponse) => void;
   onError: (error: Error) => void;
 }
 
 export interface AIProvider {
-  streamChat(messages: ChatMessage[], callbacks: StreamCallbacks): Promise<void>;
+  streamChat(
+    messages: ChatMessage[],
+    currentLeadState: LeadState,
+    callbacks: StreamCallbacks
+  ): Promise<void>;
 }
 
 // ----------------------------------------------------
-// TIA Knowledge Base & System Prompt
+// TIA Knowledge Base & JSON System Prompt
 // ----------------------------------------------------
 export const TIA_SYSTEM_PROMPT = `
-You are TIA AI, a professional 24/7 sales assistant for TIA Software Solutions.
-Your goal is to help visitors understand our services, answer their questions, recommend solutions, and guide them toward starting a project or booking a consultation.
+You are TIA AI, a professional 24/7 sales consultant for TIA Software Solutions.
+Your goal is to help visitors understand our services, answer their questions, recommend solutions, and capture their project requirements.
 
 ABOUT TIA SOFTWARE SOLUTIONS:
 We are a premier digital agency specializing in premium design, software development, and digital growth.
@@ -36,9 +56,6 @@ OUR SERVICES:
 4. Branding Essentials: Logo design, brand style guides, stationery design, social media kits, and brand books.
 5. UI/UX Design: Wireframes, user journey mapping, high-fidelity UI designs, mobile app design, web design, and interactive prototypes.
 6. AI Automation: Chatbots, custom AI integrations, automated workflows, and workflow optimization.
-7. Video & Motion Graphics: Explainer videos, promotional videos, logo animations.
-8. Stories & Reels Assets: Short-form videos (Reels, TikTok, Shorts), daily content assets.
-9. Festive & Event Graphics: Holiday campaigns, teasers, RSVP designs, venue print layouts.
 
 PRICING PLANS (All services operate on a subscription tier system, supporting GBP, USD, and AUD):
 - Basic Plan: £199.99 / $199.99 USD / $285.41 AUD per month. Standard design, daily graphics, email support, 1 active project at a time.
@@ -47,12 +64,32 @@ PRICING PLANS (All services operate on a subscription tier system, supporting GB
 - Premium Plan: £899.99 / $899.99 USD / $1,284.40 AUD per month. Complete digital solutions, unlimited active projects, 24/7 VIP support.
 *Note: The exchange rate for AUD is exactly 1.4271 relative to USD.*
 
-AI BEHAVIOR GUIDELINES:
-- Be professional, welcoming, polite, and brief. Do not output massive walls of text. Keep responses conversational.
-- Recommend suitable services based on what the user wants.
-- Guide the user to click the "Book a consultation" button or use the inquiry form to start their project.
-- If the user shows buying intent (e.g. asking to book, start, hire, price, subscribe, schedule), naturally encourage them to book a consultation or fill out the form.
-- NEVER invent information. If you do not know something, politely ask them to contact our team directly at sales@tiasoftwaresolutions.com or +44 7451 255217.
+CONVERSATIONAL RULES (Acknowledge ➔ Provide Expertise ➔ Ask ONE Question):
+1. Keep Memory: Do not ask questions for details the user has already stated. Always look at the user's message history and the provided currentLeadState context.
+2. Direct, Focused Inquiries: Never ask two questions at the same time. Maintain a conversational flow.
+3. Consultative Selling: When a user shares their business type or goals, give value!
+   - E.g. If it is a Dental Clinic: "That's great! For dental clinics, patients usually look for services, doctor profiles, online appointments, and contact details. Do you also want online appointment booking?"
+   - E.g. If it is a Restaurant: "Excellent! Restaurant websites convert best when they feature an interactive online menu, table reservations, Google Maps, and easy WhatsApp ordering. Do you need table reservations?"
+4. Recommend Packages: When discussing budget, instead of asking "What is your budget?", recommend our plans based on what they want.
+   - E.g. "Based on your requirements for custom web and mobile app design, I'd recommend our Pro subscription (£649.99/mo). It gives you a dedicated developer and priority support. Does that sound like a good fit?"
+5. Closing details: Once all project details are collected (completeness score reaches 100), output:
+   "Perfect! 🎉 I've gathered everything needed to prepare your quotation. Please share your name, email, and phone number so our team can send you a detailed proposal within 24 hours."
+
+OUTPUT FORMAT:
+You MUST respond with a single valid JSON object containing:
+{
+  "assistant_response": "The conversational reply to the user (contains no JSON tags, clean markdown)",
+  "lead_state": {
+    "service": "Website" | "Mobile App" | "Digital Marketing" | "Branding" | "UI/UX Design" | "AI Automation" | null,
+    "businessType": "string or null",
+    "pages": "string or null",
+    "features": ["array of strings"],
+    "budget": "string or null",
+    "timeline": "string or null"
+  },
+  "lead_score": number, // 0 to 100. Calculate based on filled lead_state fields (service: 20%, businessType: 20%, pages: 15%, features: 15%, budget: 15%, timeline: 15%)
+  "missing": ["array of fields from lead_state that are currently null"]
+}
 `;
 
 // ----------------------------------------------------
@@ -66,27 +103,38 @@ export class GeminiProvider implements AIProvider {
     this.genAI = new GoogleGenerativeAI(apiKey);
   }
 
-  async streamChat(messages: ChatMessage[], callbacks: StreamCallbacks): Promise<void> {
+  async streamChat(
+    messages: ChatMessage[],
+    currentLeadState: LeadState,
+    callbacks: StreamCallbacks
+  ): Promise<void> {
     try {
       const model = this.genAI.getGenerativeModel({
         model: this.modelName,
         systemInstruction: TIA_SYSTEM_PROMPT,
       });
 
-      // Map our message format to Gemini's format:
-      // role: 'user' or 'model' (Gemini uses 'model' instead of 'assistant')
-      const contents = messages
-        .filter((msg) => msg.role !== "system")
-        .map((msg) => ({
-          role: msg.role === "user" ? "user" : "model",
-          parts: [{ text: msg.content }],
-        }));
+      // Prepare payload. We prepend current lead state context in system instructions
+      const leadStateContext = `Current Project Summary State: ${JSON.stringify(currentLeadState)}`;
+      const contents = [
+        {
+          role: "user" as const,
+          parts: [{ text: leadStateContext }],
+        },
+        ...messages
+          .filter((msg) => msg.role !== "system")
+          .map((msg) => ({
+            role: msg.role === "user" ? ("user" as const) : ("model" as const),
+            parts: [{ text: msg.content }],
+          })),
+      ];
 
       const result = await model.generateContentStream({
         contents,
         generationConfig: {
-          maxOutputTokens: 800,
+          responseMimeType: "application/json",
           temperature: 0.7,
+          maxOutputTokens: 1000,
         },
       });
 
@@ -98,7 +146,22 @@ export class GeminiProvider implements AIProvider {
           callbacks.onChunk(chunkText);
         }
       }
-      callbacks.onFinish(fullText);
+
+      // Final parse
+      try {
+        const parsed: ChatJSONResponse = JSON.parse(fullText);
+        callbacks.onFinish(parsed);
+      } catch (jsonErr) {
+        // Fallback if JSON format was slightly corrupted
+        console.warn("JSON parsing failed, attempting raw extract", jsonErr);
+        const extractedResponse = fullText.match(/"assistant_response"\s*:\s*"([^"]+)"/)?.[1] || "Sorry, please try again.";
+        callbacks.onFinish({
+          assistant_response: extractedResponse,
+          lead_state: currentLeadState,
+          lead_score: 50,
+          missing: [],
+        });
+      }
     } catch (error) {
       callbacks.onError(error instanceof Error ? error : new Error(String(error)));
     }
@@ -109,158 +172,135 @@ export class GeminiProvider implements AIProvider {
 // Mock / Fallback Provider Implementation
 // ----------------------------------------------------
 export class MockProvider implements AIProvider {
-  async streamChat(messages: ChatMessage[], callbacks: StreamCallbacks): Promise<void> {
+  async streamChat(
+    messages: ChatMessage[],
+    currentLeadState: LeadState,
+    callbacks: StreamCallbacks
+  ): Promise<void> {
     const lastUserMessage = messages[messages.length - 1]?.content.toLowerCase() || "";
 
-    let response = "";
+    // Copy current state
+    const nextState = { ...currentLeadState };
+    if (!nextState.features) nextState.features = [];
 
-    // Classification Rules:
-    if (
-      lastUserMessage.includes("book") ||
-      lastUserMessage.includes("consultation") ||
-      lastUserMessage.includes("hire") ||
-      lastUserMessage.includes("start") ||
-      lastUserMessage.includes("schedule") ||
-      lastUserMessage.includes("call") ||
-      lastUserMessage.includes("meeting") ||
-      lastUserMessage.includes("contact your team")
-    ) {
-      response = `I'd love to help you book a consultation with our team!
+    let reply = "";
 
-You can click the **Book a consultation** button in the chat options to open our quick contact form, and we'll get back to you within 24 hours.
-
-Alternatively, you can reach out directly via **WhatsApp** or call us at **+44 7451 255217** or email us at **sales@tiasoftwaresolutions.com**.
-
-Would you like to start a project with us? I can collect your details right here!`;
-    } else if (
-      lastUserMessage.includes("price") ||
-      lastUserMessage.includes("pricing") ||
-      lastUserMessage.includes("cost") ||
-      lastUserMessage.includes("how much") ||
-      lastUserMessage.includes("rate") ||
-      lastUserMessage.includes("tier") ||
-      lastUserMessage.includes("plan")
-    ) {
-      response = `We offer flexible subscription plans to support brands at all stages. Here are our main pricing tiers:
-
-• **Basic**: £199.99 / $199.99 USD / $285.41 AUD per month. Best for daily graphic design, social media assets, and basic support.
-• **Standard**: £399.99 / $399.99 USD / $570.83 AUD per month. Perfect for standard website design, maintenance, and faster responses.
-• **Pro**: £649.99 / $649.99 USD / $927.61 AUD per month. Ideal for advanced development, custom mobile apps, and a dedicated developer.
-• **Premium**: £899.99 / $899.99 USD / $1,284.40 AUD per month. Full-suite agency solution with unlimited projects and 24/7 VIP support.
-
-*Note: All plans are billed monthly, and we support GBP, USD, and AUD currencies.*
-
-Which plan sounds like the best fit for your project?`;
-    } else if (
-      lastUserMessage.includes("website") ||
-      lastUserMessage.includes("web site") ||
-      lastUserMessage.includes("develop") ||
-      lastUserMessage.includes("wordpress") ||
-      lastUserMessage.includes("react") ||
-      lastUserMessage.includes("nextjs") ||
-      lastUserMessage.includes("e-commerce") ||
-      lastUserMessage.includes("ecommerce")
-    ) {
-      response = `Website development is one of our core specialties at TIA! 
-
-We build high-performance, responsive websites, e-commerce stores, custom web applications, and landing pages using modern technologies like React, Next.js, and WordPress. All our designs are premium, lightning-fast, and search engine optimized.
-
-Are you looking to build a brand new site from scratch, or are you looking to redesign and optimize an existing website?`;
-    } else if (
-      lastUserMessage.includes("app") ||
-      lastUserMessage.includes("mobile") ||
-      lastUserMessage.includes("ios") ||
-      lastUserMessage.includes("android") ||
-      lastUserMessage.includes("react native")
-    ) {
-      response = `We design and build premium mobile applications for both iOS and Android. 
-
-Whether you need a cross-platform app built with React Native to launch quickly or a custom mobile product, we manage everything from user journeys (UX) to publication on the App Store and Google Play Store.
-
-What kind of app are you planning to build? I'd love to hear more about your vision!`;
-    } else if (
-      lastUserMessage.includes("seo") ||
-      lastUserMessage.includes("marketing") ||
-      lastUserMessage.includes("ads") ||
-      lastUserMessage.includes("ppc") ||
-      lastUserMessage.includes("google ranking")
-    ) {
-      response = `We provide complete digital marketing and SEO solutions to help your business get found and grow online.
-
-Our services include:
-• **SEO**: On-page, technical, and local optimization (to rank #1 on Google).
-• **PPC**: Custom paid ad campaigns on Meta, Google, and LinkedIn.
-• **Social Media Management**: Content scheduling, branding, and community building.
-
-Are you looking to improve your organic Google ranking, run paid ads, or manage your social channels?`;
-    } else if (lastUserMessage.includes("brand") || lastUserMessage.includes("logo") || lastUserMessage.includes("identity")) {
-      response = `A cohesive brand identity is essential for stand-out businesses. We craft premium branding assets, including:
-
-• Professional logo design
-• Complete brand style guides (colors, fonts, usage)
-• Social media kit assets
-• Print stationery (business cards, letterheads)
-
-Do you need a full brand identity from scratch, or are you looking to refresh an existing logo?`;
-    } else if (
-      lastUserMessage.includes("phone") ||
-      lastUserMessage.includes("number") ||
-      lastUserMessage.includes("email") ||
-      lastUserMessage.includes("contact") ||
-      lastUserMessage.includes("support") ||
-      lastUserMessage.includes("address") ||
-      lastUserMessage.includes("whatsapp")
-    ) {
-      response = `You can easily reach our team through these official channels:
-
-• **WhatsApp / Phone**: +44 7451 255217
-• **Email**: sales@tiasoftwaresolutions.com
-• **Location**: London, United Kingdom
-
-Would you like to book a direct consultation with us? You can click the **Book a consultation** button in the chat options to open our quick contact form!`;
-    } else if (
-      lastUserMessage.includes("hello") ||
-      lastUserMessage.includes("hi ") ||
-      lastUserMessage.startsWith("hi") ||
-      lastUserMessage.includes("hey") ||
-      lastUserMessage.includes("help") ||
-      lastUserMessage.includes("services") ||
-      lastUserMessage.includes("what can you do")
-    ) {
-      response = `Hello! 👋 I'm TIA AI, your sales and project assistant. 
-
-I can help you with details about:
-• Website & E-commerce Development
-• Mobile App Development
-• Digital Marketing & SEO
-• Branding & UI/UX Design
-• AI Automation
-• Pricing subscriptions and custom quotes
-
-How can I help you with your business goals today?`;
-    } else {
-      response = `That sounds very interesting! TIA Software Solutions has wide expertise across branding, web development, custom software, SEO, and digital marketing. 
-
-To give you the most accurate advice, could you share a bit more about your project goals or timeline? 
-
-Alternatively, you can book a free consultation by clicking **Book a consultation** below, or contact our team directly at **+44 7451 255217** or **sales@tiasoftwaresolutions.com**.`;
+    // 1. Identify Service & BusinessType
+    if (!nextState.service) {
+      if (lastUserMessage.includes("website") || lastUserMessage.includes("e-commerce") || lastUserMessage.includes("ecommerce") || lastUserMessage.includes("site")) {
+        nextState.service = "Website";
+      } else if (lastUserMessage.includes("app") || lastUserMessage.includes("mobile") || lastUserMessage.includes("ios") || lastUserMessage.includes("android")) {
+        nextState.service = "Mobile App";
+      } else if (lastUserMessage.includes("seo") || lastUserMessage.includes("marketing") || lastUserMessage.includes("ads") || lastUserMessage.includes("grow")) {
+        nextState.service = "Digital Marketing";
+      } else if (lastUserMessage.includes("brand") || lastUserMessage.includes("logo") || lastUserMessage.includes("identity")) {
+        nextState.service = "Branding";
+      } else if (lastUserMessage.includes("automation") || lastUserMessage.includes("chatbot") || lastUserMessage.includes("ai tool")) {
+        nextState.service = "AI Automation";
+      } else if (lastUserMessage.includes("design") || lastUserMessage.includes("ui") || lastUserMessage.includes("ux")) {
+        nextState.service = "UI/UX Design";
+      }
     }
 
-    // Stream response chunk by chunk to mimic typing
-    const words = response.split(" ");
+    if (!nextState.businessType && nextState.service) {
+      // Try to extract business keyword
+      const words = lastUserMessage.split(/\s+/);
+      const skip = ["i", "need", "want", "website", "app", "marketing", "for", "a", "an", "my", "our", "company", "business"];
+      const potential = words.find((w) => w.length > 3 && !skip.includes(w));
+      if (potential) {
+        nextState.businessType = potential.charAt(0).toUpperCase() + potential.slice(1);
+      }
+    }
+
+    // 2. Classify state updates based on current progress
+    if (nextState.service && !nextState.businessType) {
+      reply = `I'd love to help you build your ${nextState.service}! To give you the best advice, what kind of business or industry is this project for?`;
+    } else if (!nextState.service) {
+      reply = `Hello! 👋 I'm TIA AI, your digital project consultant. 
+
+Are you looking to build a new Website, develop a Mobile App, optimize your Digital Marketing (SEO/Ads), or refresh your Brand Identity?`;
+    } else if (nextState.features.length === 0) {
+      if (lastUserMessage.includes("clinic") || lastUserMessage.includes("dental") || lastUserMessage.includes("doctor")) {
+        nextState.businessType = "Dental Clinic";
+        reply = `Awesome—a dental clinic! Patient sites usually require services listings, staff profiles, WhatsApp support, and online appointment bookings because they build trust. 
+
+Do you want us to include online appointment scheduling?`;
+      } else if (lastUserMessage.includes("restaurant") || lastUserMessage.includes("food") || lastUserMessage.includes("cafe")) {
+        nextState.businessType = "Restaurant";
+        reply = `That's great! Restaurant websites convert best when they feature an interactive online menu, table reservations, Google Maps, and easy WhatsApp ordering.
+
+Would you like online table reservations built-in?`;
+      } else {
+        // Standard feature recommendation
+        reply = `Excellent! For a ${nextState.businessType || "business"} ${nextState.service}, most clients usually include:
+• WhatsApp Chat Support
+• Google Maps Location
+• Online Contact Form
+• Built-in SEO Optimization
+
+Would you like us to integrate any of these, or do you have other features in mind?`;
+      }
+      nextState.features = ["Standard Features"];
+    } else if (!nextState.pages) {
+      // User answered about features, record it and ask about size
+      if (lastUserMessage.includes("yes") || lastUserMessage.includes("booking") || lastUserMessage.includes("reservation")) {
+        nextState.features.push("Interactive booking");
+      }
+      reply = `Got it! Approximately how many pages are we planning for this project? (e.g. 5 pages, 10 pages, or not sure?)`;
+      nextState.pages = "Not sure yet";
+    } else if (!nextState.budget) {
+      // User answered about pages
+      if (lastUserMessage.match(/\d+/)) {
+        nextState.pages = `${lastUserMessage.match(/\d+/)?.[0]} pages`;
+      }
+      reply = `Perfect. Based on your features, I'd highly recommend our **Standard Plan** (£399.99/mo). It covers full website development, support, and hosting maintenance.
+
+Does that sound close to what you're looking for, or did you have a different budget in mind?`;
+      nextState.budget = "Standard Plan (£399.99/mo)";
+    } else if (!nextState.timeline) {
+      // User answered about budget
+      reply = `Understood. And what is your target timeline to launch this project? (e.g. 1 month, 3 months, or flexible?)`;
+      nextState.timeline = "Flexible";
+    } else {
+      // Everything is gathered!
+      reply = `Perfect! 🎉 I've gathered everything needed to prepare your quotation. 
+
+Please share your name, email, and phone number so our team can send you a detailed proposal within 24 hours.`;
+    }
+
+    // Calculate score
+    let score = 0;
+    const missing: string[] = [];
+    if (nextState.service) score += 20; else missing.push("service");
+    if (nextState.businessType) score += 20; else missing.push("businessType");
+    if (nextState.pages) score += 15; else missing.push("pages");
+    if (nextState.features.length > 0) score += 15; else missing.push("features");
+    if (nextState.budget) score += 15; else missing.push("budget");
+    if (nextState.timeline) score += 15; else missing.push("timeline");
+
+    const jsonResponse: ChatJSONResponse = {
+      assistant_response: reply,
+      lead_state: nextState,
+      lead_score: score,
+      missing,
+    };
+
+    // Stream the JSON response as a string, simulating typing
+    const responseString = JSON.stringify(jsonResponse);
+    const chars = responseString.split("");
     let currentText = "";
-    let wordIndex = 0;
+    let index = 0;
 
     const interval = setInterval(() => {
-      if (wordIndex < words.length) {
-        currentText += (wordIndex > 0 ? " " : "") + words[wordIndex];
-        callbacks.onChunk(words[wordIndex] + " ");
-        wordIndex++;
+      if (index < chars.length) {
+        currentText += chars[index];
+        callbacks.onChunk(chars[index]);
+        index++;
       } else {
         clearInterval(interval);
-        callbacks.onFinish(response);
+        callbacks.onFinish(jsonResponse);
       }
-    }, 45); // Typing speed simulator
+    }, 2); // Extremely fast chunk updates for JSON string streaming
   }
 }
 
@@ -281,31 +321,4 @@ export function getActiveProvider(): AIProvider {
   }
 
   return activeProvider;
-}
-
-/**
- * Checks whether the user's message contains buying intent
- */
-export function detectBuyingIntent(message: string): boolean {
-  const normalized = message.toLowerCase();
-  const triggers = [
-    "i need a website",
-    "website pricing",
-    "seo services",
-    "mobile app development",
-    "branding",
-    "book a consultation",
-    "contact your team",
-    "hire you",
-    "get a quote",
-    "start a project",
-    "buy a plan",
-    "subscribe to",
-    "how much does",
-    "cost to build",
-    "want a website",
-    "pricing plans",
-    "need an app",
-  ];
-  return triggers.some((trigger) => normalized.includes(trigger));
 }
