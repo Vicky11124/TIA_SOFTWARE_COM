@@ -66,10 +66,10 @@ PRICING PLANS (All services operate on a subscription tier system, supporting GB
 
 CONVERSATIONAL RULES (Acknowledge ➔ Provide Expertise ➔ Ask ONE Question):
 1. DETECT AND ACKNOWLEDGE CORRECTIONS CAREFULLY:
-   - Read the user's latest message. If they correct, change, reject, or modify any previously collected field (e.g., they say "no I want 5 pages instead" when pages was 10, or "actually budget is £500"), you MUST:
-     a) Acknowledge the correction (e.g., "Got it! Thanks for clarifying. I've updated the project to a 5-page website.")
-     b) Provide expertise about the change (e.g., "A 5-page website gives you enough space for Home, About, Services, Projects, and Contact. We can always scale it later!")
-     c) Recalculate/adjust package recommendation if applicable (e.g. suggest Basic Plan instead of Standard).
+   - Read the user's latest message. If they correct, change, reject, or modify any previously collected field (e.g., they say "no I want 5 pages instead" when pages was 10, or "actually my business is a second hand bike seller"), you MUST:
+     a) Acknowledge the correction (e.g., "Got it! Thanks for clarifying. I've updated the project details to a second-hand bike seller website.")
+     b) Provide expertise about the change (e.g., "For bike sellers, visitors look for interactive inventory lists, high-quality photos, and quick contact options. We can add a WhatsApp booking setup to help drive test rides!")
+     c) Recalculate/adjust package recommendation immediately based on their changes.
      d) Ask only ONE next missing question.
 2. KEEP ACTIVE MEMORY:
    - Do not ask questions for details the user has already stated. Check currentLeadState.
@@ -188,7 +188,7 @@ export class MockProvider implements AIProvider {
 
     let correctionText = "";
 
-    // 1. Dynamic parameters detection from last message
+    // 1. Dynamic service detection
     let detectedService: string | null = null;
     if (lastUserLower.includes("website") || lastUserLower.includes("e-commerce") || lastUserLower.includes("ecommerce") || lastUserLower.includes("site")) {
       detectedService = "Website";
@@ -211,24 +211,41 @@ export class MockProvider implements AIProvider {
       nextState.service = detectedService;
     }
 
+    // 2. Advanced Dynamic Business Type Extraction
     let detectedBusiness: string | null = null;
-    if (lastUserLower.includes("dental") || lastUserLower.includes("clinic") || lastUserLower.includes("doctor")) {
+    
+    // Look for explicit business declarations first
+    if (lastUserLower.includes("bike") || lastUserLower.includes("bicycle") || lastUserLower.includes("vehicle") || lastUserLower.includes("car ")) {
+      detectedBusiness = "Second Hand Bike Seller";
+    } else if (lastUserLower.includes("dental") || lastUserLower.includes("clinic") || lastUserLower.includes("doctor") || lastUserLower.includes("dentist")) {
       detectedBusiness = "Dental Clinic";
-    } else if (lastUserLower.includes("restaurant") || lastUserLower.includes("food") || lastUserLower.includes("cafe")) {
+    } else if (lastUserLower.includes("restaurant") || lastUserLower.includes("food") || lastUserLower.includes("cafe") || lastUserLower.includes("bakery")) {
       detectedBusiness = "Restaurant";
-    } else if (lastUserLower.includes("interior") || lastUserLower.includes("house") || lastUserLower.includes("decor")) {
+    } else if (lastUserLower.includes("interior") || lastUserLower.includes("house") || lastUserLower.includes("decor") || lastUserLower.includes("architect")) {
       detectedBusiness = "Interior Design";
-    } else if (lastUserLower.includes("store") || lastUserLower.includes("shop") || lastUserLower.includes("clothing")) {
-      detectedBusiness = "Retail Store";
+    } else if (lastUserLower.includes("police")) {
+      detectedBusiness = "Police Website";
+    } else {
+      // Regex extraction from patterns like "for a [business]", "for [business]", "i want a [business]"
+      const match = lastUserLower.match(/(?:for a|for|my|own a|own|about a|about)\s+([^.,?!]+)/i);
+      if (match) {
+        const potential = match[1].trim();
+        const words = potential.split(/\s+/);
+        // Exclude generic terms and website terms
+        if (words.length <= 4 && !words.includes("website") && !words.includes("app") && !words.includes("site")) {
+          detectedBusiness = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+        }
+      }
     }
 
     if (detectedBusiness) {
       if (nextState.businessType && nextState.businessType !== detectedBusiness) {
-        correctionText += `Thanks for clarifying. I've updated the business industry to ${detectedBusiness}. `;
+        correctionText += `Thanks for clarifying! I've updated your business industry to a **${detectedBusiness}**. `;
       }
       nextState.businessType = detectedBusiness;
     }
 
+    // 3. Dynamic Page count detection
     let detectedPages: string | null = null;
     const pageMatch = lastUserMessage.match(/(\d+)\s*-?\s*page/i) || lastUserMessage.match(/page\s*-?\s*(\d+)/i) || lastUserMessage.match(/\b(\d+)\s*pages?\b/i);
     if (pageMatch) {
@@ -238,14 +255,14 @@ export class MockProvider implements AIProvider {
     if (detectedPages) {
       if (nextState.pages && nextState.pages !== detectedPages) {
         correctionText += `Got it! I've updated the size of the project to ${detectedPages}. `;
-        // If they correct to 5 pages, we reset budget so it gets recalculated
         if (detectedPages.includes("5")) {
-          nextState.budget = null;
+          nextState.budget = null; // reset budget for plan recalculation
         }
       }
       nextState.pages = detectedPages;
     }
 
+    // 4. Dynamic Budget / package matching
     let detectedBudget: string | null = null;
     const budgetMatch = lastUserMessage.match(/(?:£|\$|aud)\s*(\d+(?:,\d+)?)/i) || lastUserMessage.match(/(\d+(?:,\d+)?)\s*(?:gbp|usd|aud)/i);
     if (budgetMatch) {
@@ -259,6 +276,7 @@ export class MockProvider implements AIProvider {
       nextState.budget = detectedBudget;
     }
 
+    // 5. Dynamic Timeline matching
     let detectedTimeline: string | null = null;
     const timelineMatch = lastUserMessage.match(/(\d+)\s*(?:month|week|day)/i) || lastUserLower.match(/flexible/i) || lastUserLower.match(/asap/i);
     if (timelineMatch) {
@@ -293,16 +311,32 @@ export class MockProvider implements AIProvider {
         nextState.features.push("SEO Setup");
       }
     }
-
-    // 2. Formulate the response
-    let reply = "";
-    if (correctionText) {
-      reply += correctionText;
-      if (detectedPages && detectedPages.includes("5")) {
-        reply += `A 5-page site is ideal! It gives you space for Home, About, Services, Projects, and Contact. We can always scale it later. Let's adjust the plans. `;
+    if (lastUserLower.includes("inventory") || lastUserLower.includes("search") || lastUserLower.includes("listing")) {
+      if (!nextState.features.includes("Inventory Listings")) {
+        nextState.features.push("Inventory Listings");
       }
     }
 
+    // 6. Assemble the response
+    let reply = "";
+    if (correctionText) {
+      reply += correctionText + "\n\n";
+    }
+
+    // Industry-specific value addition (Provide Expertise)
+    let industryTips = "";
+    const bizType = nextState.businessType || "";
+    if (bizType.includes("Bike") || bizType.includes("Vehicle") || bizType.includes("Car")) {
+      industryTips = "For bike or vehicle sellers, visitors convert best when they can view an interactive catalog listing, detailed photo galleries, vehicle specs, and a direct WhatsApp button to schedule test rides.";
+    } else if (bizType.includes("Dental") || bizType.includes("Clinic") || bizType.includes("Dentist")) {
+      industryTips = "For clinical practices, patients look for verified treatments, staff biographies, clinic images, and simple online appointment options to build absolute trust.";
+    } else if (bizType.includes("Restaurant") || bizType.includes("Food")) {
+      industryTips = "For food establishments, visitors appreciate interactive online menus, maps directories, and seamless table reservations to optimize conversions.";
+    } else if (bizType.includes("Police")) {
+      industryTips = "For community and public service hubs, users look for online enquiry forms, latest announcements dashboards, and contact support lines.";
+    }
+
+    // Main dialogue tree based on missing requirements (Acknowledge ➔ Provide Expertise ➔ Ask ONE Question)
     if (!nextState.service) {
       reply += `Hello! 👋 I'm TIA AI, your digital project consultant.
 
@@ -310,33 +344,22 @@ Are you looking to build a new Website, develop a Mobile App, optimize your Digi
     } else if (!nextState.businessType) {
       reply += `I'd love to help you build your ${nextState.service}! To give you the best advice, what kind of business or industry is this project for?`;
     } else if (nextState.features.length === 0) {
-      if (nextState.businessType === "Dental Clinic") {
-        reply += `Awesome—a dental clinic! Patient sites usually require services listings, staff profiles, WhatsApp support, and online appointment bookings because they build trust.
+      reply += `Got it! ${industryTips || `For a ${bizType} project, we recommend displaying clear services, galleries, customer reviews, and a simple lead capture form.`}
 
-Do you want us to include online appointment scheduling?`;
-      } else if (nextState.businessType === "Restaurant") {
-        reply += `That's great! Restaurant websites convert best when they feature an interactive online menu, table reservations, Google Maps, and easy WhatsApp ordering.
-
-Would you like online table reservations built-in?`;
-      } else {
-        reply += `Excellent. For a ${nextState.businessType} ${nextState.service}, most clients usually include:
-• WhatsApp Chat Support
-• Google Maps Location
-• Online Contact Form
-• Built-in SEO Optimization
-
-Would you like us to integrate any of these features, or do you have other options in mind?`;
-      }
+Would you like us to integrate these standard conversion features, or do you have specific options in mind?`;
       nextState.features = ["Standard Setup"];
     } else if (!nextState.pages) {
-      reply += `A website for a ${nextState.businessType} works great when pages are divided cleanly. Approximately how many pages are we planning for this project? (e.g. 5 pages, 10 pages, or not sure?)`;
+      if (industryTips && !correctionText) {
+        reply += `${industryTips}\n\n`;
+      }
+      reply += `Approximately how many pages are we planning for this ${bizType} ${nextState.service}? (e.g. 5 pages, 10 pages, or not sure?)`;
     } else if (!nextState.budget) {
-      // Dynamic budget recommendation
+      // Plan recommendation adjustments
       let recommendedPlan = "Standard Plan (£399.99/mo)";
       if (nextState.pages && (nextState.pages.includes("5") || nextState.pages.includes("five"))) {
         recommendedPlan = "Basic Plan (£199.99/mo)";
       }
-      reply += `For a ${nextState.pages || "standard"} ${nextState.businessType || "business"} site, I recommend our **${recommendedPlan}**. This plan covers all design, development, and standard support.
+      reply += `Since we're building a ${nextState.pages} website for your ${bizType}, I recommend our **${recommendedPlan}**. This plan covers all design, development, SEO setups, and daily maintenance support.
 
 Does that sound close to what you're looking for, or do you have a different budget preference?`;
       nextState.budget = `Recommended: ${recommendedPlan}`;
