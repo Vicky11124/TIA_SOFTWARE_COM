@@ -58,22 +58,28 @@ OUR SERVICES:
 6. AI Automation: Chatbots, custom AI integrations, automated workflows, and workflow optimization.
 
 PRICING PLANS (All services operate on a subscription tier system, supporting GBP, USD, and AUD):
-- Basic Plan: £199.99 / $199.99 USD / $285.41 AUD per month. Standard design, daily graphics, email support, 1 active project at a time.
-- Standard Plan: £399.99 / $399.99 USD / $570.83 AUD per month. Standard website development & design, 2 active projects, faster response times.
+- Basic Plan: £199.99 / $199.99 USD / $285.41 AUD per month. Standard design, daily graphics, email support, 1 active project at a time. Recommended for simple websites (e.g. 5 pages or less).
+- Standard Plan: £399.99 / $399.99 USD / $570.83 AUD per month. Standard website development & design, 2 active projects, faster response times. Recommended for standard business sites (e.g. 5-10 pages).
 - Pro Plan: £649.99 / $649.99 USD / $927.61 AUD per month. Advanced development, web/mobile app design, priority support, dedicated designer/developer.
 - Premium Plan: £899.99 / $899.99 USD / $1,284.40 AUD per month. Complete digital solutions, unlimited active projects, 24/7 VIP support.
 *Note: The exchange rate for AUD is exactly 1.4271 relative to USD.*
 
 CONVERSATIONAL RULES (Acknowledge ➔ Provide Expertise ➔ Ask ONE Question):
-1. Keep Memory: Do not ask questions for details the user has already stated. Always look at the user's message history and the provided currentLeadState context.
-2. Direct, Focused Inquiries: Never ask two questions at the same time. Maintain a conversational flow.
-3. Consultative Selling: When a user shares their business type or goals, give value!
-   - E.g. If it is a Dental Clinic: "That's great! For dental clinics, patients usually look for services, doctor profiles, online appointments, and contact details. Do you also want online appointment booking?"
-   - E.g. If it is a Restaurant: "Excellent! Restaurant websites convert best when they feature an interactive online menu, table reservations, Google Maps, and easy WhatsApp ordering. Do you need table reservations?"
-4. Recommend Packages: When discussing budget, instead of asking "What is your budget?", recommend our plans based on what they want.
-   - E.g. "Based on your requirements for custom web and mobile app design, I'd recommend our Pro subscription (£649.99/mo). It gives you a dedicated developer and priority support. Does that sound like a good fit?"
-5. Closing details: Once all project details are collected (completeness score reaches 100), output:
-   "Perfect! 🎉 I've gathered everything needed to prepare your quotation. Please share your name, email, and phone number so our team can send you a detailed proposal within 24 hours."
+1. DETECT AND ACKNOWLEDGE CORRECTIONS CAREFULLY:
+   - Read the user's latest message. If they correct, change, reject, or modify any previously collected field (e.g., they say "no I want 5 pages instead" when pages was 10, or "actually budget is £500"), you MUST:
+     a) Acknowledge the correction (e.g., "Got it! Thanks for clarifying. I've updated the project to a 5-page website.")
+     b) Provide expertise about the change (e.g., "A 5-page website gives you enough space for Home, About, Services, Projects, and Contact. We can always scale it later!")
+     c) Recalculate/adjust package recommendation if applicable (e.g. suggest Basic Plan instead of Standard).
+     d) Ask only ONE next missing question.
+2. KEEP ACTIVE MEMORY:
+   - Do not ask questions for details the user has already stated. Check currentLeadState.
+3. ASK ONE QUESTION AT A TIME:
+   - Never ask two questions at once. Let the conversation flow naturally.
+4. RECOMMEND PLANS DYNAMICALLY:
+   - Suggest basic, standard, pro, or premium plans based on the client's scope. If scope changes, update the recommendation dynamically.
+5. CLOSING DETAILS:
+   - Once all project details are collected (completeness score reaches 100), output:
+     "Perfect! 🎉 I've gathered everything needed to prepare your quotation. Please share your name, email, and phone number so our team can send you a detailed proposal within 24 hours."
 
 OUTPUT FORMAT:
 You MUST respond with a single valid JSON object containing:
@@ -114,7 +120,6 @@ export class GeminiProvider implements AIProvider {
         systemInstruction: TIA_SYSTEM_PROMPT,
       });
 
-      // Prepare payload. We prepend current lead state context in system instructions
       const leadStateContext = `Current Project Summary State: ${JSON.stringify(currentLeadState)}`;
       const contents = [
         {
@@ -147,12 +152,10 @@ export class GeminiProvider implements AIProvider {
         }
       }
 
-      // Final parse
       try {
         const parsed: ChatJSONResponse = JSON.parse(fullText);
         callbacks.onFinish(parsed);
       } catch (jsonErr) {
-        // Fallback if JSON format was slightly corrupted
         console.warn("JSON parsing failed, attempting raw extract", jsonErr);
         const extractedResponse = fullText.match(/"assistant_response"\s*:\s*"([^"]+)"/)?.[1] || "Sorry, please try again.";
         callbacks.onFinish({
@@ -177,93 +180,170 @@ export class MockProvider implements AIProvider {
     currentLeadState: LeadState,
     callbacks: StreamCallbacks
   ): Promise<void> {
-    const lastUserMessage = messages[messages.length - 1]?.content.toLowerCase() || "";
+    const lastUserMessage = messages[messages.length - 1]?.content || "";
+    const lastUserLower = lastUserMessage.toLowerCase();
 
-    // Copy current state
     const nextState = { ...currentLeadState };
     if (!nextState.features) nextState.features = [];
 
+    let correctionText = "";
+
+    // 1. Dynamic parameters detection from last message
+    let detectedService: string | null = null;
+    if (lastUserLower.includes("website") || lastUserLower.includes("e-commerce") || lastUserLower.includes("ecommerce") || lastUserLower.includes("site")) {
+      detectedService = "Website";
+    } else if (lastUserLower.includes("app") || lastUserLower.includes("mobile") || lastUserLower.includes("ios") || lastUserLower.includes("android")) {
+      detectedService = "Mobile App";
+    } else if (lastUserLower.includes("seo") || lastUserLower.includes("marketing") || lastUserLower.includes("ads") || lastUserLower.includes("grow")) {
+      detectedService = "Digital Marketing";
+    } else if (lastUserLower.includes("brand") || lastUserLower.includes("logo") || lastUserLower.includes("identity")) {
+      detectedService = "Branding";
+    } else if (lastUserLower.includes("automation") || lastUserLower.includes("chatbot") || lastUserLower.includes("ai tool")) {
+      detectedService = "AI Automation";
+    } else if (lastUserLower.includes("design") || lastUserLower.includes("ui") || lastUserLower.includes("ux")) {
+      detectedService = "UI/UX Design";
+    }
+
+    if (detectedService) {
+      if (nextState.service && nextState.service !== detectedService) {
+        correctionText += `Got it! I've updated your project type from a ${nextState.service} to a ${detectedService}. `;
+      }
+      nextState.service = detectedService;
+    }
+
+    let detectedBusiness: string | null = null;
+    if (lastUserLower.includes("dental") || lastUserLower.includes("clinic") || lastUserLower.includes("doctor")) {
+      detectedBusiness = "Dental Clinic";
+    } else if (lastUserLower.includes("restaurant") || lastUserLower.includes("food") || lastUserLower.includes("cafe")) {
+      detectedBusiness = "Restaurant";
+    } else if (lastUserLower.includes("interior") || lastUserLower.includes("house") || lastUserLower.includes("decor")) {
+      detectedBusiness = "Interior Design";
+    } else if (lastUserLower.includes("store") || lastUserLower.includes("shop") || lastUserLower.includes("clothing")) {
+      detectedBusiness = "Retail Store";
+    }
+
+    if (detectedBusiness) {
+      if (nextState.businessType && nextState.businessType !== detectedBusiness) {
+        correctionText += `Thanks for clarifying. I've updated the business industry to ${detectedBusiness}. `;
+      }
+      nextState.businessType = detectedBusiness;
+    }
+
+    let detectedPages: string | null = null;
+    const pageMatch = lastUserMessage.match(/(\d+)\s*-?\s*page/i) || lastUserMessage.match(/page\s*-?\s*(\d+)/i) || lastUserMessage.match(/\b(\d+)\s*pages?\b/i);
+    if (pageMatch) {
+      detectedPages = `${pageMatch[1]} pages`;
+    }
+
+    if (detectedPages) {
+      if (nextState.pages && nextState.pages !== detectedPages) {
+        correctionText += `Got it! I've updated the size of the project to ${detectedPages}. `;
+        // If they correct to 5 pages, we reset budget so it gets recalculated
+        if (detectedPages.includes("5")) {
+          nextState.budget = null;
+        }
+      }
+      nextState.pages = detectedPages;
+    }
+
+    let detectedBudget: string | null = null;
+    const budgetMatch = lastUserMessage.match(/(?:£|\$|aud)\s*(\d+(?:,\d+)?)/i) || lastUserMessage.match(/(\d+(?:,\d+)?)\s*(?:gbp|usd|aud)/i);
+    if (budgetMatch) {
+      detectedBudget = `£${budgetMatch[1]}`;
+    }
+
+    if (detectedBudget) {
+      if (nextState.budget && nextState.budget !== detectedBudget) {
+        correctionText += `Acknowledge. I've updated your budget preference to ${detectedBudget}. `;
+      }
+      nextState.budget = detectedBudget;
+    }
+
+    let detectedTimeline: string | null = null;
+    const timelineMatch = lastUserMessage.match(/(\d+)\s*(?:month|week|day)/i) || lastUserLower.match(/flexible/i) || lastUserLower.match(/asap/i);
+    if (timelineMatch) {
+      detectedTimeline = timelineMatch[0];
+    }
+
+    if (detectedTimeline) {
+      if (nextState.timeline && nextState.timeline !== detectedTimeline) {
+        correctionText += `Sure, I've adjusted your launch target timeline to ${detectedTimeline}. `;
+      }
+      nextState.timeline = detectedTimeline;
+    }
+
+    // Features detection
+    if (lastUserLower.includes("booking") || lastUserLower.includes("appointment") || lastUserLower.includes("schedule")) {
+      if (!nextState.features.includes("Online Booking")) {
+        nextState.features.push("Online Booking");
+      }
+    }
+    if (lastUserLower.includes("menu") || lastUserLower.includes("reservation")) {
+      if (!nextState.features.includes("Menu & Reservations")) {
+        nextState.features.push("Menu & Reservations");
+      }
+    }
+    if (lastUserLower.includes("whatsapp") || lastUserLower.includes("chat")) {
+      if (!nextState.features.includes("WhatsApp Support")) {
+        nextState.features.push("WhatsApp Support");
+      }
+    }
+    if (lastUserLower.includes("seo") || lastUserLower.includes("google")) {
+      if (!nextState.features.includes("SEO Setup")) {
+        nextState.features.push("SEO Setup");
+      }
+    }
+
+    // 2. Formulate the response
     let reply = "";
+    if (correctionText) {
+      reply += correctionText;
+      if (detectedPages && detectedPages.includes("5")) {
+        reply += `A 5-page site is ideal! It gives you space for Home, About, Services, Projects, and Contact. We can always scale it later. Let's adjust the plans. `;
+      }
+    }
 
-    // 1. Identify Service & BusinessType
     if (!nextState.service) {
-      if (lastUserMessage.includes("website") || lastUserMessage.includes("e-commerce") || lastUserMessage.includes("ecommerce") || lastUserMessage.includes("site")) {
-        nextState.service = "Website";
-      } else if (lastUserMessage.includes("app") || lastUserMessage.includes("mobile") || lastUserMessage.includes("ios") || lastUserMessage.includes("android")) {
-        nextState.service = "Mobile App";
-      } else if (lastUserMessage.includes("seo") || lastUserMessage.includes("marketing") || lastUserMessage.includes("ads") || lastUserMessage.includes("grow")) {
-        nextState.service = "Digital Marketing";
-      } else if (lastUserMessage.includes("brand") || lastUserMessage.includes("logo") || lastUserMessage.includes("identity")) {
-        nextState.service = "Branding";
-      } else if (lastUserMessage.includes("automation") || lastUserMessage.includes("chatbot") || lastUserMessage.includes("ai tool")) {
-        nextState.service = "AI Automation";
-      } else if (lastUserMessage.includes("design") || lastUserMessage.includes("ui") || lastUserMessage.includes("ux")) {
-        nextState.service = "UI/UX Design";
-      }
-    }
-
-    if (!nextState.businessType && nextState.service) {
-      // Try to extract business keyword
-      const words = lastUserMessage.split(/\s+/);
-      const skip = ["i", "need", "want", "website", "app", "marketing", "for", "a", "an", "my", "our", "company", "business"];
-      const potential = words.find((w) => w.length > 3 && !skip.includes(w));
-      if (potential) {
-        nextState.businessType = potential.charAt(0).toUpperCase() + potential.slice(1);
-      }
-    }
-
-    // 2. Classify state updates based on current progress
-    if (nextState.service && !nextState.businessType) {
-      reply = `I'd love to help you build your ${nextState.service}! To give you the best advice, what kind of business or industry is this project for?`;
-    } else if (!nextState.service) {
-      reply = `Hello! 👋 I'm TIA AI, your digital project consultant. 
+      reply += `Hello! 👋 I'm TIA AI, your digital project consultant.
 
 Are you looking to build a new Website, develop a Mobile App, optimize your Digital Marketing (SEO/Ads), or refresh your Brand Identity?`;
+    } else if (!nextState.businessType) {
+      reply += `I'd love to help you build your ${nextState.service}! To give you the best advice, what kind of business or industry is this project for?`;
     } else if (nextState.features.length === 0) {
-      if (lastUserMessage.includes("clinic") || lastUserMessage.includes("dental") || lastUserMessage.includes("doctor")) {
-        nextState.businessType = "Dental Clinic";
-        reply = `Awesome—a dental clinic! Patient sites usually require services listings, staff profiles, WhatsApp support, and online appointment bookings because they build trust. 
+      if (nextState.businessType === "Dental Clinic") {
+        reply += `Awesome—a dental clinic! Patient sites usually require services listings, staff profiles, WhatsApp support, and online appointment bookings because they build trust.
 
 Do you want us to include online appointment scheduling?`;
-      } else if (lastUserMessage.includes("restaurant") || lastUserMessage.includes("food") || lastUserMessage.includes("cafe")) {
-        nextState.businessType = "Restaurant";
-        reply = `That's great! Restaurant websites convert best when they feature an interactive online menu, table reservations, Google Maps, and easy WhatsApp ordering.
+      } else if (nextState.businessType === "Restaurant") {
+        reply += `That's great! Restaurant websites convert best when they feature an interactive online menu, table reservations, Google Maps, and easy WhatsApp ordering.
 
 Would you like online table reservations built-in?`;
       } else {
-        // Standard feature recommendation
-        reply = `Excellent! For a ${nextState.businessType || "business"} ${nextState.service}, most clients usually include:
+        reply += `Excellent. For a ${nextState.businessType} ${nextState.service}, most clients usually include:
 • WhatsApp Chat Support
 • Google Maps Location
 • Online Contact Form
 • Built-in SEO Optimization
 
-Would you like us to integrate any of these, or do you have other features in mind?`;
+Would you like us to integrate any of these features, or do you have other options in mind?`;
       }
-      nextState.features = ["Standard Features"];
+      nextState.features = ["Standard Setup"];
     } else if (!nextState.pages) {
-      // User answered about features, record it and ask about size
-      if (lastUserMessage.includes("yes") || lastUserMessage.includes("booking") || lastUserMessage.includes("reservation")) {
-        nextState.features.push("Interactive booking");
-      }
-      reply = `Got it! Approximately how many pages are we planning for this project? (e.g. 5 pages, 10 pages, or not sure?)`;
-      nextState.pages = "Not sure yet";
+      reply += `A website for a ${nextState.businessType} works great when pages are divided cleanly. Approximately how many pages are we planning for this project? (e.g. 5 pages, 10 pages, or not sure?)`;
     } else if (!nextState.budget) {
-      // User answered about pages
-      if (lastUserMessage.match(/\d+/)) {
-        nextState.pages = `${lastUserMessage.match(/\d+/)?.[0]} pages`;
+      // Dynamic budget recommendation
+      let recommendedPlan = "Standard Plan (£399.99/mo)";
+      if (nextState.pages && (nextState.pages.includes("5") || nextState.pages.includes("five"))) {
+        recommendedPlan = "Basic Plan (£199.99/mo)";
       }
-      reply = `Perfect. Based on your features, I'd highly recommend our **Standard Plan** (£399.99/mo). It covers full website development, support, and hosting maintenance.
+      reply += `For a ${nextState.pages || "standard"} ${nextState.businessType || "business"} site, I recommend our **${recommendedPlan}**. This plan covers all design, development, and standard support.
 
-Does that sound close to what you're looking for, or did you have a different budget in mind?`;
-      nextState.budget = "Standard Plan (£399.99/mo)";
+Does that sound close to what you're looking for, or do you have a different budget preference?`;
+      nextState.budget = `Recommended: ${recommendedPlan}`;
     } else if (!nextState.timeline) {
-      // User answered about budget
-      reply = `Understood. And what is your target timeline to launch this project? (e.g. 1 month, 3 months, or flexible?)`;
-      nextState.timeline = "Flexible";
+      reply += `Perfect. And what is your target timeline to launch this project? (e.g. 1 month, 3 months, or flexible?)`;
     } else {
-      // Everything is gathered!
-      reply = `Perfect! 🎉 I've gathered everything needed to prepare your quotation. 
+      reply += `Perfect! 🎉 I've gathered everything needed to prepare your quotation.
 
 Please share your name, email, and phone number so our team can send you a detailed proposal within 24 hours.`;
     }
@@ -285,7 +365,6 @@ Please share your name, email, and phone number so our team can send you a detai
       missing,
     };
 
-    // Stream the JSON response as a string, simulating typing
     const responseString = JSON.stringify(jsonResponse);
     const chars = responseString.split("");
     let currentText = "";
@@ -300,7 +379,7 @@ Please share your name, email, and phone number so our team can send you a detai
         clearInterval(interval);
         callbacks.onFinish(jsonResponse);
       }
-    }, 2); // Extremely fast chunk updates for JSON string streaming
+    }, 2);
   }
 }
 
