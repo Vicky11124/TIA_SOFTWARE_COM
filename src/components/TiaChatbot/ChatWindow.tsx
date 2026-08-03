@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Send, RefreshCw, X, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, RefreshCw, X, Sparkles } from "lucide-react";
 import MessageItem, { Message } from "./MessageItem";
 import ProgressIndicator from "./ProgressIndicator";
 import ProjectSummaryCard from "./ProjectSummaryCard";
@@ -90,7 +90,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   const [leadState, setLeadState] = useState<LeadState>(INITIAL_LEAD_STATE);
   const [leadScore, setLeadScore] = useState(0);
   const [showContactForm, setShowContactForm] = useState(false);
-  const [summaryOpen, setSummaryOpen] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -277,25 +276,16 @@ If you have any other questions in the meantime, feel free to ask!`,
       {/* Progress Phase Header */}
       <ProgressIndicator score={leadScore} />
 
-      {/* Sticky Project Profile Panel */}
-      {leadScore > 0 && (
-        <div className="bg-background/80 border-b border-border/40 px-4 py-1.5 flex flex-col">
-          <button
-            onClick={() => setSummaryOpen((s) => !s)}
-            className="flex items-center justify-between text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors py-0.5"
-          >
-            <span>ACTIVE PROJECT PROFILE ({leadScore >= 100 ? "100%" : `${leadScore}%`} COMPLETE)</span>
-            {summaryOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-          </button>
-          {summaryOpen && <ProjectSummaryCard leadState={leadState} />}
-        </div>
-      )}
-
       {/* Message Stream */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin flex flex-col bg-background/50"
       >
+        {/* Project Profile Summary rendered at the top of messages so it scrolls naturally */}
+        {leadScore > 0 && (
+          <ProjectSummaryCard leadState={leadState} />
+        )}
+
         {messages.map((msg, index) => (
           <MessageItem key={index} message={msg} />
         ))}

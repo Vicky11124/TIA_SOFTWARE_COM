@@ -15,24 +15,21 @@ const ProjectSummaryCard = ({ leadState }: ProjectSummaryCardProps) => {
   ];
 
   return (
-    <div className="glass-card p-3.5 mb-4 border border-border/80 bg-card/65 backdrop-blur-sm rounded-xl text-xs shadow-md select-none animate-fade-in">
-      <div className="flex items-center gap-1.5 pb-2 mb-2 border-b border-border/40 text-primary font-bold tracking-wide uppercase text-[10px]">
-        <ClipboardList size={14} />
-        <span>📋 Project Profile</span>
+    <div className="glass-card p-2.5 border border-border/80 bg-card/45 rounded-xl text-[10px] shadow-sm select-none mb-2">
+      <div className="flex items-center gap-1.5 text-[9px] font-bold text-primary uppercase mb-1.5">
+        <ClipboardList size={11} />
+        <span>Project Profile</span>
       </div>
-
-      <div className="space-y-1.5">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
         {items.map((item) => (
-          <div key={item.label} className="flex justify-between items-center gap-4">
-            <span className="text-muted-foreground font-medium">{item.label}</span>
-            <div className="flex items-center gap-1 text-right max-w-[65%] min-w-0">
-              <span className="truncate text-foreground font-semibold">
-                {item.isFilled ? item.value : "Pending"}
-              </span>
+          <div key={item.label} className="flex justify-between items-center min-w-0">
+            <span className="text-muted-foreground">{item.label}</span>
+            <div className="flex items-center gap-0.5 truncate max-w-[70%] text-foreground font-semibold">
+              <span className="truncate">{item.isFilled ? item.value : "Pending"}</span>
               {item.isFilled ? (
-                <Check size={11} className="text-emerald-500 shrink-0" />
+                <Check size={9} className="text-emerald-500 shrink-0" />
               ) : (
-                <Hourglass size={11} className="text-amber-500 shrink-0 animate-pulse" />
+                <Hourglass size={9} className="text-amber-500 shrink-0" />
               )}
             </div>
           </div>
