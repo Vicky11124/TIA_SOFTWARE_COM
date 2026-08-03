@@ -50,7 +50,7 @@ const AdminLeads = () => {
                 </select>
               </div>
             </div>
-            {lead.message && <p className="text-sm text-muted-foreground">{lead.message}</p>}
+            {lead.message && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{lead.message}</p>}
             <p className="text-xs text-muted-foreground mt-3">
               {new Date(lead.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
             </p>

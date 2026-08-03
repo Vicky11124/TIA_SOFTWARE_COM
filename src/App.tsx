@@ -25,6 +25,7 @@ import { BlogDetail } from "./pages/BlogDetail.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ScrollToTop from "./components/ScrollToTop";
+import TiaChatbot from "./components/TiaChatbot/TiaChatbot";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const App = () => (
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <TiaChatbot />
         </BrowserRouter>
       </TooltipProvider>
     </GeoProvider>
