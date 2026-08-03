@@ -313,6 +313,20 @@ export class MockProvider implements AIProvider {
       detectedBusiness = "Construction Company";
     } else if (lastUserLower.includes("cleaning")) {
       detectedBusiness = "Cleaning Services";
+    } else if (lastUserLower.includes("ecommerce") || lastUserLower.includes("e-commerce") || lastUserLower.includes("online store") || lastUserLower.includes("shop")) {
+      detectedBusiness = "E-commerce Store";
+    } else if (lastUserLower.includes("portfolio") || lastUserLower.includes("photography") || lastUserLower.includes("photographer")) {
+      detectedBusiness = "Creative Portfolio";
+    } else if (lastUserLower.includes("salon") || lastUserLower.includes("spa") || lastUserLower.includes("barber") || lastUserLower.includes("hair")) {
+      detectedBusiness = "Salon & Spa Booking";
+    } else if (lastUserLower.includes("accounting") || lastUserLower.includes("finance") || lastUserLower.includes("tax") || lastUserLower.includes("consulting")) {
+      detectedBusiness = "Financial Consulting Firm";
+    } else if (lastUserLower.includes("medical") || lastUserLower.includes("healthcare") || lastUserLower.includes("hospital") || lastUserLower.includes("pharmacy")) {
+      detectedBusiness = "Healthcare Provider";
+    } else if (lastUserLower.includes("education") || lastUserLower.includes("course") || lastUserLower.includes("school") || lastUserLower.includes("tutoring")) {
+      detectedBusiness = "Educational Platform";
+    } else if (lastUserLower.includes("travel") || lastUserLower.includes("tourism") || lastUserLower.includes("hotel") || lastUserLower.includes("agency")) {
+      detectedBusiness = "Travel & Tourism Agency";
     } else {
       // If we are currently missing businessType and they answered with a short phrase (not a question or command)
       const isQuestion = lastUserLower.includes("?") || lastUserLower.includes("do you") || lastUserLower.includes("can you") || lastUserLower.includes("how much") || lastUserLower.includes("where");
@@ -472,6 +486,20 @@ export class MockProvider implements AIProvider {
       industryTips = "For construction companies, customers look for portfolio galleries of past builds, lists of services, safety certifications, and request-a-quote estimators.";
     } else if (bizType.includes("Cleaning")) {
       industryTips = "For cleaning services, customers look for service lists, service areas, customer testimonials, and an online quote calculator.";
+    } else if (bizType.includes("E-commerce")) {
+      industryTips = "For e-commerce stores, customers convert best with fast checkout integrations (Stripe/PayPal), product filters, clear high-resolution graphics, and product review logs.";
+    } else if (bizType.includes("Portfolio")) {
+      industryTips = "For portfolios, showcasing high-resolution project grids, detailed case study tabs, client testimonies, and a clear call-to-action button is key to converting visitors.";
+    } else if (bizType.includes("Salon") || bizType.includes("Spa")) {
+      industryTips = "For salons and spas, booking conversions rely on real-time calendars, stylist summaries, and online service pricing guides.";
+    } else if (bizType.includes("Financial")) {
+      industryTips = "For financial advice sites, trust relies heavily on expert credentials, compliance listings, case history breakdowns, and automated consult bookings.";
+    } else if (bizType.includes("Healthcare")) {
+      industryTips = "For healthcare websites, patient experience depends on medical bios, lists of specialties, insurance coverage info, and simple patient intake sheet downloads.";
+    } else if (bizType.includes("Educational")) {
+      industryTips = "For educational pages, students sign up faster when they see course curricula, tutor bios, interactive demo videos, and student ratings.";
+    } else if (bizType.includes("Travel")) {
+      industryTips = "For travel agencies, vacation bookings convert best with package lists, map routing, travel itineraries, and a direct WhatsApp team chat link.";
     }
 
     // Next missing question logic

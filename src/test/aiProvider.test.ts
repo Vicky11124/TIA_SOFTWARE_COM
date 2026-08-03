@@ -109,4 +109,27 @@ describe("MockProvider Conversational Flow", () => {
     const res = await runChat(provider, [{ role: "user", content: "real estate" }], state);
     expect(res.lead_state.businessType).toBe("Real Estate Agency");
   });
+
+  it("should extract diverse business types directly", async () => {
+    const state: LeadState = {
+      service: "Website",
+      businessType: null,
+      pages: null,
+      features: [],
+      budget: null,
+      timeline: null,
+    };
+
+    const resStore = await runChat(provider, [{ role: "user", content: "online store" }], state);
+    expect(resStore.lead_state.businessType).toBe("E-commerce Store");
+
+    const resSalon = await runChat(provider, [{ role: "user", content: "spa salon" }], state);
+    expect(resSalon.lead_state.businessType).toBe("Salon & Spa Booking");
+
+    const resSchool = await runChat(provider, [{ role: "user", content: "online school" }], state);
+    expect(resSchool.lead_state.businessType).toBe("Educational Platform");
+
+    const resPhoto = await runChat(provider, [{ role: "user", content: "photographer portfolio" }], state);
+    expect(resPhoto.lead_state.businessType).toBe("Creative Portfolio");
+  });
 });
