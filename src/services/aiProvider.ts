@@ -497,6 +497,14 @@ Please share your name, email, and phone number so our team can send you a detai
     };
 
     const responseString = JSON.stringify(jsonResponse);
+    const isTest = typeof process !== "undefined" && process.env?.NODE_ENV === "test";
+
+    if (isTest) {
+      callbacks.onChunk(responseString);
+      callbacks.onFinish(jsonResponse);
+      return;
+    }
+
     const chars = responseString.split("");
     let currentText = "";
     let index = 0;
