@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
+import { Instagram, Facebook, Mail, Phone, MapPin, Linkedin } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import logo from "@/assets/logo.webp";
 
@@ -32,6 +32,14 @@ const Footer = () => {
                 className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
               >
                 <Facebook size={18} />
+              </a>
+              <a
+                href={settings.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+              >
+                <Linkedin size={18} />
               </a>
             </div>
           </div>

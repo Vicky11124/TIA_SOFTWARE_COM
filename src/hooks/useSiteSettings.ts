@@ -8,6 +8,7 @@ const defaults: Record<string, string> = {
   address: "London, United Kingdom",
   instagram_url: "https://www.instagram.com/tiasoftwaresolutions/",
   facebook_url: "https://www.facebook.com/profile.php?id=61578643118286",
+  linkedin_url: "https://www.linkedin.com/company/tia-softwares-solutions/",
 };
 
 export function useSiteSettings() {
