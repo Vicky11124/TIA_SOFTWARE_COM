@@ -71,13 +71,16 @@ CONVERSATIONAL RULES (Acknowledge ➔ Provide Expertise ➔ Ask ONE Question):
      b) Provide expertise about the change (e.g., "For bike sellers, visitors look for interactive inventory lists, high-quality photos, and quick contact options. We can add a WhatsApp booking setup to help drive test rides!")
      c) Recalculate/adjust package recommendation immediately based on their changes.
      d) Ask only ONE next missing question.
-2. KEEP ACTIVE MEMORY:
-   - Do not ask questions for details the user has already stated. Check currentLeadState.
-3. ASK ONE QUESTION AT A TIME:
+2. KEEP ACTIVE MEMORY & AVOID OVERWRITES:
+   - Do not ask questions for details the user has already stated.
+   - Do not let feature keywords (e.g., "seo ready" or "need logo") accidentally override the main service type (e.g. changing Website to Digital Marketing). Add them to features instead.
+3. ANSWER USER QUESTIONS DIRECTLY:
+   - If a user asks a general question (e.g. "Do you do SEO?", "What is your pricing?", "Where are you based?"), answer it directly and provide helpful guidance, and then ask the next missing detail to resume the quotation.
+4. ASK ONE QUESTION AT A TIME:
    - Never ask two questions at once. Let the conversation flow naturally.
-4. RECOMMEND PLANS DYNAMICALLY:
+5. RECOMMEND PLANS DYNAMICALLY:
    - Suggest basic, standard, pro, or premium plans based on the client's scope. If scope changes, update the recommendation dynamically.
-5. CLOSING DETAILS:
+6. CLOSING DETAILS:
    - Once all project details are collected (completeness score reaches 100), output:
      "Perfect! 🎉 I've gathered everything needed to prepare your quotation. Please share your name, email, and phone number so our team can send you a detailed proposal within 24 hours."
 
@@ -188,20 +191,28 @@ export class MockProvider implements AIProvider {
 
     let correctionText = "";
 
-    // 1. Dynamic service detection
+    // 1. Dynamic service detection (with override avoidance)
     let detectedService: string | null = null;
-    if (lastUserLower.includes("website") || lastUserLower.includes("e-commerce") || lastUserLower.includes("ecommerce") || lastUserLower.includes("site")) {
-      detectedService = "Website";
-    } else if (lastUserLower.includes("app") || lastUserLower.includes("mobile") || lastUserLower.includes("ios") || lastUserLower.includes("android")) {
-      detectedService = "Mobile App";
-    } else if (lastUserLower.includes("seo") || lastUserLower.includes("marketing") || lastUserLower.includes("ads") || lastUserLower.includes("grow")) {
-      detectedService = "Digital Marketing";
-    } else if (lastUserLower.includes("brand") || lastUserLower.includes("logo") || lastUserLower.includes("identity")) {
-      detectedService = "Branding";
-    } else if (lastUserLower.includes("automation") || lastUserLower.includes("chatbot") || lastUserLower.includes("ai tool")) {
-      detectedService = "AI Automation";
-    } else if (lastUserLower.includes("design") || lastUserLower.includes("ui") || lastUserLower.includes("ux")) {
-      detectedService = "UI/UX Design";
+    const isExplicitChange = lastUserLower.includes("change") || lastUserLower.includes("instead") || lastUserLower.startsWith("no ");
+    
+    // Only parse a new service if not already set, OR if the user is explicitly correcting it
+    if (!nextState.service || isExplicitChange) {
+      if (lastUserLower.includes("website") || lastUserLower.includes("e-commerce") || lastUserLower.includes("ecommerce") || lastUserLower.includes("site")) {
+        detectedService = "Website";
+      } else if (lastUserLower.includes("app") || lastUserLower.includes("mobile") || lastUserLower.includes("ios") || lastUserLower.includes("android")) {
+        detectedService = "Mobile App";
+      } else if (lastUserLower.includes("seo") || lastUserLower.includes("marketing") || lastUserLower.includes("ads") || lastUserLower.includes("grow")) {
+        // Prevent phrase collisions (e.g. "seo ready website" shouldn't change service to marketing)
+        if (!lastUserLower.includes("ready") && !lastUserLower.includes("stuff") && !lastUserLower.includes("include") && !lastUserLower.includes("do you")) {
+          detectedService = "Digital Marketing";
+        }
+      } else if (lastUserLower.includes("brand") || lastUserLower.includes("logo") || lastUserLower.includes("identity")) {
+        detectedService = "Branding";
+      } else if (lastUserLower.includes("automation") || lastUserLower.includes("chatbot") || lastUserLower.includes("ai tool")) {
+        detectedService = "AI Automation";
+      } else if (lastUserLower.includes("design") || lastUserLower.includes("ui") || lastUserLower.includes("ux")) {
+        detectedService = "UI/UX Design";
+      }
     }
 
     if (detectedService) {
@@ -211,10 +222,8 @@ export class MockProvider implements AIProvider {
       nextState.service = detectedService;
     }
 
-    // 2. Advanced Dynamic Business Type Extraction
+    // 2. Dynamic Business Type Extraction
     let detectedBusiness: string | null = null;
-    
-    // Look for explicit business declarations first
     if (lastUserLower.includes("bike") || lastUserLower.includes("bicycle") || lastUserLower.includes("vehicle") || lastUserLower.includes("car ")) {
       detectedBusiness = "Second Hand Bike Seller";
     } else if (lastUserLower.includes("dental") || lastUserLower.includes("clinic") || lastUserLower.includes("doctor") || lastUserLower.includes("dentist")) {
@@ -226,13 +235,11 @@ export class MockProvider implements AIProvider {
     } else if (lastUserLower.includes("police")) {
       detectedBusiness = "Police Website";
     } else {
-      // Regex extraction from patterns like "for a [business]", "for [business]", "i want a [business]"
       const match = lastUserLower.match(/(?:for a|for|my|own a|own|about a|about)\s+([^.,?!]+)/i);
       if (match) {
         const potential = match[1].trim();
         const words = potential.split(/\s+/);
-        // Exclude generic terms and website terms
-        if (words.length <= 4 && !words.includes("website") && !words.includes("app") && !words.includes("site")) {
+        if (words.length <= 4 && !words.includes("website") && !words.includes("app") && !words.includes("site") && !words.includes("stuff")) {
           detectedBusiness = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
         }
       }
@@ -256,7 +263,7 @@ export class MockProvider implements AIProvider {
       if (nextState.pages && nextState.pages !== detectedPages) {
         correctionText += `Got it! I've updated the size of the project to ${detectedPages}. `;
         if (detectedPages.includes("5")) {
-          nextState.budget = null; // reset budget for plan recalculation
+          nextState.budget = null;
         }
       }
       nextState.pages = detectedPages;
@@ -291,35 +298,68 @@ export class MockProvider implements AIProvider {
     }
 
     // Features detection
+    let addedFeatureText = "";
     if (lastUserLower.includes("booking") || lastUserLower.includes("appointment") || lastUserLower.includes("schedule")) {
       if (!nextState.features.includes("Online Booking")) {
         nextState.features.push("Online Booking");
+        addedFeatureText = "Online Booking scheduling";
       }
     }
     if (lastUserLower.includes("menu") || lastUserLower.includes("reservation")) {
       if (!nextState.features.includes("Menu & Reservations")) {
         nextState.features.push("Menu & Reservations");
+        addedFeatureText = "Menu & Reservations layout";
       }
     }
     if (lastUserLower.includes("whatsapp") || lastUserLower.includes("chat")) {
       if (!nextState.features.includes("WhatsApp Support")) {
         nextState.features.push("WhatsApp Support");
+        addedFeatureText = "WhatsApp Support buttons";
       }
     }
-    if (lastUserLower.includes("seo") || lastUserLower.includes("google")) {
+    if (lastUserLower.includes("seo")) {
       if (!nextState.features.includes("SEO Setup")) {
         nextState.features.push("SEO Setup");
+        addedFeatureText = "Google SEO Optimization";
       }
     }
     if (lastUserLower.includes("inventory") || lastUserLower.includes("search") || lastUserLower.includes("listing")) {
       if (!nextState.features.includes("Inventory Listings")) {
         nextState.features.push("Inventory Listings");
+        addedFeatureText = "Inventory listings catalog";
       }
     }
 
-    // 6. Assemble the response
+    if (addedFeatureText && !correctionText) {
+      correctionText += `Got it! I've added **${addedFeatureText}** to your website specifications. `;
+    }
+
+    // 6. FAQ / User Question Answering
+    let questionAnswer = "";
+    if (lastUserLower.includes("do you do") || lastUserLower.includes("can you") || lastUserLower.includes("do you offer") || lastUserLower.includes("support")) {
+      if (lastUserLower.includes("seo") || lastUserLower.includes("marketing") || lastUserLower.includes("stuff")) {
+        questionAnswer = "Yes, absolutely! We handle complete Search Engine Optimization (SEO) including technical audits, metadata configuration, keyword research, and Google indexing setup. For any website we build, standard SEO packages are included in our Basic and Standard subscription tiers.";
+        if (nextState.service === "Website" && !nextState.features.includes("SEO Setup")) {
+          nextState.features.push("SEO Setup");
+        }
+      } else if (lastUserLower.includes("design") || lastUserLower.includes("logo")) {
+        questionAnswer = "Yes, TIA offers high-fidelity UI/UX design, visual branding, logo assets, and full corporate branding kits.";
+      } else if (lastUserLower.includes("app") || lastUserLower.includes("mobile")) {
+        questionAnswer = "Yes! We build cross-platform mobile apps for iOS and Android using React Native and Flutter.";
+      }
+    } else if (lastUserLower.includes("price") || lastUserLower.includes("cost") || lastUserLower.includes("how much")) {
+      questionAnswer = "Our digital design and development subscription plans start at £199.99/mo (Basic), £399.99/mo (Standard), and £649.99/mo (Pro), supporting flexible scaling.";
+    } else if (lastUserLower.includes("where") || lastUserLower.includes("location") || lastUserLower.includes("located")) {
+      questionAnswer = "We are headquartered in London, United Kingdom, and deliver digital solutions to businesses globally.";
+    } else if (lastUserLower.includes("phone") || lastUserLower.includes("number") || lastUserLower.includes("whatsapp") || lastUserLower.includes("contact")) {
+      questionAnswer = "You can contact our sales advisors directly via phone/WhatsApp at **+44 7451 255217** or email at **sales@tiasoftwaresolutions.com**.";
+    }
+
+    // 7. Assemble the final reply
     let reply = "";
-    if (correctionText) {
+    if (questionAnswer) {
+      reply += questionAnswer + "\n\n";
+    } else if (correctionText) {
       reply += correctionText + "\n\n";
     }
 
@@ -336,7 +376,7 @@ export class MockProvider implements AIProvider {
       industryTips = "For community and public service hubs, users look for online enquiry forms, latest announcements dashboards, and contact support lines.";
     }
 
-    // Main dialogue tree based on missing requirements (Acknowledge ➔ Provide Expertise ➔ Ask ONE Question)
+    // Next missing question logic
     if (!nextState.service) {
       reply += `Hello! 👋 I'm TIA AI, your digital project consultant.
 
@@ -349,12 +389,11 @@ Are you looking to build a new Website, develop a Mobile App, optimize your Digi
 Would you like us to integrate these standard conversion features, or do you have specific options in mind?`;
       nextState.features = ["Standard Setup"];
     } else if (!nextState.pages) {
-      if (industryTips && !correctionText) {
+      if (industryTips && !correctionText && !questionAnswer) {
         reply += `${industryTips}\n\n`;
       }
       reply += `Approximately how many pages are we planning for this ${bizType} ${nextState.service}? (e.g. 5 pages, 10 pages, or not sure?)`;
     } else if (!nextState.budget) {
-      // Plan recommendation adjustments
       let recommendedPlan = "Standard Plan (£399.99/mo)";
       if (nextState.pages && (nextState.pages.includes("5") || nextState.pages.includes("five"))) {
         recommendedPlan = "Basic Plan (£199.99/mo)";
