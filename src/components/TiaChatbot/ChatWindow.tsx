@@ -222,6 +222,7 @@ const STEPS: Step[] = [
       { label: "Digital Marketing", value: "Digital Marketing", iconName: "TrendingUp", description: "Targeted SEO, content marketing, and performance advertising." },
       { label: "Branding & UI/UX", value: "Branding & UI/UX", iconName: "Palette", description: "Sleek logos, brand kits, and interactive product designs." },
       { label: "Software Development", value: "Software Development", iconName: "Code2", description: "Bespoke custom software, APIs, databases, and integrations." },
+      { label: "Virtual Assistance", value: "Virtual Assistance", iconName: "Briefcase", description: "Dedicated virtual assistants for admin, support, and marketing." },
       { label: "Talk to Our Team", value: "Talk to Our Team", iconName: "MessageSquare", description: "Get direct contact details including email, phone, and social media." }
     ],
     nextStep: () => "industry"
@@ -255,6 +256,7 @@ const STEPS: Step[] = [
       if (s === "Digital Marketing") return "marketing_website";
       if (s === "Branding & UI/UX") return "branding_scope";
       if (s === "Software Development") return "team_topic";
+      if (s === "Virtual Assistance") return "va_scope";
       return "budget";
     }
   },
@@ -377,6 +379,20 @@ const STEPS: Step[] = [
     nextStep: () => "budget"
   },
   {
+    id: "va_scope",
+    title: "What assistance tasks are required?",
+    subtitle: "Select the primary scope for your dedicated assistant.",
+    milestone: "Scope",
+    options: [
+      { label: "Customer Support", value: "Customer Support", iconName: "MessageSquare", description: "Email handling, live chat support, and ticket management." },
+      { label: "Data Entry & Admin", value: "Data Entry & Admin", iconName: "Layers", description: "CRM management, spreadsheet updates, and file organizing." },
+      { label: "Social Media Management", value: "Social Media", iconName: "Sparkles", description: "Post scheduling, basic graphic design, and audience engagement." },
+      { label: "Billing & Bookkeeping", value: "Bookkeeping", iconName: "Coins", description: "Invoice generation, expense tracking, and basic accounts." },
+      { label: "General Admin VA", value: "General Admin", iconName: "Briefcase", description: "Calendar management, travel booking, and custom executive support." }
+    ],
+    nextStep: () => "budget"
+  },
+  {
     id: "budget",
     title: "What is your estimated investment budget?",
     subtitle: "We offer tailored tiers matching different scales.",
@@ -389,7 +405,7 @@ const STEPS: Step[] = [
     ],
     nextStep: (sel) => {
       const s = sel["service"];
-      if (s === "Digital Marketing" || s === "Software Development") {
+      if (s === "Digital Marketing" || s === "Software Development" || s === "Virtual Assistance") {
         return "country";
       }
       return "timeline";
@@ -495,6 +511,38 @@ export function getRecommendation(selections: Record<string, string>): Recommend
       addons: ["Interactive design prototype preview", "High-resolution source file delivery"],
       benefits: ["Premium design look and feel", "Instant market credibility", "Consistent brand presentation"]
     };
+  } else if (service === "Virtual Assistance") {
+    if (budget === "Basic") {
+      const vaBasic = country === "UK" ? "£199.99/mo" : country === "US" ? "$249.99/mo" : "A$349.99/mo";
+      return {
+        packageName: "Essential VA Subscription",
+        price: vaBasic,
+        timeline: "Immediate Start",
+        features: ["10 hours per week dedicated support", "Email inbox & calendar management", "Basic CRM & data entry tasks", "Document editing and scheduling"],
+        addons: ["Weekly performance breakdown", "Direct Slack/WhatsApp chat line"],
+        benefits: ["Saves 10 operational hours/wk", "No employee overhead / benefits", "Fully trained & vetted agent"]
+      };
+    } else if (budget === "Standard" || budget === "Not Sure") {
+      const vaStandard = country === "UK" ? "£379.99/mo" : country === "US" ? "$479.99/mo" : "A$679.99/mo";
+      return {
+        packageName: "Professional VA Subscription",
+        price: vaStandard,
+        timeline: "Immediate Start",
+        features: ["20 hours per week dedicated support", "Customer live chat & email ticket handling", "Lead follow-up & CRM coordination", "Social media post scheduling & basic graphics"],
+        addons: ["Daily progress reports", "Shared dashboard integration"],
+        benefits: ["Delegate core admin tasks completely", "Boost customer response times", "Consistent execution week-to-week"]
+      };
+    } else {
+      const vaPremium = country === "UK" ? "£699.99/mo" : country === "US" ? "$899.99/mo" : "A$1,299.99/mo";
+      return {
+        packageName: "Premium VA Subscription",
+        price: vaPremium,
+        timeline: "Immediate Start",
+        features: ["Full-time support hours", "Custom operations support", "Bookkeeping & invoice creation", "Comprehensive administrative operations support"],
+        addons: ["Priority agent matching", "Custom tool onboarding support"],
+        benefits: ["Maximize administrative output", "1-on-1 direct operations scaling", "Comprehensive operations relief"]
+      };
+    }
   } else {
     return {
       packageName: "Custom Software Development",
@@ -575,6 +623,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     "Digital Marketing": ["Service", "Industry", "Channels", "Budget", "Location"],
     "Branding & UI/UX": ["Service", "Industry", "Scope", "Budget", "Timeline", "Location"],
     "Software Development": ["Service", "Industry", "Topic", "Budget", "Location"],
+    "Virtual Assistance": ["Service", "Industry", "Scope", "Budget", "Location"],
   };
 
   const activeMilestones = milestonesByService[service] || milestonesByService["Website"];
@@ -613,6 +662,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       if (s === "Digital Marketing") return selections["marketing_channels"] || "—";
       if (s === "Branding & UI/UX") return selections["branding_scope"] || "—";
       if (s === "Software Development") return selections["team_topic"] || "—";
+      if (s === "Virtual Assistance") return selections["va_scope"] || "—";
       return "—";
     }
     if (milestone === "Budget") return selections["budget"] || "—";
@@ -695,7 +745,8 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       const targetStep = s === "Website" ? "website_scope" :
                          s === "Mobile App" ? "app_platforms" :
                          s === "Digital Marketing" ? "marketing_website" :
-                         s === "Branding & UI/UX" ? "branding_scope" : "team_topic";
+                         s === "Branding & UI/UX" ? "branding_scope" :
+                         s === "Virtual Assistance" ? "va_scope" : "team_topic";
       setActiveStepId(targetStep);
       // Re-create history leading up to target
       setStepHistory(["service", "industry"]);
@@ -1128,7 +1179,7 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
                       >
                         ✏ Edit Budget
                       </Button>
-                      {selections["service"] !== "Digital Marketing" && selections["service"] !== "Software Development" ? (
+                      {selections["service"] !== "Digital Marketing" && selections["service"] !== "Software Development" && selections["service"] !== "Virtual Assistance" ? (
                         <Button
                           onClick={() => handleEditSection("Timeline")}
                           variant="outline"
