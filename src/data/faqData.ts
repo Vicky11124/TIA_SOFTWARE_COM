@@ -37,6 +37,27 @@ export const faqs = [
     ],
   },
   {
+    category: "Web & Software Development",
+    items: [
+      {
+        q: "What tech stack do you use for website and web app development?",
+        a: "We build using modern, high-performance tech stacks. Our frontend development relies on React, TypeScript, Next.js, and Tailwind CSS. For backends and databases, we use robust solutions like Supabase, Node.js, and PostgreSQL to ensure speed, security, and scalability.",
+      },
+      {
+        q: "Do you develop native mobile apps or cross-platform apps?",
+        a: "We specialize in cross-platform mobile application development using React Native and Flutter. This approach delivers a native look and feel on both iOS and Android from a single codebase, significantly reducing your development costs and time-to-market.",
+      },
+      {
+        q: "What is your approach to custom software development?",
+        a: "Our process is fully agile: we begin with interactive wireframing and UI/UX design, followed by sprints of iterative development, automated testing, and secure deployment. We also offer continuous maintenance and updates post-launch to keep your software performing at its best.",
+      },
+      {
+        q: "How do you ensure application security and speed?",
+        a: "We implement industry-standard security protocols including OAuth 2.0 authentication, end-to-end encryption, and secure HTTPS connections. For speed, we write optimized, clean code, employ lazy-loading, leverage CDNs, and compress assets to achieve top-tier Lighthouse performance scores.",
+      },
+    ],
+  },
+  {
     category: "Pricing & Plans",
     items: [
       {
