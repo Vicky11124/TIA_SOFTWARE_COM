@@ -21,6 +21,7 @@ const Footer = () => {
                 href={settings.instagram_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Instagram"
                 className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
               >
                 <Instagram size={18} />
@@ -29,6 +30,7 @@ const Footer = () => {
                 href={settings.facebook_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Facebook"
                 className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
               >
                 <Facebook size={18} />
@@ -37,6 +39,7 @@ const Footer = () => {
                 href={settings.linkedin_url}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="LinkedIn"
                 className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
               >
                 <Linkedin size={18} />
@@ -45,6 +48,7 @@ const Footer = () => {
                 href="https://x.com/tiasoftwares"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="X (Twitter)"
                 className="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -56,7 +60,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <h3 className="font-semibold text-base mb-4 text-foreground">Quick Links</h3>
             <div className="flex flex-col gap-3">
               {[
                 { label: "Home", path: "/" },
@@ -80,7 +84,7 @@ const Footer = () => {
 
           {/* Services */}
           <div>
-            <h4 className="font-semibold mb-4">Services</h4>
+            <h3 className="font-semibold text-base mb-4 text-foreground">Services</h3>
             <div className="flex flex-col gap-3">
               {[
                 { label: "Virtual Assistance", path: "/services/virtual-assistance" },
@@ -101,7 +105,7 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className="font-semibold mb-4">Contact</h4>
+            <h3 className="font-semibold text-base mb-4 text-foreground">Contact</h3>
             <div className="flex flex-col gap-4">
               <a href={`mailto:${settings.email}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                 <Mail size={16} />

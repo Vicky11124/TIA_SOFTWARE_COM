@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
@@ -52,7 +52,7 @@ const AboutPreview = () => {
             </p>
             <Button variant="hero-outline" size="lg" asChild>
               <Link to="/about">
-                Learn More <ArrowRight className="ml-2" size={18} />
+                Learn More About TIA <ArrowRight className="ml-2" size={18} />
               </Link>
             </Button>
           </motion.div>
