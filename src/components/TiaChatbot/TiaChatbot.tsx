@@ -20,6 +20,7 @@ type Emotion =
 
 const TiaChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOnboardingActive, setIsOnboardingActive] = useState(() => !localStorage.getItem("tia_onboarding_complete"));
   const location = useLocation();
 
   // Emotion and animation states
@@ -292,12 +293,17 @@ const TiaChatbot = () => {
       }, 4000);
     };
 
+    const handleOnboardingStart = () => setIsOnboardingActive(true);
+    const handleOnboardingComplete = () => setIsOnboardingActive(false);
+
     window.addEventListener("tia-chatbot-opened", handleOpened);
     window.addEventListener("tia-chatbot-closed", handleClosed);
     window.addEventListener("tia-chatbot-thinking-start", handleThinkingStart);
     window.addEventListener("tia-chatbot-speaking-start", handleSpeakingStart);
     window.addEventListener("tia-chatbot-thinking-stop", handleThinkingStop);
     window.addEventListener("tia-chatbot-success", handleSuccess);
+    window.addEventListener("tia-chatbot-onboarding-start", handleOnboardingStart);
+    window.addEventListener("tia-chatbot-onboarding-complete", handleOnboardingComplete);
 
     return () => {
       window.removeEventListener("tia-chatbot-opened", handleOpened);
@@ -306,6 +312,8 @@ const TiaChatbot = () => {
       window.removeEventListener("tia-chatbot-speaking-start", handleSpeakingStart);
       window.removeEventListener("tia-chatbot-thinking-stop", handleThinkingStop);
       window.removeEventListener("tia-chatbot-success", handleSuccess);
+      window.removeEventListener("tia-chatbot-onboarding-start", handleOnboardingStart);
+      window.removeEventListener("tia-chatbot-onboarding-complete", handleOnboardingComplete);
     };
   }, []);
 
@@ -345,25 +353,6 @@ const TiaChatbot = () => {
     setIsDragging(false);
     setEmotion("idle");
     setBubbleText(null);
-  };
-
-  // Click interactions
-  const handleHeadClick = () => {
-    setEmotion("confused");
-    setBubbleText("Hehe 😄");
-    setTimeout(() => {
-      setBubbleText(null);
-      setEmotion(isOpen ? "listening" : "idle");
-    }, 2000);
-  };
-
-  const handleBadgeClick = () => {
-    setEmotion("focused");
-    setBubbleText("I'm TIA AI, Digital Consultant");
-    setTimeout(() => {
-      setBubbleText(null);
-      setEmotion(isOpen ? "listening" : "idle");
-    }, 3000);
   };
 
   // Chat window toggle with micro-animations
@@ -560,13 +549,16 @@ const TiaChatbot = () => {
     return null;
   }
 
+  const showMascot = true;
+
   return (
     <>
       {/* Mascot Wrapper (Increased padding and raised bottom to bottom-10) */}
-      <div 
-        ref={mascotRef}
-        className="fixed top-20 right-6 sm:top-20 sm:right-8 z-50 flex flex-col items-center pointer-events-none select-none p-3 overflow-visible"
-      >
+      {showMascot && (
+        <div 
+          ref={mascotRef}
+          className="fixed top-20 right-6 sm:top-20 sm:right-8 z-50 flex flex-col items-center pointer-events-none select-none p-3 overflow-visible"
+        >
         {/* Dialogue Bubble */}
         <AnimatePresence>
           {bubbleText && (
@@ -602,6 +594,7 @@ const TiaChatbot = () => {
           initial={{ opacity: 0, y: 20, scale: 0.8 }}
           animate={mascotAnimate}
           transition={mascotTransition}
+          onClick={handleBodyClick}
           className={`w-16 h-20 sm:w-20 sm:h-24 relative pointer-events-auto flex flex-col items-center justify-end overflow-visible ${
             emotion === "sleepy" ? "cursor-pointer" : "cursor-grab active:cursor-grabbing"
           }`}
@@ -729,38 +722,14 @@ const TiaChatbot = () => {
             className="w-11 sm:w-13 h-1.5 bg-gradient-to-r from-purple-600/80 to-indigo-600/80 rounded-full blur-[1px] mt-1.5 pointer-events-none"
           />
 
-          {/* Interactive Click Hitboxes */}
-          {/* Head click target */}
+          {/* Interactive Click Hitbox */}
           <div 
-            onClick={(e) => {
-              e.stopPropagation();
-              handleHeadClick();
-            }}
-            className="absolute top-0 left-0 w-full h-[50%] z-20 cursor-pointer rounded-t-2xl"
-            title="TIA AI Face"
-          />
-
-          {/* Badge click target */}
-          <div 
-            onClick={(e) => {
-              e.stopPropagation();
-              handleBadgeClick();
-            }}
-            className="absolute bottom-[16%] right-0 w-[42%] h-[36%] z-20 cursor-pointer"
-            title="TIA Consultant Badge"
-          />
-
-          {/* Body toggle click target */}
-          <div 
-            onClick={(e) => {
-              e.stopPropagation();
-              handleBodyClick();
-            }}
-            className="absolute bottom-[16%] left-0 w-[55%] h-[36%] z-20 cursor-pointer"
-            title="Open ChatWindow"
+            className="absolute inset-0 z-20 cursor-pointer"
+            title="Toggle TIA Digital Consultant"
           />
         </motion.div>
       </div>
+      )}
 
       {/* Chat Window Panel (Originates from bottom right) */}
       <AnimatePresence>
