@@ -111,11 +111,93 @@ const fallbackAdsPlans: Plan[] = [
   }
 ];
 
+const fallbackOldPlans: Plan[] = [
+  {
+    id: "old-1",
+    name: "Basic",
+    price: "149.99",
+    price_usd: "199.99",
+    features: [
+      "Logo Design (2-3 concepts)",
+      "Business Card Design",
+      "Basic Brand Identity",
+      "2 Rounds of Revisions",
+      "Social Media Graphics",
+      "Standard Turnaround Time",
+      "Basic Website (Hosting, Domain & 2 Emails)"
+    ],
+    is_popular: false
+  },
+  {
+    id: "old-2",
+    name: "Standard",
+    price: "299.99",
+    price_usd: "399.99",
+    features: [
+      "Everything in the Basic Plan",
+      "Social Media Templates & Banners",
+      "Presentation/Deck Design",
+      "2 Rounds of Revisions",
+      "Standard Turnaround Time"
+    ],
+    is_popular: false
+  },
+  {
+    id: "old-3",
+    name: "Pro",
+    price: "499.99",
+    price_usd: "649.99",
+    features: [
+      "Everything in the Standard Plan",
+      "Packaging & Merchandise Design",
+      "Motion Graphics / Animated Content",
+      "Unlimited Revisions",
+      "Social Media Promotions",
+      "Express Turnaround Time"
+    ],
+    is_popular: true
+  },
+  {
+    id: "old-4",
+    name: "Premium",
+    price: "699.99",
+    price_usd: "899.99",
+    features: [
+      "Everything in the Pro Plan",
+      "UX/UI Design for Apps & Websites",
+      "Virtual Assistance",
+      "Dedicated Account Manager",
+      "ERP Tool (Any one module)"
+    ],
+    is_popular: false
+  }
+];
+
 const planPricing: Record<string, {
   UK: { price: string; original?: string };
   US: { price: string; original?: string };
   AU: { price: string; original?: string };
 }> = {
+  "basic": {
+    UK: { price: "149.99", original: "249.99" },
+    US: { price: "199.99", original: "299.99" },
+    AU: { price: "289.99", original: "399.99" }
+  },
+  "standard": {
+    UK: { price: "299.99", original: "449.99" },
+    US: { price: "399.99", original: "599.99" },
+    AU: { price: "579.99", original: "799.99" }
+  },
+  "pro": {
+    UK: { price: "499.99", original: "699.99" },
+    US: { price: "649.99", original: "899.99" },
+    AU: { price: "939.99", original: "1,299.99" }
+  },
+  "premium": {
+    UK: { price: "699.99", original: "999.99" },
+    US: { price: "899.99", original: "1,299.99" },
+    AU: { price: "1,299.99", original: "1,799.99" }
+  },
   "professional website": {
     UK: { price: "249", original: "399" },
     US: { price: "329", original: "499" },
@@ -156,6 +238,9 @@ const Plans = () => {
       });
   }, []);
 
+  const oldPlans = plans.filter(p => ["basic", "standard", "pro", "premium"].includes(p.name.toLowerCase()));
+  const displayOldPlans = oldPlans.length > 0 ? oldPlans : fallbackOldPlans;
+
   const websitePlans = plans.filter(p => p.name.toLowerCase().includes("website"));
   const displayWebsitePlans = websitePlans.length > 0 ? websitePlans : fallbackPlans;
 
@@ -179,15 +264,9 @@ const Plans = () => {
           plan.is_popular ? "glow-border border-primary/30" : ""
         }`}
       >
-        {isPremiumWebsite && (
+        {plan.is_popular && (
           <div className="absolute top-4 right-4 bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-300 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md border border-pink-200 dark:border-pink-900/30">
-            Most Popular
-          </div>
-        )}
-
-        {isPremiumAds && (
-          <div className="absolute top-4 right-4 bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-300 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md border border-pink-200 dark:border-pink-900/30">
-            Highest ROI
+            {isPremiumAds ? "Highest ROI" : "Most Popular"}
           </div>
         )}
 
@@ -195,15 +274,20 @@ const Plans = () => {
 
         {/* Subtitle / desc */}
         <p className="text-xs text-muted-foreground/80 mt-1.5 mb-4">
-          {plan.name.toLowerCase().includes("premium") 
+          {plan.name.toLowerCase().includes("premium") || plan.name.toLowerCase() === "pro"
             ? "Complete solution for business growth" 
             : "Perfect for businesses getting started online"}
         </p>
 
-        <div className="mb-6">
+        <div className="mb-6 flex items-baseline gap-2">
           <span className="text-3xl font-extrabold text-foreground">
             {currencySymbol}{price}
           </span>
+          {pricing?.original && (
+            <span className="text-sm text-muted-foreground/60 line-through">
+              {currencySymbol}{pricing.original}
+            </span>
+          )}
         </div>
 
         <ul className="space-y-3 mb-8 flex-1">
@@ -311,6 +395,25 @@ const Plans = () => {
       {/* Plans Section */}
       <section className="pb-24">
         <div className="container space-y-16">
+          {/* Core Subscription Packages (Old Plans) */}
+          <div>
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+                Core Subscription <span className="gradient-text">Packages</span>
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-lg mx-auto">
+                All-inclusive branding, design, website, and support packages to grow your business.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+              {displayOldPlans.map((plan, i) => (
+                <PlanCard key={plan.id} plan={plan} i={i} />
+              ))}
+            </div>
+          </div>
+
+          <div className="h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-12" />
+
           {/* Website Development Plans */}
           <div>
             <div className="text-center mb-10">
