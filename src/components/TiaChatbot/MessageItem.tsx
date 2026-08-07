@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Copy, Check, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import tiaBotIcon from "@/assets/tia-bot.png";
 
 export interface Message {
   role: "user" | "model" | "system";
@@ -186,13 +187,17 @@ const MessageItem = ({ message }: MessageItemProps) => {
       {/* Avatar */}
       <div
         className={cn(
-          "w-8 h-8 rounded-full flex items-center justify-center shadow-sm shrink-0 border select-none",
+          "w-8 h-8 rounded-full flex items-center justify-center shadow-sm shrink-0 border select-none overflow-hidden",
           isBot
-            ? "bg-primary/10 border-primary/20 text-primary"
+            ? "bg-white border-primary/20"
             : "bg-muted border-border text-muted-foreground"
         )}
       >
-        {isBot ? <Bot size={16} /> : <User size={16} />}
+        {isBot ? (
+          <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" />
+        ) : (
+          <User size={16} />
+        )}
       </div>
 
       {/* Message Box */}

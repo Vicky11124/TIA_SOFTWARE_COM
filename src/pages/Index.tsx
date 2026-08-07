@@ -53,20 +53,66 @@ const Index = () => {
       "latitude": 51.5074,
       "longitude": -0.1278
     },
-    "priceRange": "$$"
+    "priceRange": "££"
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://www.tiasoftwaresolutions.com/#website",
+    "url": "https://www.tiasoftwaresolutions.com",
+    "name": "TIA Software Solutions",
+    "publisher": {
+      "@id": "https://www.tiasoftwaresolutions.com/#organization"
+    }
+  };
+
+  const webpageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://www.tiasoftwaresolutions.com/#webpage",
+    "url": "https://www.tiasoftwaresolutions.com",
+    "name": "Web Design & SEO Agency London | TIA Software Solutions",
+    "isPartOf": {
+      "@id": "https://www.tiasoftwaresolutions.com/#website"
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://www.tiasoftwaresolutions.com/#breadcrumb",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tiasoftwaresolutions.com"
+      }
+    ]
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
+        <link rel="canonical" href="https://www.tiasoftwaresolutions.com" />
         <script type="application/ld+json">
           {JSON.stringify(organizationSchema)}
         </script>
         <script type="application/ld+json">
           {JSON.stringify(localBusinessSchema)}
         </script>
+        <script type="application/ld+json">
+          {JSON.stringify(websiteSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(webpageSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
       </Helmet>
-      <h1 className="sr-only">Digital Marketing & Website Development Company — TIA Software Solutions</h1>
+      <h1 className="sr-only">Web Design & SEO Agency London — TIA Software Solutions</h1>
       <Navbar />
       <HeroCarousel />
       <ServicesHighlight />

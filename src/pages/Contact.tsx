@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { Helmet } from "react-helmet-async";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
@@ -30,8 +31,42 @@ const Contact = () => {
     setSubmitting(false);
   };
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tiasoftwaresolutions.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Contact",
+        "item": "https://www.tiasoftwaresolutions.com/contact"
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Contact TIA Software Solutions | Free Consultation UK</title>
+        <meta name="description" content="Get in touch with TIA Software Solutions today. Partner with our team for custom web design, SEO, software development, and virtual assistants. Serving clients throughout the UK." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.tiasoftwaresolutions.com/contact" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Contact TIA Software Solutions | Free Consultation UK" />
+        <meta property="og:description" content="Get in touch with TIA Software Solutions today. Partner with our team for custom web design, SEO, software development, and virtual assistants. Serving clients throughout the UK." />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact TIA Software Solutions | Free Consultation UK" />
+        <meta name="twitter:description" content="Get in touch with TIA Software Solutions today. Partner with our team for custom web design, SEO, software development, and virtual assistants. Serving clients throughout the UK." />
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* Hero */}

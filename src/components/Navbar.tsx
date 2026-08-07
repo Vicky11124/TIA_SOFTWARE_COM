@@ -9,6 +9,9 @@ import logo from "@/assets/logo.webp";
 
 const serviceLinks = [
   { label: "Virtual Assistance", path: "/services/virtual-assistance" },
+  { label: "Website Development", path: "/services/website-development" },
+  { label: "App Development", path: "/services/app-development" },
+  { label: "Software Development", path: "/services/software-development" },
   { label: "Branding Essentials", path: "/services/branding-essentials" },
   { label: "Digital Marketing", path: "/services/digital-marketing" },
   { label: "Creative Design", path: "/services/creative-design" },

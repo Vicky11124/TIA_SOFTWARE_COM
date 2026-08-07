@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Palette, Megaphone, PenTool, Monitor, Film, Camera, Sparkles, CalendarDays, Headphones } from "lucide-react";
+import { ArrowRight, Palette, Megaphone, PenTool, Monitor, Film, Camera, Sparkles, CalendarDays, Headphones, Laptop, Smartphone, Cpu } from "lucide-react";
 import serviceBranding from "@/assets/service-branding.webp";
 import serviceMarketing from "@/assets/service-marketing.webp";
 import serviceCreative from "@/assets/service-creative.webp";
@@ -14,6 +14,9 @@ import serviceStoriesReels from "@/assets/service-stories-reels.webp";
 import serviceSeasonal from "@/assets/service-seasonal.webp";
 import serviceEvents from "@/assets/service-events.webp";
 import serviceVA from "@/assets/service-virtual-assistance.webp";
+import serviceWebDev from "@/assets/banner-1.webp";
+import serviceAppDev from "@/assets/banner-3.webp";
+import serviceSoftwareDev from "@/assets/banner-4.webp";
 import { type LucideIcon } from "lucide-react";
 
 type ServiceCategory = {
@@ -35,6 +38,30 @@ const serviceCategories: ServiceCategory[] = [
     items: ["Administrative Support", "Customer Support", "Digital Marketing Support", "E-commerce Assistance", "Bookkeeping & Accounting"],
     desc: "Professional virtual assistants to streamline your operations, reduce workload, and boost productivity.",
     highlight: true,
+  },
+  {
+    icon: Laptop,
+    title: "Website Development",
+    slug: "website-development",
+    image: serviceWebDev,
+    items: ["Custom Responsive Coding", "Speed & Performance Optimization", "SEO Foundation & Audits", "CMS Integration"],
+    desc: "Stunning, high-performance websites built using modern front-end technologies to turn visitors into active customers.",
+  },
+  {
+    icon: Smartphone,
+    title: "App Development",
+    slug: "app-development",
+    image: serviceAppDev,
+    items: ["Native iOS & Android Apps", "Hybrid Mobile Applications", "Interactive Prototypes", "App Store Publishing"],
+    desc: "Robust, user-friendly mobile and web applications with seamless database integrations and native performances.",
+  },
+  {
+    icon: Cpu,
+    title: "Software Development",
+    slug: "software-development",
+    image: serviceSoftwareDev,
+    items: ["Bespoke Software & CRMs", "RESTful API Integrations", "Database Automation", "Cloud Hosting Setup"],
+    desc: "Bespoke enterprise software, custom dashboards, and workflow automation tailored precisely to your operations.",
   },
   {
     icon: Palette,
@@ -126,11 +153,93 @@ const Services = () => {
     }))
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How much does a website cost in the UK?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Website development pricing typically varies by complexity. Our Professional Website plan starts at £249, and our Premium Website plan is £399, providing premium value with fully responsive designs and SEO optimization."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How long does website development take?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Simple professional websites are typically completed within 1 to 2 weeks, while larger custom web applications, e-commerce stores, or custom software projects can take between 4 to 8 weeks depending on the scope."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you provide SEO?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we integrate solid SEO foundations into all our website projects and offer dedicated Digital Marketing and SEO campaign solutions to rank your business higher on Google search results."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you redesign websites?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely. We can take your existing website and completely redesign its user interface (UI) and user experience (UX) to modern, responsive design standards while improving page load speeds."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you build ecommerce websites?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, we build robust e-commerce solutions with secure shopping cart flows, payment integrations (Stripe, PayPal), product catalog managers, and order fulfillment tracking."
+        }
+      }
+    ]
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tiasoftwaresolutions.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Services",
+        "item": "https://www.tiasoftwaresolutions.com/services"
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
+        <title>Web Development Services UK | TIA Software Solutions</title>
+        <meta name="description" content="Explore our premium digital solutions including custom web development, mobile apps, CRM/ERP software, SEO, and virtual assistance. Serving clients throughout the UK." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.tiasoftwaresolutions.com/services" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Web Development Services UK | TIA Software Solutions" />
+        <meta property="og:description" content="Explore our premium digital solutions including custom web development, mobile apps, CRM/ERP software, SEO, and virtual assistance. Serving clients throughout the UK." />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Web Development Services UK | TIA Software Solutions" />
+        <meta name="twitter:description" content="Explore our premium digital solutions including custom web development, mobile apps, CRM/ERP software, SEO, and virtual assistance. Serving clients throughout the UK." />
         <script type="application/ld+json">
           {JSON.stringify(itemListSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
         </script>
       </Helmet>
       <Navbar />

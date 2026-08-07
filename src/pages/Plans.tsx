@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Check, Star } from "lucide-react";
+import { Check, Star, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useGeo } from "@/contexts/GeoContext";
@@ -20,68 +21,125 @@ type Plan = {
 
 const fallbackPlans: Plan[] = [
   {
-    id: "1",
-    name: "Basic",
-    price: "149.99",
-    price_usd: "199.99",
+    id: "web-1",
+    name: "Professional Website",
+    price: "249",
+    price_usd: "329",
     features: [
-      "Logo Design (2-3 concepts)",
-      "Business Card Design",
-      "Basic Brand Identity",
-      "2 Rounds of Revisions",
-      "Social Media Graphics",
-      "Standard Turnaround Time",
-      "Basic Website (Hosting, Domain & 2 Emails)",
+      "Custom Website Design & Modern UI",
+      "Fully Responsive Layout",
+      "Up to 5 Pages",
+      "Contact Form & WhatsApp Integration",
+      "Google Maps Integration",
+      "Basic SEO Setup & Analytics Setup",
+      "Google Search Console Setup",
+      "Basic Performance & Scroll Animations",
+      "Browser Compatibility & Clean Code",
+      "Live Deployment & Verification",
+      "not:Technical & On-Page SEO Optimization",
+      "not:XML Sitemap, Robots.txt & Canonical URLs",
+      "not:Advanced Performance & Media Optimization"
     ],
-    is_popular: false,
+    is_popular: false
   },
   {
-    id: "2",
-    name: "Standard",
-    price: "299.99",
-    price_usd: "399.99",
+    id: "web-2",
+    name: "Premium Website",
+    price: "399",
+    price_usd: "499",
     features: [
-      "Everything in the Basic Plan",
-      "Social Media Templates & Banners",
-      "Presentation/Deck Design",
-      "2 Rounds of Revisions",
-      "Standard Turnaround Time",
+      "Premium UI/UX & Custom Design",
+      "Up to 20 Pages",
+      "On-Page & Technical SEO Setup",
+      "XML Sitemap, Robots.txt & Canonical URLs",
+      "Open Graph & Twitter/X Social Cards",
+      "Google Tag Manager & Schema Markup",
+      "Advanced Performance & Media Optimization",
+      "Core Web Vitals Optimization",
+      "Advanced Scroll Animations & Transitions",
+      "Accessibility Optimization (WCAG compliant)",
+      "100% Secure, Clean Code & Deployment"
     ],
-    is_popular: false,
-  },
-  {
-    id: "3",
-    name: "Pro",
-    price: "499.99",
-    price_usd: "649.99",
-    features: [
-      "Everything in the Standard Plan",
-      "Packaging & Merchandise Design",
-      "Motion Graphics / Animated Content",
-      "Unlimited Revisions",
-      "Social Media Promotions",
-      "Express Turnaround Time",
-    ],
-    is_popular: true,
-  },
-  {
-    id: "4",
-    name: "Premium",
-    price: "699.99",
-    price_usd: "899.99",
-    features: [
-      "Everything in the Pro Plan",
-      "UX/UI Design for Apps & Websites",
-      "Virtual Assistance",
-      "Dedicated Account Manager",
-      "ERP Tool (Any one module)",
-    ],
-    is_popular: false,
-  },
+    is_popular: true
+  }
 ];
 
+const fallbackAdsPlans: Plan[] = [
+  {
+    id: "ads-1",
+    name: "Professional Ads",
+    price: "199",
+    price_usd: "249",
+    features: [
+      "Google Ads & Meta Ads Setup",
+      "Campaign Strategy & Planning",
+      "Ad Copywriting & Basic Banner Design",
+      "Basic Audience Targeting & Keyword Research",
+      "Basic Conversion Tracking Setup",
+      "Google Analytics Integration",
+      "Competitor Analysis & Campaign Optimization",
+      "Weekly 2 Posts Social Media Management",
+      "Content Creation & Design (2 Posts / Week)",
+      "Hashtag Research & Basic Community Engagement",
+      "Monthly Report & Dedicated Support",
+      "not:Google Tag Manager & Meta Pixel Integration",
+      "not:A/B Testing & Video/Reels Management"
+    ],
+    is_popular: false
+  },
+  {
+    id: "ads-2",
+    name: "Premium Ads",
+    price: "299",
+    price_usd: "379",
+    features: [
+      "Everything in Professional Ads",
+      "Google Ads & Meta Ads Setup",
+      "Campaign Strategy & Planning",
+      "Ad Copywriting & Advanced Banner Design",
+      "Advanced Audience Targeting & Keyword Research",
+      "Advanced Conversion & Pixel Tracking Setup",
+      "Google Tag Manager & Meta Pixel Setup",
+      "Advanced Campaign & Competitor Optimization",
+      "A/B Split Testing & High-ROI campaigns",
+      "Weekly 3 Posts (1 Video + 2 Posts) Management",
+      "Content Creation (1 Video + 2 Posts / Week)",
+      "Advanced Community & Hashtag Optimization",
+      "Detailed Weekly Reports & Dedicated Support"
+    ],
+    is_popular: true
+  }
+];
+
+const planPricing: Record<string, {
+  UK: { price: string; original?: string };
+  US: { price: string; original?: string };
+  AU: { price: string; original?: string };
+}> = {
+  "professional website": {
+    UK: { price: "249", original: "399" },
+    US: { price: "329", original: "499" },
+    AU: { price: "479", original: "729" }
+  },
+  "premium website": {
+    UK: { price: "399", original: "599" },
+    US: { price: "499", original: "799" },
+    AU: { price: "729", original: "1,159" }
+  },
+  "professional ads": {
+    UK: { price: "199", original: "299" },
+    US: { price: "249", original: "399" },
+    AU: { price: "359", original: "569" }
+  },
+  "premium ads": {
+    UK: { price: "299", original: "449" },
+    US: { price: "379", original: "599" },
+    AU: { price: "539", original: "799" }
+  }
+};
+
 const Plans = () => {
-  const [plans, setPlans] = useState<Plan[]>(fallbackPlans);
+  const [plans, setPlans] = useState<Plan[]>([]);
   const { whatsappLink } = useSiteSettings();
   const { geo, currencySymbol } = useGeo();
 
@@ -98,24 +156,137 @@ const Plans = () => {
       });
   }, []);
 
-  const getPrice = (plan: Plan) => {
-    if (geo === "AU" && plan.price_usd) {
-      const usdVal = parseFloat(plan.price_usd);
-      if (!isNaN(usdVal)) {
-        // Exchange rate from user screenshot: 199.99 USD = 285.41 AUD
-        // 285.41 / 199.99 = 1.4271213560678033
-        return (usdVal * 1.4271213560678033).toFixed(2);
+  const websitePlans = plans.filter(p => p.name.toLowerCase().includes("website"));
+  const displayWebsitePlans = websitePlans.length > 0 ? websitePlans : fallbackPlans;
+
+  const adsPlans = plans.filter(p => p.name.toLowerCase().includes("ads"));
+  const displayAdsPlans = adsPlans.length > 0 ? adsPlans : fallbackAdsPlans;
+
+  const PlanCard = ({ plan, i, isAds = false }: { plan: Plan; i: number; isAds?: boolean }) => {
+    const isPremiumWebsite = plan.name.toLowerCase() === "premium website";
+    const isPremiumAds = plan.name.toLowerCase() === "premium ads";
+
+    // Lookup prices from planPricing based on geo
+    const pricing = planPricing[plan.name.toLowerCase()]?.[geo];
+    const price = pricing ? pricing.price : (geo === "US" && plan.price_usd ? plan.price_usd : plan.price);
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: i * 0.1, duration: 0.5 }}
+        className={`glass-card p-8 relative hover-lift flex flex-col ${
+          plan.is_popular ? "glow-border border-primary/30" : ""
+        }`}
+      >
+        {isPremiumWebsite && (
+          <div className="absolute top-4 right-4 bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-300 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md border border-pink-200 dark:border-pink-900/30">
+            Most Popular
+          </div>
+        )}
+
+        {isPremiumAds && (
+          <div className="absolute top-4 right-4 bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-300 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md border border-pink-200 dark:border-pink-900/30">
+            Highest ROI
+          </div>
+        )}
+
+        <h3 className="text-xl font-bold">{plan.name}</h3>
+
+        {/* Subtitle / desc */}
+        <p className="text-xs text-muted-foreground/80 mt-1.5 mb-4">
+          {plan.name.toLowerCase().includes("premium") 
+            ? "Complete solution for business growth" 
+            : "Perfect for businesses getting started online"}
+        </p>
+
+        <div className="mb-6">
+          <span className="text-3xl font-extrabold text-foreground">
+            {currencySymbol}{price}
+          </span>
+        </div>
+
+        <ul className="space-y-3 mb-8 flex-1">
+          {plan.features.map((f) => {
+            const isExcluded = f.startsWith("not:");
+            const text = isExcluded ? f.substring(4) : f;
+            return (
+              <li
+                key={f}
+                className={`flex items-start gap-3 text-sm ${
+                  isExcluded ? "text-muted-foreground/40" : "text-muted-foreground"
+                }`}
+              >
+                {isExcluded ? (
+                  <X size={16} className="text-muted-foreground/30 shrink-0 mt-0.5" />
+                ) : (
+                  <Check size={16} className="text-primary shrink-0 mt-0.5" />
+                )}
+                {text}
+              </li>
+            );
+          })}
+        </ul>
+
+        <Button
+          variant={plan.is_popular ? "hero" : "hero-outline"}
+          className="w-full"
+          asChild
+        >
+          <a
+            href={`${whatsappLink}?text=${encodeURIComponent(
+              `Hi! I'm interested in the ${plan.name} plan.`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get Started
+          </a>
+        </Button>
+      </motion.div>
+    );
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tiasoftwaresolutions.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Plans",
+        "item": "https://www.tiasoftwaresolutions.com/plans"
       }
-    }
-    return geo === "US" && plan.price_usd ? plan.price_usd : plan.price;
+    ]
   };
 
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Website Pricing UK | TIA Software Solutions</title>
+        <meta name="description" content="View transparent web development, digital marketing, and ad campaign pricing packages. Serving clients throughout the UK. No hidden fees. Get your quote today." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.tiasoftwaresolutions.com/plans" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Website Pricing UK | TIA Software Solutions" />
+        <meta property="og:description" content="View transparent web development, digital marketing, and ad campaign pricing packages. Serving clients throughout the UK. No hidden fees. Get your quote today." />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Website Pricing UK | TIA Software Solutions" />
+        <meta name="twitter:description" content="View transparent web development, digital marketing, and ad campaign pricing packages. Serving clients throughout the UK. No hidden fees. Get your quote today." />
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-32 pb-16 overflow-hidden">
         <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]" />
         <div className="container relative z-10 text-center">
           <motion.div
@@ -124,7 +295,7 @@ const Plans = () => {
             transition={{ duration: 0.6 }}
           >
             <span className="text-sm font-semibold text-primary tracking-widest uppercase mb-4 block">
-              Pricing
+              Pricing & Plans
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6">
               Choose Your <span className="gradient-text">Plan</span>
@@ -137,56 +308,43 @@ const Plans = () => {
         </div>
       </section>
 
-      {/* Plans Grid */}
-      <section className="section-padding">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {plans.map((plan, i) => (
-              <motion.div
-                key={plan.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                className={`glass-card p-8 relative hover-lift flex flex-col ${
-                  plan.is_popular ? "glow-border border-primary/30" : ""
-                }`}
-              >
-                {plan.is_popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-4 py-1 rounded-full flex items-center gap-1">
-                    <Star size={12} /> Most Popular
-                  </div>
-                )}
+      {/* Plans Section */}
+      <section className="pb-24">
+        <div className="container space-y-16">
+          {/* Website Development Plans */}
+          <div>
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+                Website Development <span className="gradient-text">Plans</span>
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-lg mx-auto">
+                Bespoke design and engineering packages tailored for businesses of all sizes.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {displayWebsitePlans.map((plan, i) => (
+                <PlanCard key={plan.id} plan={plan} i={i} />
+              ))}
+            </div>
+          </div>
 
-                <h3 className="text-lg font-bold mb-2">{plan.name}</h3>
-                <div className="mb-6">
-                  <span className="text-3xl font-extrabold">{currencySymbol}{getPrice(plan)}</span>
-                </div>
+          <div className="h-px bg-gradient-to-r from-transparent via-border/50 to-transparent my-12" />
 
-                <ul className="space-y-3 mb-8 flex-1">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <Check size={16} className="text-primary shrink-0 mt-0.5" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  variant={plan.is_popular ? "hero" : "hero-outline"}
-                  className="w-full"
-                  asChild
-                >
-                  <a
-                    href={`${whatsappLink}?text=${encodeURIComponent(`Hi! I'm interested in the ${plan.name} plan.`)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Get Started
-                  </a>
-                </Button>
-              </motion.div>
-            ))}
+          {/* Ads Plans */}
+          <div>
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-extrabold mb-3">
+                Digital Marketing & <span className="gradient-text">Ads Plans</span>
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-lg mx-auto">
+                Drive conversions and scale your brand with expert ad campaigns and social media management.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {displayAdsPlans.map((plan, i) => (
+                <PlanCard key={plan.id} plan={plan} i={i} isAds={true} />
+              ))}
+            </div>
           </div>
         </div>
       </section>

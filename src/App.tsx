@@ -25,7 +25,7 @@ import { BlogDetail } from "./pages/BlogDetail.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ScrollToTop from "./components/ScrollToTop";
-import TiaChatbot from "./components/TiaChatbot/TiaChatbot";
+// import TiaChatbot from "./components/TiaChatbot/TiaChatbot";
 
 const queryClient = new QueryClient();
 
@@ -38,17 +38,17 @@ const App = () => (
       <TooltipProvider>
         {/* Default SEO — individual pages override via their own <Helmet> */}
         <Helmet>
-          <title>Website Development, SEO & Digital Marketing Agency | TIA Software Solutions</title>
-          <meta name="description" content="TIA Software Solutions crafts high-performance branding, digital marketing, UI/UX design, and creative content for ambitious brands. Based in London." />
-          <meta name="keywords" content="digital agency, branding, logo design, social media marketing, UI design, London" />
+          <title>Web Design & SEO Agency London | TIA Software Solutions</title>
+          <meta name="description" content="Grow your business with custom websites, SEO, software development, and digital marketing. Serving clients throughout the UK. Free consultation available." />
+          <meta name="robots" content="index, follow" />
           <link rel="canonical" href="https://www.tiasoftwaresolutions.com" />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content="Website Development, SEO & Digital Marketing Agency | TIA Software Solutions" />
-          <meta property="og:description" content="TIA Software Solutions crafts high-performance branding, digital marketing, UI/UX design, and creative content for ambitious brands. Based in London." />
+          <meta property="og:title" content="Web Design & SEO Agency London | TIA Software Solutions" />
+          <meta property="og:description" content="Grow your business with custom websites, SEO, software development, and digital marketing. Serving clients throughout the UK. Free consultation available." />
           <meta property="og:image" content={OG_IMAGE} />
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Website Development, SEO & Digital Marketing Agency | TIA Software Solutions" />
-          <meta name="twitter:description" content="TIA Software Solutions crafts high-performance branding, digital marketing, UI/UX design, and creative content for ambitious brands. Based in London." />
+          <meta name="twitter:title" content="Web Design & SEO Agency London | TIA Software Solutions" />
+          <meta name="twitter:description" content="Grow your business with custom websites, SEO, software development, and digital marketing. Serving clients throughout the UK. Free consultation available." />
           <meta name="twitter:image" content={OG_IMAGE} />
         </Helmet>
         <Toaster />
@@ -77,7 +77,7 @@ const App = () => (
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <TiaChatbot />
+          {/* <TiaChatbot /> */}
         </BrowserRouter>
       </TooltipProvider>
     </GeoProvider>

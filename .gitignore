@@ -13,8 +13,8 @@ node_modules
 .pnp.js
 
 # Build output
-# dist
-# dist-ssr
+dist
+dist-ssr
 build
 *.tsbuildinfo
 
@@ -73,3 +73,7 @@ desktop.ini
 
 # Gemini / AI tooling
 .gemini
+
+# Scratch and test utility files
+scripts/test_query.js
+src/scratch_test.ts

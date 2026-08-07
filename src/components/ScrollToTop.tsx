@@ -13,8 +13,8 @@ const ScrollToTop = () => {
       navigator.webdriver || 
       (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.includes("HeadlessChrome"));
 
-    if (!isPuppeteer && typeof (window as any).fbq === "function") {
-      (window as any).fbq('track', 'PageView');
+    if (!isPuppeteer && typeof (window as unknown as { fbq?: (event: string, action: string) => void }).fbq === "function") {
+      (window as unknown as { fbq: (event: string, action: string) => void }).fbq('track', 'PageView');
     }
   }, [pathname]);
 

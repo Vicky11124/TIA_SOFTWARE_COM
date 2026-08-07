@@ -1,4 +1,5 @@
-﻿import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
+import { Helmet } from "react-helmet-async";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
@@ -45,8 +46,42 @@ const whyChooseUs = [
 ];
 
 const About = () => {
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tiasoftwaresolutions.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": "https://www.tiasoftwaresolutions.com/about"
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>About TIA Software Solutions</title>
+        <meta name="description" content="Discover our journey and mission. Helping businesses grow with custom websites, bespoke software, and virtual assistants. Serving clients throughout the UK." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.tiasoftwaresolutions.com/about" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="About TIA Software Solutions" />
+        <meta property="og:description" content="Discover our journey and mission. Helping businesses grow with custom websites, bespoke software, and virtual assistants. Serving clients throughout the UK." />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About TIA Software Solutions" />
+        <meta name="twitter:description" content="Discover our journey and mission. Helping businesses grow with custom websites, bespoke software, and virtual assistants. Serving clients throughout the UK." />
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* Hero */}
@@ -151,6 +186,59 @@ const About = () => {
                 landscape.
               </p>
             </motion.div>
+          </div>
+
+          {/* Timeline Section */}
+          <div className="mt-24">
+            <div className="text-center mb-16">
+              <span className="text-sm font-semibold text-primary tracking-widest uppercase mb-3 block">
+                Our Journey
+              </span>
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
+                One Step <span className="gradient-text">At A Time</span>
+              </h2>
+              <div className="section-divider mx-auto" />
+            </div>
+
+            <div className="max-w-2xl mx-auto relative border-l-2 border-primary/20 space-y-12">
+              {[
+                {
+                  year: "2024",
+                  desc: "Founded TIA Software Solutions in the UK, starting with professional Virtual Assistance and high-performance Web Development services.",
+                },
+                {
+                  year: "2025",
+                  desc: "Launched specialized Digital Marketing, SEO, and social media ad campaign services to drive business growth.",
+                },
+                {
+                  year: "2026",
+                  desc: "Expanded service offerings to include custom App Development and Software Solutions, supporting businesses across regions.",
+                },
+                {
+                  year: "Today",
+                  desc: "Delivering high-performance, creative, and scalable digital solutions for brands globally, including the US, UK, and Australia.",
+                },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="relative pl-8"
+                >
+                  {/* Dot */}
+                  <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-primary border-2 border-background shadow-sm" />
+                  
+                  <span className="text-lg font-bold text-primary block mb-2">
+                    {item.year}
+                  </span>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {item.desc}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

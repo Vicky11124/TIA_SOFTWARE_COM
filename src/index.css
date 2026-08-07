@@ -126,3 +126,46 @@
     text-wrap: balance;
   }
 }
+
+/* TIA AI Mascot Sleep Zzz Animations */
+@keyframes z1 {
+  0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(-30px) scale(1) rotate(-10deg); opacity: 0; }
+}
+
+@keyframes z2 {
+  0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(-40px) scale(0.9) rotate(15deg); opacity: 0; }
+}
+
+@keyframes z3 {
+  0% { transform: translateY(0) scale(0.4) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(-50px) scale(1.1) rotate(-5deg); opacity: 0; }
+}
+
+.animate-sleep-z1 {
+  animation: z1 3s infinite ease-in-out;
+}
+.animate-sleep-z2 {
+  animation: z2 3s infinite ease-in-out 1s;
+}
+.animate-sleep-z3 {
+  animation: z3 3s infinite ease-in-out 2s;
+}
+
+/* Visor Laser Scanline Animation */
+@keyframes scanline {
+  0% { top: 0%; }
+  50% { top: 90%; }
+  100% { top: 0%; }
+}
+
+.animate-scanline {
+  animation: scanline 2s infinite ease-in-out;
+}

@@ -5,7 +5,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Check, Headphones, ClipboardList, Phone, Megaphone, ShoppingCart, BarChart3, CalendarDays, Calculator, Star, Users, Zap, Shield, Clock, Target, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Headphones, ClipboardList, Phone, Megaphone, ShoppingCart, BarChart3, CalendarDays, Calculator, Star, Users, Zap, Shield, Clock, Target, Sparkles, Monitor, Smartphone, Laptop, Cpu, LucideIcon } from "lucide-react";
 import serviceBranding from "@/assets/service-branding.webp";
 import serviceMarketing from "@/assets/service-marketing.webp";
 import serviceCreative from "@/assets/service-creative.webp";
@@ -22,6 +22,10 @@ import vaAccounting from "@/assets/va-accounting.webp";
 import aboutTeam from "@/assets/about-team.webp";
 import showcaseWork from "@/assets/showcase-work.webp";
 import banner2 from "@/assets/banner-2.webp";
+import serviceWebDev from "@/assets/banner-1.webp";
+import serviceAppDev from "@/assets/banner-3.webp";
+import serviceSoftwareDev from "@/assets/banner-4.webp";
+
 
 const vaSubServices = [
   {
@@ -101,7 +105,14 @@ const serviceData: Record<string, {
   features: string[];
   process: { step: string; desc: string }[];
   deliverables: string[];
-  detailedContent: string[];
+  detailedContent?: string[];
+  subServices?: {
+    icon: LucideIcon;
+    title: string;
+    desc: string;
+    image: string;
+    items: string[];
+  }[];
 }> = {
   "branding-essentials": {
     title: "Branding Essentials",
@@ -153,12 +164,55 @@ const serviceData: Record<string, {
       { step: "Optimize", desc: "Continuous monitoring and optimization." },
     ],
     deliverables: ["Monthly analytics reports", "Ad creatives & copy", "SEO audit document", "Content calendar", "Campaign dashboard"],
-    detailedContent: [
-      "In the modern business landscape, having a stellar product or service is only half the battle; the other half is ensuring that your target audience can actually find you. Digital marketing is the engine that drives visibility, engagement, and revenue in an increasingly online world. At TIA Software Solutions, we reject cookie-cutter marketing strategies. We recognize that every business has unique goals, distinct audiences, and specific budgets. Our digital marketing solutions are built from the ground up, utilizing data-driven methodologies and real-time testing to ensure your advertising campaigns achieve maximum efficiency and return on investment.",
-      "Our comprehensive digital marketing approach spans multiple channels, including social media advertising, search engine optimization (SEO), and search engine marketing (SEM). We create highly targeted paid campaigns on platforms like Facebook, Instagram, LinkedIn, and Google Ads, laser-focusing on demographics, behaviors, and search intent that align with your ideal customer profile. By constantly A/B testing ad creatives, copy, and audience segments, we minimize ad waste and drive high-quality leads directly to your landing pages. This active campaign management ensures that your marketing budget is working as hard as possible for you.",
-      "Beyond paid advertising, we emphasize the power of organic growth through technical SEO and content strategy. High search engine rankings are a vital source of sustainable, long-term traffic that doesn't cost you per click. We optimize your website’s speed, mobile responsiveness, meta tags, and internal linking structure to make it highly attractive to search engines. Simultaneously, we construct a content strategy that establishes your business as an industry authority, creating informative blogs, social media calendars, and newsletters that educate your audience and address their pain points.",
-      "At TIA Software Solutions, we believe that transparency is paramount in digital marketing. We don't hide behind confusing jargon or vanity metrics. Every month, we deliver detailed analytics reports that clearly outline your campaign's performance, including key indicators like click-through rates, acquisition costs, conversion numbers, and overall return on ad spend (ROAS). This continuous monitoring allows us to pivot quickly and optimize live campaigns based on actual market data. Partner with us to scale your digital presence, build a robust customer acquisition pipeline, and achieve measurable, sustained business growth.",
-      "Furthermore, our digital marketing team remains at the absolute forefront of industry trends, algorithm updates, and emerging technologies. As consumer habits shift and advertising platforms evolve, we proactively adjust your marketing funnel to capture new opportunities before your competitors do. By choosing TIA Software Solutions, you gain a dedicated growth partner committed to translating clicks into customers and impressions into revenue, allowing you to focus on the operational excellence of your business."
+    subServices: [
+      {
+        icon: BarChart3,
+        title: "Search Engine Optimization (SEO)",
+        desc: "Boost your organic visibility and rank higher on Google to capture high-intent search traffic.",
+        image: serviceMarketing,
+        items: [
+          "On-page optimization & meta tags structuring",
+          "Technical SEO auditing & speed optimization",
+          "Keyword research & competitor analysis",
+          "Local SEO & Google Business Profile tuning"
+        ]
+      },
+      {
+        icon: Megaphone,
+        title: "Paid Advertising & PPC Campaigns",
+        desc: "Targeted advertising campaigns that deliver immediate leads, traffic, and high conversion rates.",
+        image: banner2,
+        items: [
+          "Meta Ads (Facebook & Instagram) strategy",
+          "Google Search & Display Ads management",
+          "A/B testing of ad copy & creative variants",
+          "Retargeting funnels to capture warm leads"
+        ]
+      },
+      {
+        icon: ClipboardList,
+        title: "Content Strategy & Copywriting",
+        desc: "Compelling messaging that engages, educates, and converts your audience across channels.",
+        image: showcaseWork,
+        items: [
+          "Social media content calendars & scheduling",
+          "Engaging blog writing & newsletter campaigns",
+          "High-converting landing page copywriting",
+          "Brand voice definition & guidelines"
+        ]
+      },
+      {
+        icon: Zap,
+        title: "Analytics & Performance Tracking",
+        desc: "Data-driven tracking and transparent reports so you always know your exact return on investment.",
+        image: aboutTeam,
+        items: [
+          "Google Analytics 4 (GA4) configuration",
+          "Conversion tracking & Meta Pixel installation",
+          "Monthly performance dashboard reports",
+          "ROAS (Return on Ad Spend) optimization"
+        ]
+      }
     ]
   },
   "creative-design": {
@@ -335,6 +389,195 @@ const serviceData: Record<string, {
       "Additionally, a polished launch presentation is critical when speaking to investors, media, or prospective clients. We design bespoke slide decks and digital brochures that present your value proposition clearly and powerfully. By integrating premium typography, custom icons, and high-impact data visualization, we ensure your message is memorable. Partnering with TIA Software Solutions guarantees that your business makes a world-class statement during its most critical moments, positioning your brand as a market leader from day one."
     ]
   },
+  "website-development": {
+    title: "Website Development",
+    subtitle: "High-performance websites that convert",
+    image: serviceWebDev,
+    description: "We design and develop fast, secure, and SEO-optimized websites tailored to your business needs, helping you turn visitors into loyal customers.",
+    features: [
+      "Custom responsive design for desktop, tablet, and mobile",
+      "Search Engine Optimization (SEO) foundation & fast page loads",
+      "Interactive features, booking calendars, and contact forms",
+      "Secure hosting, custom domain setup, and SSL integration",
+      "Admin panel to easily manage and update your content",
+      "Ongoing maintenance and technical support"
+    ],
+    process: [
+      { step: "Planning & Strategy", desc: "We map out your site architecture, pages, and key objectives." },
+      { step: "UI/UX Design", desc: "We design pixel-perfect layouts matching your brand identity." },
+      { step: "Development & Testing", desc: "We build and rigorously test your site for speed and compatibility." },
+      { step: "Launch & Support", desc: "We deploy your website and provide ongoing maintenance." }
+    ],
+    deliverables: ["Full responsive source code", "Figma design files", "Content management admin panel", "Technical documentation", "SEO and speed optimization reports"],
+    subServices: [
+      {
+        icon: Monitor,
+        title: "Front-End & Creative Web Design",
+        desc: "Interactive and visual experiences that capture attention and represent your brand.",
+        image: serviceWebDev,
+        items: [
+          "Custom React and Tailwind CSS development",
+          "Fully responsive mobile-first layouts",
+          "Scroll animations and interactive components",
+          "Optimized asset and image loading"
+        ]
+      },
+      {
+        icon: ShoppingCart,
+        title: "E-Commerce & Shop Solutions",
+        desc: "Fully-featured online storefronts designed to streamline shopping and maximize transactions.",
+        image: banner2,
+        items: [
+          "Secure shopping carts and checkout funnels",
+          "Stripe, PayPal, and local payment integration",
+          "Inventory and product catalog management",
+          "Order tracking and email automation"
+        ]
+      },
+      {
+        icon: ClipboardList,
+        title: "Content Management & Blogs",
+        desc: "Powerful administration tools to easily update text, news, and services without code.",
+        image: showcaseWork,
+        items: [
+          "Headless CMS integration (Sanity, Strapi, Decap)",
+          "Rich text editor and media library",
+          "SEO meta tag controls and sitemap auto-generation",
+          "Multi-user role and permission levels"
+        ]
+      },
+      {
+        icon: Zap,
+        title: "Performance & SEO Hardening",
+        desc: "Speed optimization and search visibility enhancements to drive organic growth.",
+        image: aboutTeam,
+        items: [
+          "Next-gen WebP image delivery and CDN caching",
+          "Clean semantic HTML5 structure for accessibility",
+          "Google Schema markup and Structured Data injection",
+          "Web Vitals score optimization (Lighthouse 90+)"
+        ]
+      }
+    ]
+  },
+  "app-development": {
+    title: "App Development",
+    subtitle: "Custom mobile & web applications",
+    image: serviceAppDev,
+    description: "We build custom mobile apps (iOS & Android) and web applications with rich user interfaces, secure databases, and smooth integrations.",
+    features: [
+      "Native iOS & Android mobile applications (hybrid or native)",
+      "Custom web applications and user dashboard portals",
+      "Secure user authentication and database integrations",
+      "Real-time push notifications and updates",
+      "Smooth API integrations (payment processors, CRMs, etc.)",
+      "App store submission and compliance support"
+    ],
+    process: [
+      { step: "Requirements Analysis", desc: "Define target platforms, databases, APIs, and project scope." },
+      { step: "Wireframing & Prototyping", desc: "Create interactive user journeys and mockups." },
+      { step: "App Development", desc: "Build backend servers and native frontend apps." },
+      { step: "App Store Launch", desc: "Submit your apps and assist with publication approval." }
+    ],
+    deliverables: ["iOS/Android app packages", "Backend API and database schemas", "Admin dashboard source code", "Interactive Figma prototypes", "Developer handoff documentation"],
+    subServices: [
+      {
+        icon: Smartphone,
+        title: "iOS & Android Mobile Apps",
+        desc: "Native-quality mobile applications published on the Apple App Store and Google Play.",
+        image: serviceAppDev,
+        items: [
+          "React Native and Flutter cross-platform coding",
+          "Local database storage and offline capabilities",
+          "Push notification delivery configurations",
+          "Biometric login (FaceID / Fingerprint) integration"
+        ]
+      },
+      {
+        icon: Laptop,
+        title: "Custom Web Applications",
+        desc: "Interactive dashboard portals and SaaS products operating in modern web browsers.",
+        image: banner2,
+        items: [
+          "Interactive charts, analytics, and data grids",
+          "Dynamic state management and real-time updates",
+          "Secure client portals and client workspaces",
+          "Export options (PDF, Excel, CSV formats)"
+        ]
+      },
+      {
+        icon: Cpu,
+        title: "Database & API Backend",
+        desc: "Robust, high-concurrency servers to handle application business logic and data storage.",
+        image: vaAccounting,
+        items: [
+          "Secure RESTful and GraphQL API servers",
+          "PostgreSQL, MongoDB, or Firebase databases",
+          "JWT-based session authentication",
+          "Automated server backups and SSL encryption"
+        ]
+      }
+    ]
+  },
+  "software-development": {
+    title: "Software Development",
+    subtitle: "Bespoke enterprise software & integrations",
+    image: serviceSoftwareDev,
+    description: "Tailored enterprise software, custom dashboards, API integrations, and database automation to optimize your business workflows.",
+    features: [
+      "Custom enterprise software and database architectures",
+      "Automated business workflows, CRMs, and ERP integrations",
+      "Secure RESTful API development and webhook connections",
+      "Legacy system upgrades and migration services",
+      "Cloud architecture setup, hosting, and backup automation",
+      "Dedicated long-term support and system maintenance"
+    ],
+    process: [
+      { step: "Discovery & Blueprinting", desc: "Understand your workflow bottlenecks and design the system blueprint." },
+      { step: "System Architecture", desc: "Model databases, server scaling, security, and integration points." },
+      { step: "Agile Development", desc: "Develop the software iteratively with frequent testing updates." },
+      { step: "Deployment & Training", desc: "Launch the system in your cloud environment and train your team." }
+    ],
+    deliverables: ["Bespoke enterprise software source code", "RESTful API and webhook documentation", "Cloud infrastructure setup scripts", "Database structure diagrams", "User training manuals"],
+    subServices: [
+      {
+        icon: Cpu,
+        title: "Enterprise Workflow Automation",
+        desc: "Custom software that eliminates repetitive manual tasks and synchronizes your databases.",
+        image: serviceSoftwareDev,
+        items: [
+          "Automated spreadsheet parsing and sync pipelines",
+          "Third-party webhook routing and processing",
+          "CRM and ERP platform data syncing",
+          "Automated invoice and PDF report generators"
+        ]
+      },
+      {
+        icon: Users,
+        title: "Custom CRM & Client Management",
+        desc: "Manage your client relationships, interactions, and operations in a private dedicated software tool.",
+        image: showcaseWork,
+        items: [
+          "Pipeline progress and sales funnel trackers",
+          "Lead history profiles and interaction logging",
+          "Internal task assignments and reminder systems",
+          "Role-based page access controls"
+        ]
+      },
+      {
+        icon: Shield,
+        title: "Cloud Infrastructure & Security",
+        desc: "Scalable hosting architectures designed for high reliability, security, and performance.",
+        image: banner2,
+        items: [
+          "AWS, Google Cloud, and DigitalOcean hosting setup",
+          "Docker containerization and deployment configuration",
+          "DDoS protection and robust firewalls",
+          "24/7 server monitoring and health alerts"
+        ]
+      }
+    ]
+  }
 };
 
 const VirtualAssistancePage = () => {
@@ -342,31 +585,60 @@ const VirtualAssistancePage = () => {
     "@context": "https://schema.org",
     "@type": "Service",
     "name": "Virtual Assistance Services",
-    "description": "Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity.",
+    "description": "Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity. Serving clients throughout the UK.",
     "provider": {
       "@type": "Organization",
       "name": "TIA Software Solutions",
       "url": "https://www.tiasoftwaresolutions.com"
     },
     "serviceType": "Virtual Assistance",
-    "areaServed": "Worldwide"
+    "areaServed": "GB"
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tiasoftwaresolutions.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Services",
+        "item": "https://www.tiasoftwaresolutions.com/services"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Virtual Assistance Services",
+        "item": "https://www.tiasoftwaresolutions.com/services/virtual-assistance"
+      }
+    ]
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Virtual Assistance Services | TIA Software Solutions</title>
-        <meta name="description" content="Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity. Hire trained virtual assistants." />
+        <title>Virtual Assistance Services UK | TIA Software Solutions</title>
+        <meta name="description" content="Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity. Serving clients throughout the UK." />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.tiasoftwaresolutions.com/services/virtual-assistance" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Virtual Assistance Services | TIA Software Solutions" />
-        <meta property="og:description" content="Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity." />
+        <meta property="og:title" content="Virtual Assistance Services UK | TIA Software Solutions" />
+        <meta property="og:description" content="Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity. Serving clients throughout the UK." />
         <meta property="og:url" content="https://www.tiasoftwaresolutions.com/services/virtual-assistance" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Virtual Assistance Services | TIA Software Solutions" />
-        <meta name="twitter:description" content="Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity." />
+        <meta name="twitter:title" content="Virtual Assistance Services UK | TIA Software Solutions" />
+        <meta name="twitter:description" content="Professional Virtual Assistance Services designed to help businesses streamline operations, reduce workload, and improve productivity. Serving clients throughout the UK." />
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
         </script>
       </Helmet>
       <Navbar />
@@ -566,7 +838,7 @@ const VirtualAssistancePage = () => {
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 {whoCanBenefit.map((item) => (
-                  <div key={item} className="glass-card p-4 flex items-center gap-3">
+                  <div key={item} className="bg-card border border-border/40 p-4 flex items-center gap-3 select-none">
                     <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
                     <span className="text-sm font-medium">{item}</span>
                   </div>
@@ -614,39 +886,89 @@ const VirtualAssistancePage = () => {
 const GenericServiceDetail = ({ service }: { service: typeof serviceData[string] }) => {
   const { slug } = useParams<{ slug: string }>();
   const serviceUrl = `https://www.tiasoftwaresolutions.com/services/${slug}`;
-  const serviceTitle = `${service.title} | TIA Software Solutions`;
+
+  const getUKTitle = (currentSlug: string | undefined, originalTitle: string) => {
+    switch (currentSlug) {
+      case "website-development":
+        return "Web Development Services UK | TIA Software Solutions";
+      case "app-development":
+        return "App Development Company UK | TIA Software Solutions";
+      case "software-development":
+        return "Software Development Services UK | TIA Software Solutions";
+      case "digital-marketing":
+        return "Digital Marketing & SEO Services UK | TIA Software Solutions";
+      case "ui-ux-design":
+        return "UI/UX Design Agency UK | TIA Software Solutions";
+      case "branding-essentials":
+        return "Branding & Logo Design UK | TIA Software Solutions";
+      default:
+        return `${originalTitle} | TIA Software Solutions`;
+    }
+  };
+
+  const serviceTitle = getUKTitle(slug, service.title);
+  const seoDescription = `${service.description} Serving clients throughout the UK.`;
 
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
     "name": service.title,
-    "description": service.description,
+    "description": seoDescription,
     "provider": {
       "@type": "Organization",
       "name": "TIA Software Solutions",
       "url": "https://www.tiasoftwaresolutions.com"
     },
     "serviceType": service.title,
-    "areaServed": "Worldwide"
+    "areaServed": "GB"
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tiasoftwaresolutions.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Services",
+        "item": "https://www.tiasoftwaresolutions.com/services"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": service.title,
+        "item": serviceUrl
+      }
+    ]
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
         <title>{serviceTitle}</title>
-        <meta name="description" content={service.description} />
+        <meta name="description" content={seoDescription} />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href={serviceUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:title" content={serviceTitle} />
-        <meta property="og:description" content={service.description} />
+        <meta property="og:description" content={seoDescription} />
         <meta property="og:image" content={service.image} />
         <meta property="og:url" content={serviceUrl} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={serviceTitle} />
-        <meta name="twitter:description" content={service.description} />
+        <meta name="twitter:description" content={seoDescription} />
         <meta name="twitter:image" content={service.image} />
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
         </script>
       </Helmet>
       <Navbar />
@@ -701,7 +1023,72 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
       </section>
 
       {/* Sub-services / In-Depth alternate cards */}
-      {service.detailedContent && (
+      {service.subServices && (
+        <section className="section-padding">
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className="text-sm font-medium text-primary tracking-widest uppercase mb-3 block">
+                What We Offer
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Our Custom <span className="gradient-text">{service.title} Solutions</span>
+              </h2>
+            </motion.div>
+
+            <div className="space-y-16">
+              {service.subServices.map((sub, i) => (
+                <motion.div
+                  key={sub.title}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05, duration: 0.6 }}
+                  className="glass-card overflow-hidden"
+                >
+                  <div className={`grid lg:grid-cols-2 ${i % 2 === 1 ? "lg:[direction:rtl]" : ""}`}>
+                    <div className="relative h-64 lg:h-auto overflow-hidden">
+                      <img
+                        src={sub.image}
+                        alt={sub.title}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="lazy"
+                        width={1200}
+                        height={800}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-background/30 to-transparent" />
+                    </div>
+                    <div className={`p-8 lg:p-12 ${i % 2 === 1 ? "lg:[direction:ltr]" : ""}`}>
+                      <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center mb-5">
+                        <sub.icon size={28} className="text-primary" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2">{sub.title}</h3>
+                      <p className="text-muted-foreground mb-6">{sub.desc}</p>
+                      <ul className="space-y-3">
+                        {sub.items.map((item) => (
+                          <li key={item} className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                              <Check size={14} className="text-primary" />
+                            </div>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Fallback to detailedContent paragraphs if subServices doesn't exist */}
+      {!service.subServices && service.detailedContent && (
         <section className="section-padding">
           <div className="container">
             <motion.div
@@ -789,7 +1176,7 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
-                className="glass-card p-6 flex items-start gap-4"
+                className="bg-card border border-border/40 p-6 rounded-2xl flex items-start gap-4 select-none"
               >
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                   <Check size={16} className="text-primary" />
@@ -923,7 +1310,7 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 {whoCanBenefit.map((item) => (
-                  <div key={item} className="glass-card p-4 flex items-center gap-3">
+                  <div key={item} className="bg-card border border-border/40 p-4 flex items-center gap-3 select-none">
                     <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
                     <span className="text-sm font-medium">{item}</span>
                   </div>
