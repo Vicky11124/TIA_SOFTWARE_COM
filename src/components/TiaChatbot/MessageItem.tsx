@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Copy, Check, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import tiaBotIcon from "@/assets/tia-bot.webp";
+const tiaBotIcon = "/assets/tia-bot.webp";
 
 export interface Message {
   role: "user" | "model" | "system";

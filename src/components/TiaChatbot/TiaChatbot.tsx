@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ChatWindow from "./ChatWindow";
-import tiaBotIcon from "@/assets/tia-bot.webp";
+const tiaBotIcon = "/assets/tia-bot.webp";
 
 type Emotion =
   | "happy"       // opens chatbot, clicks head, success
@@ -43,6 +43,7 @@ const TiaChatbot = () => {
   const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
   const lastScrollY = useRef(window.scrollY);
   const lastScrollTime = useRef(Date.now());
+  const mascotCenter = useRef<{ x: number; y: number } | null>(null);
 
   // Exclude admin pages from rendering the chatbot
   const isAdminPage = location.pathname.startsWith("/admin");
@@ -179,15 +180,30 @@ const TiaChatbot = () => {
 
   // 4. Mouse Proximity tracking (eyes follow and head tilts)
   useEffect(() => {
+    // Reset cached center when state changes (e.g. mascot toggled or drag ended)
+    mascotCenter.current = null;
+
+    const handleResize = () => {
+      mascotCenter.current = null;
+    };
+    window.addEventListener("resize", handleResize);
+
     const handleMouseMove = (e: MouseEvent) => {
       if (isOpen || isDragging || emotion === "welcome" || emotion === "sleepy" || emotion === "goodbye" || emotion === "celebrating" || emotion === "thinking" || emotion === "speaking") {
         return;
       }
 
-      if (!mascotRef.current) return;
-      const rect = mascotRef.current.getBoundingClientRect();
-      const mascotCenterX = rect.left + rect.width / 2;
-      const mascotCenterY = rect.top + rect.height / 2;
+      if (!mascotCenter.current) {
+        if (!mascotRef.current) return;
+        const rect = mascotRef.current.getBoundingClientRect();
+        mascotCenter.current = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2
+        };
+      }
+
+      const mascotCenterX = mascotCenter.current.x;
+      const mascotCenterY = mascotCenter.current.y;
 
       const dx = e.clientX - mascotCenterX;
       const dy = e.clientY - mascotCenterY;
@@ -213,7 +229,10 @@ const TiaChatbot = () => {
     };
 
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
   }, [isOpen, isDragging, emotion]);
 
   // 5. Page context awareness (focused reading on Services pages)

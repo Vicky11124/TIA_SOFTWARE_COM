@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getActiveProvider, LeadState, COUNTRY_CONFIG, extractCountryFromText } from "@/services/aiProvider";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import tiaBotIcon from "@/assets/tia-bot.webp";
+const tiaBotIcon = "/assets/tia-bot.webp";
 import {
   Globe,
   Smartphone,

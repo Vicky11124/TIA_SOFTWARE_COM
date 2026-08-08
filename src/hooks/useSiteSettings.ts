@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 const defaults: Record<string, string> = {
   whatsapp_number: "447451255217",
@@ -18,19 +17,21 @@ let cachedSettings: Record<string, string> | null = null;
 function fetchSettings(): Promise<Record<string, string>> {
   if (cachedSettings) return Promise.resolve(cachedSettings);
   if (!cachedSettingsPromise) {
-    cachedSettingsPromise = supabase
-      .from("site_settings")
-      .select("*")
-      .then(({ data }) => {
-        const map = { ...defaults };
-        if (data && data.length > 0) {
-          data.forEach((d) => {
-            if (d.value) map[d.key] = d.value;
-          });
-        }
-        cachedSettings = map;
-        return map;
-      });
+    cachedSettingsPromise = import("@/integrations/supabase/client").then(({ supabase }) =>
+      supabase
+        .from("site_settings")
+        .select("*")
+        .then(({ data }) => {
+          const map = { ...defaults };
+          if (data && data.length > 0) {
+            data.forEach((d) => {
+              if (d.value) map[d.key] = d.value;
+            });
+          }
+          cachedSettings = map;
+          return map;
+        })
+    );
   }
   return cachedSettingsPromise;
 }

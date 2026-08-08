@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import banner1 from "@/assets/banner-1.webp";
 import banner2 from "@/assets/banner-2.webp";
@@ -64,26 +63,28 @@ const HeroCarousel = () => {
   const { whatsappLink } = useSiteSettings();
 
   useEffect(() => {
-    supabase
-      .from("banners")
-      .select("*")
-      .eq("is_active", true)
-      .order("sort_order")
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          setSlides(
-            data.map((b) => ({
-              image: b.image_url || banner1,
-              subtitle: b.subtitle,
-              title: b.title,
-              highlight: b.highlight,
-              desc: b.description,
-              cta_text: b.cta_text || "Book Now",
-              cta_link: b.cta_link || "",
-            }))
-          );
-        }
-      });
+    import("@/integrations/supabase/client").then(({ supabase }) => {
+      supabase
+        .from("banners")
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order")
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            setSlides(
+              data.map((b) => ({
+                image: b.image_url || banner1,
+                subtitle: b.subtitle,
+                title: b.title,
+                highlight: b.highlight,
+                desc: b.description,
+                cta_text: b.cta_text || "Book Now",
+                cta_link: b.cta_link || "",
+              }))
+            );
+          }
+        });
+    });
   }, []);
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
