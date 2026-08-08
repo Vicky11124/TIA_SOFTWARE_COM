@@ -134,35 +134,48 @@ const HeroCarousel = () => {
 
       {/* Content */}
       <div className="container relative z-10 pt-20">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={current}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            className="max-w-3xl"
-          >
+        <div className="max-w-3xl">
+          <AnimatePresence mode="popLayout">
             <motion.span
+              key={`subtitle-${current}`}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.4 }}
               className="inline-block text-sm font-semibold text-primary mb-6 tracking-widest uppercase"
             >
               {slide.subtitle}
             </motion.span>
+          </AnimatePresence>
 
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-foreground">
-              {slide.title}
-              <br />
-              <span className="gradient-text">{slide.highlight}</span>
-            </h2>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-foreground">
+            {slide.title}
+            <br />
+            <span className="gradient-text">{slide.highlight}</span>
+          </h2>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed">
+          <AnimatePresence mode="popLayout">
+            <motion.p
+              key={`desc-${current}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5 }}
+              className="text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed"
+            >
               {slide.desc}
-            </p>
+            </motion.p>
+          </AnimatePresence>
 
-            <div className="flex flex-wrap gap-4">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              key={`actions-${current}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-wrap gap-4"
+            >
               <Button variant="hero" size="lg" className="px-8 py-6 text-base shadow-lg" asChild>
                 <a href={slide.cta_link || whatsappLink} target="_blank" rel="noopener noreferrer">
                   {slide.cta_text} <ArrowRight className="ml-2" size={18} />
@@ -173,9 +186,9 @@ const HeroCarousel = () => {
                   WhatsApp Us
                 </a>
               </Button>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
         {/* Slide indicators */}
         <div className="flex items-center gap-3 mt-16">

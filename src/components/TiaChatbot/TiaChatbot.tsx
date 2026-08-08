@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import ChatWindow from "./ChatWindow";
+const ChatWindow = lazy(() => import("./ChatWindow"));
 const tiaBotIcon = "/assets/tia-bot.webp";
 
 type Emotion =
@@ -761,7 +761,9 @@ const TiaChatbot = () => {
             style={{ transformOrigin: "top right" }}
             className="z-50"
           >
-            <ChatWindow onClose={() => setIsOpen(false)} />
+            <Suspense fallback={null}>
+              <ChatWindow onClose={() => setIsOpen(false)} />
+            </Suspense>
           </motion.div>
         )}
       </AnimatePresence>

@@ -19,7 +19,7 @@
       <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     </noscript>
 
-    <!-- Meta Pixel Code (Deferred initialization) -->
+    <!-- Meta Pixel Code (Deferred script load until user interaction) -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -29,15 +29,33 @@
     n.loaded=!0;
     n.version='2.0';
     n.queue=[];
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        t=b.createElement(e);
-        t.async=!0;
-        t.src=v;
-        s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s);
-      }, 2000);
-    });
+    
+    var scriptLoaded = false;
+    function loadScript() {
+      if (scriptLoaded) return;
+      scriptLoaded = true;
+      
+      // Remove event listeners
+      window.removeEventListener('mousemove', loadScript);
+      window.removeEventListener('scroll', loadScript);
+      window.removeEventListener('keydown', loadScript);
+      window.removeEventListener('touchstart', loadScript);
+      
+      t=b.createElement(e);
+      t.async=!0;
+      t.src=v;
+      s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s);
+    }
+    
+    // Listen for first interaction to load the external script
+    window.addEventListener('mousemove', loadScript);
+    window.addEventListener('scroll', loadScript);
+    window.addEventListener('keydown', loadScript);
+    window.addEventListener('touchstart', loadScript);
+    
+    // Fallback: If no interaction, load after 8 seconds
+    setTimeout(loadScript, 8000);
     }(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
 
