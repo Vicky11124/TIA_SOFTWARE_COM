@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ChatWindow from "./ChatWindow";
-import tiaBotIcon from "@/assets/tia-bot.png";
+import tiaBotIcon from "@/assets/tia-bot.webp";
 
 type Emotion =
   | "happy"       // opens chatbot, clicks head, success
@@ -549,15 +549,15 @@ const TiaChatbot = () => {
     return null;
   }
 
-  const showMascot = true;
+  const showMascot = !isOpen;
 
   return (
     <>
-      {/* Mascot Wrapper (Increased padding and raised bottom to bottom-10) */}
+      {/* Mascot Wrapper (Positioned at bottom-right above the WhatsApp button) */}
       {showMascot && (
         <div 
           ref={mascotRef}
-          className="fixed top-20 right-6 sm:top-20 sm:right-8 z-50 flex flex-col items-center pointer-events-none select-none p-3 overflow-visible"
+          className="fixed bottom-24 right-3 sm:bottom-28 sm:right-5 z-30 flex flex-col items-center pointer-events-none select-none p-3 overflow-visible"
         >
         {/* Dialogue Bubble */}
         <AnimatePresence>
@@ -675,7 +675,7 @@ const TiaChatbot = () => {
             )}
 
             {/* Robot Image Base */}
-            <img src={tiaBotIcon} alt="TIA Mascot" className="w-full h-full object-cover select-none bg-transparent" />
+            <img src={tiaBotIcon} alt="TIA Mascot" className="w-full h-full object-cover select-none bg-transparent" width={64} height={64} />
 
             {/* Dynamic Visor Overlay Screen */}
             <div className="absolute top-[28%] left-[17%] w-[66%] h-[34%] rounded-[30%] bg-[#08070d] flex flex-col items-center justify-between p-[9%_12%] overflow-hidden z-10 pointer-events-none border border-black/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]">

@@ -68,8 +68,8 @@ const fallbackAdsPlans: Plan[] = [
   {
     id: "ads-1",
     name: "Professional Ads",
-    price: "199",
-    price_usd: "249",
+    price: "149",
+    price_usd: "199",
     features: [
       "Google Ads & Meta Ads Setup",
       "Campaign Strategy & Planning",
@@ -90,8 +90,8 @@ const fallbackAdsPlans: Plan[] = [
   {
     id: "ads-2",
     name: "Premium Ads",
-    price: "299",
-    price_usd: "379",
+    price: "249",
+    price_usd: "329",
     features: [
       "Everything in Professional Ads",
       "Google Ads & Meta Ads Setup",
@@ -209,14 +209,14 @@ const planPricing: Record<string, {
     AU: { price: "729", original: "1,159" }
   },
   "professional ads": {
-    UK: { price: "199", original: "299" },
-    US: { price: "249", original: "399" },
-    AU: { price: "359", original: "569" }
+    UK: { price: "149", original: "249" },
+    US: { price: "199", original: "299" },
+    AU: { price: "289", original: "449" }
   },
   "premium ads": {
-    UK: { price: "299", original: "449" },
-    US: { price: "379", original: "599" },
-    AU: { price: "539", original: "799" }
+    UK: { price: "249", original: "399" },
+    US: { price: "329", original: "499" },
+    AU: { price: "479", original: "699" }
   }
 };
 

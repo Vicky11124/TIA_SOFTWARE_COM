@@ -12,7 +12,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand */}
           <div>
-            <img src={logo} alt="TIA Software Solutions" className="h-10 mb-2 mix-blend-multiply dark:mix-blend-normal" />
+            <img src={logo} alt="TIA Software Solutions" className="w-auto h-10 mb-2 mix-blend-multiply dark:mix-blend-normal" width={400} height={210} />
             <p className="text-muted-foreground text-sm leading-relaxed">
               We help brands grow smarter, faster, and stronger in the digital world.
             </p>

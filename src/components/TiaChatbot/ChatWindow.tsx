@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getActiveProvider, LeadState, COUNTRY_CONFIG, extractCountryFromText } from "@/services/aiProvider";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import tiaBotIcon from "@/assets/tia-bot.png";
+import tiaBotIcon from "@/assets/tia-bot.webp";
 import {
   Globe,
   Smartphone,
@@ -937,7 +937,7 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
         <div className="flex items-center gap-2.5">
           <div className="relative">
             <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-white/20 overflow-hidden">
-              <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" />
+              <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" width={32} height={32} />
             </div>
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-primary animate-pulse" />
           </div>
@@ -1201,67 +1201,19 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
 
                   {/* Actions Choice Panel */}
                   <div className="space-y-2 pt-2">
-                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider select-none">What would you like to do next?</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <button
-                        onClick={() => setShowBookForm(true)}
-                        className="flex items-center gap-3 bg-card hover:bg-primary/5 border border-border hover:border-primary/20 rounded-xl p-3 text-left transition-all"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                          <Calendar size={15} />
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-bold text-foreground">Book Consultation</h4>
-                          <p className="text-[9px] text-muted-foreground">Schedule a direct call with our lead architect.</p>
-                        </div>
-                      </button>
-
-                      <button
-                        onClick={() => setShowProposalForm(true)}
-                        className="flex items-center gap-3 bg-card hover:bg-primary/5 border border-border hover:border-primary/20 rounded-xl p-3 text-left transition-all"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center shrink-0">
-                          <Mail size={15} />
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-bold text-foreground">Request Proposal</h4>
-                          <p className="text-[9px] text-muted-foreground">Submit specs to receive an official PDF contract.</p>
-                        </div>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setPhase("chat");
-                          window.dispatchEvent(new CustomEvent("tia-chatbot-onboarding-complete"));
-                          // Seed an introductory chatbot greeting
-                          setChatMessages([
-                            { role: "model", content: `I have loaded your configuration details for the **${recommendation.packageName}** (${recommendation.price}).\n\nWhat questions can I answer for you regarding details, technology stack, security, or integrations?` }
-                          ]);
-                        }}
-                        className="flex items-center gap-3 bg-card hover:bg-primary/5 border border-border hover:border-primary/20 rounded-xl p-3 text-left transition-all"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                          <MessageSquare size={15} />
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-bold text-foreground">Chat with TIA Consultant</h4>
-                          <p className="text-[9px] text-muted-foreground">Ask follow-up questions to our digital AI agent.</p>
-                        </div>
-                      </button>
-
-                      <button
-                        onClick={handleWhatsAppRedirect}
-                        className="flex items-center gap-3 bg-card hover:bg-primary/5 border border-border hover:border-primary/20 rounded-xl p-3 text-left transition-all"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center shrink-0">
-                          <Phone size={15} />
-                        </div>
-                        <div>
-                          <h4 className="text-xs font-bold text-foreground">WhatsApp Us</h4>
-                          <p className="text-[9px] text-muted-foreground">Instantly message your project configuration details.</p>
-                        </div>
-                      </button>
-                    </div>
+                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider select-none">For more info contact us</h4>
+                    <button
+                      onClick={handleWhatsAppRedirect}
+                      className="flex items-center gap-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/40 rounded-xl p-3.5 text-left transition-all w-full group"
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <Phone size={18} />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold text-foreground group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">WhatsApp Us</h4>
+                        <p className="text-[9px] text-muted-foreground font-medium">Instantly message your project configuration details to our team.</p>
+                      </div>
+                    </button>
                   </div>
                 </div>
               ) : showProposalForm ? (
@@ -1586,7 +1538,7 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
                   >
                     {msg.role !== "user" && (
                       <div className="w-7 h-7 rounded-full bg-white border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden select-none">
-                        <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" />
+                        <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" width={28} height={28} />
                       </div>
                     )}
                     <div className={`rounded-xl px-3 py-2 text-xs leading-relaxed shadow-sm whitespace-pre-line ${
@@ -1609,7 +1561,7 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
                 {isChatTyping && chatMessages[chatMessages.length - 1]?.content !== "" && (
                   <div className="flex gap-2.5 max-w-[85%] self-start animate-pulse">
                     <div className="w-7 h-7 rounded-full bg-white border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
-                      <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" />
+                      <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" width={28} height={28} />
                     </div>
                     <div className="rounded-xl px-3.5 py-2.5 bg-card border border-border text-foreground rounded-tl-none shadow-sm flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce delay-75" />

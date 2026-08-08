@@ -78,3 +78,6 @@ desktop.ini
 # Scratch and test utility files
 scripts/test_query.js
 src/scratch_test.ts
+
+# Lighthouse reports
+lighthouse-report*.html

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Copy, Check, Bot, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import tiaBotIcon from "@/assets/tia-bot.png";
+import tiaBotIcon from "@/assets/tia-bot.webp";
 
 export interface Message {
   role: "user" | "model" | "system";
@@ -194,7 +194,7 @@ const MessageItem = ({ message }: MessageItemProps) => {
         )}
       >
         {isBot ? (
-          <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" />
+          <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" width={32} height={32} />
         ) : (
           <User size={16} />
         )}

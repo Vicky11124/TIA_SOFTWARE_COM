@@ -74,7 +74,7 @@ const Navbar = () => {
     >
       <div className="container flex items-center justify-between h-[88px]">
         <Link to="/" className="flex items-center">
-          <img src={logo} alt="TIA Software Solutions" className="h-20 md:h-24 mix-blend-multiply dark:mix-blend-normal" />
+          <img src={logo} alt="TIA Software Solutions" className="w-auto h-20 md:h-24 mix-blend-multiply dark:mix-blend-normal" width={400} height={210} />
         </Link>
 
         {/* Geo selector */}
