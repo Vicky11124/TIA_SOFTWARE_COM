@@ -109,7 +109,7 @@ const HeroCarousel = () => {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* Background images with crossfade - higher opacity for visibility */}
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence mode="popLayout" initial={false}>
         <motion.img
           key={current}
           src={slide.image}
@@ -129,8 +129,14 @@ const HeroCarousel = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent" />
 
       {/* Decorative elements */}
-      <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px]" />
-      <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] rounded-full bg-accent/30 blur-[100px]" />
+      <div 
+        className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none" 
+        style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.05) 0%, transparent 70%)" }}
+      />
+      <div 
+        className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] rounded-full pointer-events-none" 
+        style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.3) 0%, transparent 70%)" }}
+      />
 
       {/* Content */}
       <div className="container relative z-10 pt-20">
