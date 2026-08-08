@@ -1,7 +1,0 @@
-# Last Updated: 2026-08-08
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /admin/
-
-Sitemap: https://www.tiasoftwaresolutions.com/sitemap.xml

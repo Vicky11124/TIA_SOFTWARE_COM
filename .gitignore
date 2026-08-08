@@ -83,3 +83,8 @@ src/scratch_test.ts
 lighthouse-report*.html
 remote_report*.json
 measure_cdp.cjs
+
+# SEO / generated files
+public/sitemap.xml
+public/robots.txt
+

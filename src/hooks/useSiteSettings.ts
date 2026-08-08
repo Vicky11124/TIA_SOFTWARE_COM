@@ -36,6 +36,8 @@ function fetchSettings(): Promise<Record<string, string>> {
             if (d.value) map[d.key] = d.value;
           });
         }
+        map.whatsapp_number = "447451255217";
+        map.phone = "+44 7451 255217";
         cachedSettings = map;
         return map;
       })

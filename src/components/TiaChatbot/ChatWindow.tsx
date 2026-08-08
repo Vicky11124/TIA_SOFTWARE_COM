@@ -775,7 +775,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     const flag = country === "US" ? "🇺🇸" : country === "AU" ? "🇦🇺" : "🇬🇧";
     const text = `Hi TIA Digital Studio, I completed your digital consultant wizard! ${flag}\n\n• Service: ${selections["service"]}\n• Industry: ${selections["industry"]}\n• Scope: ${getMilestoneValue("Scope")}\n• Budget: ${selections["budget"]}\n• Timeline: ${selections["timeline"] || "N/A"}\n\nRecommended: ${rec.packageName} (${rec.price}). I'd like to discuss our official project proposal!`;
     const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/447451234567?text=${encoded}`, "_blank", "noopener,noreferrer");
+    window.open(`${whatsappLink}?text=${encoded}`, "_blank", "noopener,noreferrer");
   };
 
   // Supabase lead submission for proposal request
