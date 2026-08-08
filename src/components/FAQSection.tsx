@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { faqs } from "@/data/faqData";
@@ -13,6 +13,9 @@ interface FAQSectionProps {
 
 const FAQSection = ({ preview = false, hideHeading = false }: FAQSectionProps) => {
   const [openIndex, setOpenIndex] = useState<string | null>(null);
+  const [headingRef, headingInView] = useInView();
+  const [listRef, listInView] = useInView();
+  const [ctaRef, ctaInView] = useInView();
 
   const displayedFaqs = preview ? faqs.slice(0, 2) : faqs;
 
@@ -25,12 +28,9 @@ const FAQSection = ({ preview = false, hideHeading = false }: FAQSectionProps) =
       <div className="container">
         {/* Heading — hidden when the page provides its own title */}
         {!hideHeading && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+          <div
+            ref={headingRef}
+            className={`text-center mb-16 reveal-fade-up ${headingInView ? "in-view" : ""}`}
           >
             <span className="text-sm font-semibold text-primary tracking-widest uppercase mb-4 block">
               FAQ
@@ -44,18 +44,16 @@ const FAQSection = ({ preview = false, hideHeading = false }: FAQSectionProps) =
               Solutions.
             </p>
             <div className="section-divider mt-6" />
-          </motion.div>
+          </div>
         )}
 
         {/* FAQ categories */}
-        <div className="max-w-3xl mx-auto space-y-10">
+        <div ref={listRef} className="max-w-3xl mx-auto space-y-10">
           {displayedFaqs.map((cat, ci) => (
-            <motion.div
+            <div
               key={cat.category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: ci * 0.08, duration: 0.5 }}
+              className={`reveal-fade-up ${listInView ? "in-view" : ""}`}
+              style={{ transitionDelay: listInView ? `${ci * 80}ms` : "0ms" }}
             >
               <h3 className="text-xs font-bold tracking-widest uppercase text-primary mb-4">
                 {cat.category}
@@ -87,36 +85,29 @@ const FAQSection = ({ preview = false, hideHeading = false }: FAQSectionProps) =
                           }`}
                         />
                       </button>
-                      <AnimatePresence initial={false}>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.28, ease: "easeInOut" }}
-                          >
-                            <p className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed">
-                              {item.a}
-                            </p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      <div
+                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                        }`}
+                      >
+                        <p className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed">
+                          {item.a}
+                        </p>
+                      </div>
                     </div>
                   );
                 })}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* CTA to full FAQ page (only on preview/homepage) */}
         {preview && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-center mt-12"
+          <div
+            ref={ctaRef}
+            className={`text-center mt-12 reveal-fade-up ${ctaInView ? "in-view" : ""}`}
+            style={{ transitionDelay: "300ms" }}
           >
             <Link
               to="/faq"
@@ -124,7 +115,7 @@ const FAQSection = ({ preview = false, hideHeading = false }: FAQSectionProps) =
             >
               View all FAQs →
             </Link>
-          </motion.div>
+          </div>
         )}
       </div>
     </section>

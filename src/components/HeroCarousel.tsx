@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import banner1 from "@/assets/banner-1.webp";
@@ -59,6 +58,7 @@ type Slide = {
 
 const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
+  const [prevImage, setPrevImage] = useState<string | null>(null);
   const [slides, setSlides] = useState<Slide[]>(fallbackSlides);
   const { whatsappLink } = useSiteSettings();
 
@@ -96,8 +96,20 @@ const HeroCarousel = () => {
       });
   }, []);
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);
-  const prev = useCallback(() => setCurrent((c) => (c - 1 + slides.length) % slides.length), [slides.length]);
+  const changeSlide = useCallback((newIdx: number) => {
+    setPrevImage(slides[current].image);
+    setCurrent(newIdx);
+  }, [current, slides]);
+
+  const next = useCallback(() => {
+    const nextIdx = (current + 1) % slides.length;
+    changeSlide(nextIdx);
+  }, [slides.length, changeSlide]);
+
+  const prev = useCallback(() => {
+    const prevIdx = (current - 1 + slides.length) % slides.length;
+    changeSlide(prevIdx);
+  }, [slides.length, changeSlide]);
 
   useEffect(() => {
     const timer = setInterval(next, 5000);
@@ -108,51 +120,52 @@ const HeroCarousel = () => {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Background images with crossfade - higher opacity for visibility */}
-      <AnimatePresence mode="popLayout" initial={false}>
-        <motion.img
-          key={current}
-          src={slide.image}
+      {/* Background images with crossfade - only render current and previous to prevent immediate downloads */}
+      {prevImage && (
+        <img
+          key={`prev-${prevImage}`}
+          src={prevImage}
           alt=""
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 0.55, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover animate-hero-bg-exit z-0 pointer-events-none"
           width={1920}
           height={1080}
         />
-      </AnimatePresence>
+      )}
+
+      <img
+        key={`current-${current}`}
+        src={slide.image}
+        alt=""
+        className={`absolute inset-0 w-full h-full object-cover z-10 ${
+          prevImage ? "animate-hero-bg" : "opacity-55 scale-100"
+        }`}
+        width={1920}
+        height={1080}
+      />
 
       {/* Lighter overlays so image is more visible */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/50 to-background" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/50 to-background z-20" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent z-20" />
 
       {/* Decorative elements */}
       <div 
-        className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none" 
+        className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none z-20" 
         style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.05) 0%, transparent 70%)" }}
       />
       <div 
-        className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] rounded-full pointer-events-none" 
+        className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] rounded-full pointer-events-none z-20" 
         style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.3) 0%, transparent 70%)" }}
       />
 
       {/* Content */}
-      <div className="container relative z-10 pt-20">
+      <div className="container relative z-30 pt-20">
         <div className="max-w-3xl">
-          <AnimatePresence mode="popLayout">
-            <motion.span
-              key={`subtitle-${current}`}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.4 }}
-              className="inline-block text-sm font-semibold text-primary mb-6 tracking-widest uppercase"
-            >
-              {slide.subtitle}
-            </motion.span>
-          </AnimatePresence>
+          <span
+            key={`subtitle-${current}`}
+            className="inline-block text-sm font-semibold text-primary mb-6 tracking-widest uppercase animate-hero-subtitle"
+          >
+            {slide.subtitle}
+          </span>
 
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-foreground">
             {slide.title}
@@ -160,40 +173,28 @@ const HeroCarousel = () => {
             <span className="gradient-text">{slide.highlight}</span>
           </h2>
 
-          <AnimatePresence mode="popLayout">
-            <motion.p
-              key={`desc-${current}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5 }}
-              className="text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed"
-            >
-              {slide.desc}
-            </motion.p>
-          </AnimatePresence>
+          <p
+            key={`desc-${current}`}
+            className="text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed animate-hero-desc"
+          >
+            {slide.desc}
+          </p>
 
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={`actions-${current}`}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-wrap gap-4"
-            >
-              <Button variant="hero" size="lg" className="px-8 py-6 text-base shadow-lg" asChild>
-                <a href={slide.cta_link || whatsappLink} target="_blank" rel="noopener noreferrer">
-                  {slide.cta_text} <ArrowRight className="ml-2" size={18} />
-                </a>
-              </Button>
-              <Button variant="hero-outline" size="lg" className="px-8 py-6 text-base" asChild>
-                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                  WhatsApp Us
-                </a>
-              </Button>
-            </motion.div>
-          </AnimatePresence>
+          <div
+            key={`actions-${current}`}
+            className="flex flex-wrap gap-4 animate-hero-actions"
+          >
+            <Button variant="hero" size="lg" className="px-8 py-6 text-base shadow-lg" asChild>
+              <a href={slide.cta_link || whatsappLink} target="_blank" rel="noopener noreferrer">
+                {slide.cta_text} <ArrowRight className="ml-2" size={18} />
+              </a>
+            </Button>
+            <Button variant="hero-outline" size="lg" className="px-8 py-6 text-base" asChild>
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                WhatsApp Us
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Slide indicators */}
@@ -201,7 +202,7 @@ const HeroCarousel = () => {
           {slides.map((_, i) => (
             <button
               key={i}
-              onClick={() => setCurrent(i)}
+              onClick={() => changeSlide(i)}
               className={`h-1.5 rounded-full transition-all duration-500 ${
                 i === current ? "w-10 bg-primary" : "w-4 bg-muted-foreground/30"
               }`}
@@ -212,7 +213,7 @@ const HeroCarousel = () => {
       </div>
 
       {/* Nav arrows */}
-      <div className="absolute right-6 bottom-1/2 translate-y-1/2 z-20 hidden md:flex flex-col gap-3">
+      <div className="absolute right-6 bottom-1/2 translate-y-1/2 z-30 hidden md:flex flex-col gap-3">
         <button
           onClick={prev}
           className="w-11 h-11 rounded-full bg-background/80 border border-border flex items-center justify-center text-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-sm"
@@ -233,3 +234,4 @@ const HeroCarousel = () => {
 };
 
 export default HeroCarousel;
+

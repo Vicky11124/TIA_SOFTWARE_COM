@@ -1,4 +1,4 @@
-# Last Updated: 2026-08-07
+# Last Updated: 2026-08-08
 # Logs
 logs
 *.log
@@ -79,5 +79,7 @@ desktop.ini
 scripts/test_query.js
 src/scratch_test.ts
 
-# Lighthouse reports
+# Lighthouse / performance diagnostics
 lighthouse-report*.html
+remote_report*.json
+measure_cdp.cjs

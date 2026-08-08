@@ -1,21 +1,19 @@
-import { motion } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const CTASection = () => {
   const { whatsappLink } = useSiteSettings();
+  const [sectionRef, sectionInView] = useInView();
 
   return (
     <section className="section-padding relative overflow-hidden">
       <div className="absolute inset-0" style={{ background: "var(--gradient-hero)" }} />
       <div className="container relative z-10 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="max-w-2xl mx-auto"
+        <div
+          ref={sectionRef}
+          className={`max-w-2xl mx-auto reveal-fade-up ${sectionInView ? "in-view" : ""}`}
         >
           <span className="text-sm font-semibold text-primary tracking-widest uppercase mb-4 block">
             Let's Work Together
@@ -39,7 +37,7 @@ const CTASection = () => {
               </a>
             </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

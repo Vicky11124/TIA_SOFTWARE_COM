@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
 import showcaseWork from "@/assets/showcase-work.webp";
 import serviceCreative from "@/assets/service-creative.webp";
 import serviceUiux from "@/assets/service-uiux.webp";
@@ -12,15 +12,15 @@ const works = [
 ];
 
 const WorkShowcase = () => {
+  const [headingRef, headingInView] = useInView();
+  const [gridRef, gridInView] = useInView();
+
   return (
     <section className="section-padding relative overflow-hidden">
       <div className="container">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+        <div
+          ref={headingRef}
+          className={`text-center mb-16 reveal-fade-up ${headingInView ? "in-view" : ""}`}
         >
           <span className="text-sm font-semibold text-primary tracking-widest uppercase mb-4 block">
             Our Portfolio
@@ -32,17 +32,14 @@ const WorkShowcase = () => {
             A glimpse of the creative projects we've delivered for brands across the globe.
           </p>
           <div className="section-divider mt-6" />
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {works.map((work, i) => (
-            <motion.div
+            <div
               key={work.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.6 }}
-              className="group relative rounded-2xl overflow-hidden hover-lift cursor-pointer"
+              className={`group relative rounded-2xl overflow-hidden hover-lift cursor-pointer reveal-fade-up ${gridInView ? "in-view" : ""}`}
+              style={{ transitionDelay: gridInView ? `${i * 100}ms` : "0ms" }}
             >
               <img
                 src={work.image}
@@ -59,7 +56,7 @@ const WorkShowcase = () => {
                 </span>
                 <h3 className="text-xl font-bold text-primary-foreground mt-1">{work.title}</h3>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

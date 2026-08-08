@@ -167,3 +167,113 @@
 .animate-scanline {
   animation: scanline 2s infinite ease-in-out;
 }
+
+/* Hero Slide Entrance Animations */
+@keyframes heroSubtitleEnter {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes heroDescEnter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroActionsEnter {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes heroBgEnter {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 0.55; transform: scale(1); }
+}
+
+@keyframes heroBgExit {
+  from { opacity: 0.55; transform: scale(1); }
+  to { opacity: 0; transform: scale(1); }
+}
+
+.animate-hero-subtitle {
+  animation: heroSubtitleEnter 0.4s ease-out forwards;
+}
+
+.animate-hero-desc {
+  animation: heroDescEnter 0.5s ease-out forwards;
+}
+
+.animate-hero-actions {
+  animation: heroActionsEnter 0.5s ease-out forwards;
+}
+
+.animate-hero-bg {
+  animation: heroBgEnter 1.2s ease-in-out forwards;
+}
+
+.animate-hero-bg-exit {
+  animation: heroBgExit 1.2s ease-in-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-subtitle,
+  .animate-hero-desc,
+  .animate-hero-actions,
+  .animate-hero-bg,
+  .animate-hero-bg-exit {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  .animate-hero-bg {
+    opacity: 0.55 !important;
+  }
+  .animate-hero-subtitle,
+  .animate-hero-desc,
+  .animate-hero-actions {
+    opacity: 1 !important;
+  }
+}
+
+/* Scroll-triggered reveal animations (replaces framer-motion whileInView) */
+.reveal-fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.reveal-fade-up.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-fade-left {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.reveal-fade-left.in-view {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-fade-right {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.reveal-fade-right.in-view {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-fade-up,
+  .reveal-fade-left,
+  .reveal-fade-right {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
 import { Link } from "react-router-dom";
 import { Palette, PartyPopper, Megaphone, Layout, Film, Sparkles, Camera, CalendarDays, ArrowRight, Headphones } from "lucide-react";
 
@@ -23,16 +23,16 @@ const services: ServiceItem[] = [
 ];
 
 const ServicesHighlight = () => {
+  const [headingRef, headingInView] = useInView();
+  const [gridRef, gridInView] = useInView();
+
   return (
     <section className="section-padding relative">
       <div className="absolute inset-0 bg-gradient-to-b from-accent/50 to-background" />
       <div className="container relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+        <div
+          ref={headingRef}
+          className={`text-center mb-16 reveal-fade-up ${headingInView ? "in-view" : ""}`}
         >
           <span className="text-sm font-semibold text-primary tracking-widest uppercase mb-4 block">
             What We Do
@@ -44,16 +44,14 @@ const ServicesHighlight = () => {
             End-to-end creative solutions to build, grow, and scale your brand in the digital world.
           </p>
           <div className="section-divider mt-6" />
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, i) => (
-            <motion.div
+            <div
               key={service.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
+              className={`reveal-fade-up ${gridInView ? "in-view" : ""}`}
+              style={{ transitionDelay: gridInView ? `${i * 80}ms` : "0ms" }}
             >
               <Link
                 to={`/services/${service.slug}`}
@@ -75,7 +73,7 @@ const ServicesHighlight = () => {
                   Learn More <ArrowRight size={14} />
                 </span>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

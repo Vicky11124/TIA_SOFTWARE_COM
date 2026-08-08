@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useGeo } from "@/contexts/GeoContext";
 import logo from "@/assets/logo.webp";
@@ -120,43 +119,36 @@ const Navbar = () => {
                   {link.label}
                   <ChevronDown size={14} className={`transition-transform duration-300 ${servicesOpen ? "rotate-180" : ""}`} />
                   {location.pathname.startsWith("/services") && (
-                    <motion.div
-                      layoutId="nav-underline"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
-                    />
+                    <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
                   )}
                 </button>
-                <AnimatePresence>
-                  {servicesOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-background border border-border rounded-xl shadow-lg overflow-hidden"
-                      onMouseLeave={() => setServicesOpen(false)}
+                <div
+                  className={`absolute top-full left-1/2 -translate-x-1/2 mt-3 w-64 bg-background border border-border rounded-xl shadow-lg overflow-hidden transition-all duration-200 origin-top ${
+                    servicesOpen
+                      ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
+                      : "opacity-0 translate-y-2 scale-[0.96] pointer-events-none"
+                  }`}
+                  onMouseLeave={() => setServicesOpen(false)}
+                >
+                  <div className="py-2">
+                    <Link
+                      to="/services"
+                      className="block px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-accent transition-colors"
                     >
-                      <div className="py-2">
-                        <Link
-                          to="/services"
-                          className="block px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-accent transition-colors"
-                        >
-                          All Services
-                        </Link>
-                        <div className="h-px bg-border mx-4 my-1" />
-                        {serviceLinks.map((s) => (
-                          <Link
-                            key={s.path}
-                            to={s.path}
-                            className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                          >
-                            {s.label}
-                          </Link>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      All Services
+                    </Link>
+                    <div className="h-px bg-border mx-4 my-1" />
+                    {serviceLinks.map((s) => (
+                      <Link
+                        key={s.path}
+                        to={s.path}
+                        className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                      >
+                        {s.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               </div>
             ) : (
               <Link
@@ -168,10 +160,7 @@ const Navbar = () => {
               >
                 {link.label}
                 {location.pathname === link.path && (
-                  <motion.div
-                    layoutId="nav-underline"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full"
-                  />
+                  <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary rounded-full" />
                 )}
               </Link>
             )
@@ -196,83 +185,68 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu - half screen */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="md:hidden fixed inset-0 top-[88px] bg-foreground/20 backdrop-blur-sm z-40"
-              onClick={() => setIsOpen(false)}
-            />
-            {/* Menu panel - slides from right, half screen width */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="md:hidden fixed top-[88px] right-0 bottom-0 w-[70%] max-w-[300px] bg-background border-l border-border shadow-xl z-50 overflow-y-auto"
-            >
-              <div className="p-6 flex flex-col gap-4">
-                {navLinks.map((link) =>
-                  link.hasDropdown ? (
-                    <div key={link.path}>
-                      <button
-                        className={`text-base font-medium transition-colors flex items-center gap-2 w-full ${
-                          location.pathname.startsWith("/services") ? "text-foreground" : "text-muted-foreground"
-                        }`}
-                        onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                      >
-                        {link.label}
-                        <ChevronDown size={16} className={`transition-transform ${mobileServicesOpen ? "rotate-180" : ""}`} />
-                      </button>
-                      <AnimatePresence>
-                        {mobileServicesOpen && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="pl-4 mt-2 space-y-2 overflow-hidden"
-                          >
-                            <Link to="/services" className="block text-sm text-muted-foreground hover:text-foreground py-1 font-medium">
-                              All Services
-                            </Link>
-                            {serviceLinks.map((s) => (
-                              <Link key={s.path} to={s.path} className="block text-sm text-muted-foreground hover:text-foreground py-1">
-                                {s.label}
-                              </Link>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ) : (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      className={`text-base font-medium transition-colors ${
-                        location.pathname === link.path ? "text-foreground" : "text-muted-foreground"
-                      }`}
-                    >
-                      {link.label}
+      {/* Mobile menu - backdrop & panel */}
+      <div
+        className={`md:hidden fixed inset-0 top-[88px] bg-foreground/20 backdrop-blur-sm z-40 transition-opacity duration-300 ${
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setIsOpen(false)}
+      />
+      <div
+        className={`md:hidden fixed top-[88px] right-0 bottom-0 w-[70%] max-w-[300px] bg-background border-l border-border shadow-xl z-50 overflow-y-auto transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="p-6 flex flex-col gap-4">
+          {navLinks.map((link) =>
+            link.hasDropdown ? (
+              <div key={link.path}>
+                <button
+                  className={`text-base font-medium transition-colors flex items-center gap-2 w-full ${
+                    location.pathname.startsWith("/services") ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                  onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                >
+                  {link.label}
+                  <ChevronDown size={16} className={`transition-transform ${mobileServicesOpen ? "rotate-180" : ""}`} />
+                </button>
+                <div
+                  className={`pl-4 space-y-2 overflow-hidden transition-all duration-300 ease-in-out ${
+                    mobileServicesOpen ? "max-h-[500px] mt-2 opacity-100" : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <Link to="/services" className="block text-sm text-muted-foreground hover:text-foreground py-1 font-medium">
+                    All Services
+                  </Link>
+                  {serviceLinks.map((s) => (
+                    <Link key={s.path} to={s.path} className="block text-sm text-muted-foreground hover:text-foreground py-1">
+                      {s.label}
                     </Link>
-                  )
-                )}
-                <Button variant="hero" size="lg" className="mt-4 w-full" asChild>
-                  <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
-                    Get Started
-                  </a>
-                </Button>
+                  ))}
+                </div>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            ) : (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`text-base font-medium transition-colors ${
+                  location.pathname === link.path ? "text-foreground" : "text-muted-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            )
+          )}
+          <Button variant="hero" size="lg" className="mt-4 w-full" asChild>
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+              Get Started
+            </a>
+          </Button>
+        </div>
+      </div>
     </nav>
   );
 };
 
 export default Navbar;
+

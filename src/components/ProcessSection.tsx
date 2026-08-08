@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { useInView } from "@/hooks/useInView";
 import { MessageSquare, Lightbulb, PenTool, Rocket } from "lucide-react";
 
 const steps = [
@@ -9,16 +9,16 @@ const steps = [
 ];
 
 const ProcessSection = () => {
+  const [headingRef, headingInView] = useInView();
+  const [gridRef, gridInView] = useInView();
+
   return (
     <section className="section-padding relative">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-accent/20 to-background" />
       <div className="container relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+        <div
+          ref={headingRef}
+          className={`text-center mb-16 reveal-fade-up ${headingInView ? "in-view" : ""}`}
         >
           <span className="text-sm font-semibold text-primary tracking-widest uppercase mb-4 block">
             How It Works
@@ -27,17 +27,14 @@ const ProcessSection = () => {
             Our <span className="gradient-text">Process</span>
           </h2>
           <div className="section-divider mt-6" />
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {steps.map((item, i) => (
-            <motion.div
+            <div
               key={item.step}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15, duration: 0.5 }}
-              className="text-center relative"
+              className={`text-center relative reveal-fade-up ${gridInView ? "in-view" : ""}`}
+              style={{ transitionDelay: gridInView ? `${i * 150}ms` : "0ms" }}
             >
               {i < steps.length - 1 && (
                 <div className="hidden md:block absolute top-10 left-[60%] w-[80%] h-px bg-border" />
@@ -50,7 +47,7 @@ const ProcessSection = () => {
               </div>
               <h3 className="text-lg font-bold mb-2">{item.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
