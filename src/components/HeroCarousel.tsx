@@ -63,28 +63,37 @@ const HeroCarousel = () => {
   const { whatsappLink } = useSiteSettings();
 
   useEffect(() => {
-    import("@/integrations/supabase/client").then(({ supabase }) => {
-      supabase
-        .from("banners")
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order")
-        .then(({ data }) => {
-          if (data && data.length > 0) {
-            setSlides(
-              data.map((b) => ({
-                image: b.image_url || banner1,
-                subtitle: b.subtitle,
-                title: b.title,
-                highlight: b.highlight,
-                desc: b.description,
-                cta_text: b.cta_text || "Book Now",
-                cta_link: b.cta_link || "",
-              }))
-            );
-          }
-        });
-    });
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+    const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+
+    fetch(`${SUPABASE_URL}/rest/v1/banners?select=*&is_active=eq.true&order=sort_order.asc`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.statusText);
+        return res.json();
+      })
+      .then((data: any[]) => {
+        if (data && data.length > 0) {
+          setSlides(
+            data.map((b) => ({
+              image: b.image_url || banner1,
+              subtitle: b.subtitle,
+              title: b.title,
+              highlight: b.highlight,
+              desc: b.description,
+              cta_text: b.cta_text || "Book Now",
+              cta_link: b.cta_link || "",
+            }))
+          );
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load banners via REST:", err);
+      });
   }, []);
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % slides.length), [slides.length]);

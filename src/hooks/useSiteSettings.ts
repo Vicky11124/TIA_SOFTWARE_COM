@@ -17,21 +17,32 @@ let cachedSettings: Record<string, string> | null = null;
 function fetchSettings(): Promise<Record<string, string>> {
   if (cachedSettings) return Promise.resolve(cachedSettings);
   if (!cachedSettingsPromise) {
-    cachedSettingsPromise = import("@/integrations/supabase/client").then(({ supabase }) =>
-      supabase
-        .from("site_settings")
-        .select("*")
-        .then(({ data }) => {
-          const map = { ...defaults };
-          if (data && data.length > 0) {
-            data.forEach((d) => {
-              if (d.value) map[d.key] = d.value;
-            });
-          }
-          cachedSettings = map;
-          return map;
-        })
-    );
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "";
+    const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+    cachedSettingsPromise = fetch(`${SUPABASE_URL}/rest/v1/site_settings?select=*`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(res.statusText);
+        return res.json();
+      })
+      .then((data: any[]) => {
+        const map = { ...defaults };
+        if (data && data.length > 0) {
+          data.forEach((d) => {
+            if (d.value) map[d.key] = d.value;
+          });
+        }
+        cachedSettings = map;
+        return map;
+      })
+      .catch((err) => {
+        console.error("Failed to load settings via REST:", err);
+        return defaults;
+      });
   }
   return cachedSettingsPromise;
 }
