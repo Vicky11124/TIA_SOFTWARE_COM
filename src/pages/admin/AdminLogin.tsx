@@ -15,15 +15,6 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Development Mode / Offline Bypass
-    if (email.toLowerCase() === "admin@tiasoftwaresolutions.com" && password === "admin123") {
-      sessionStorage.setItem("tia_admin_bypass", "true");
-      toast.success("Welcome back, admin! (Dev Bypass Active)");
-      navigate("/admin");
-      setLoading(false);
-      return;
-    }
-
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       toast.error(error.message);

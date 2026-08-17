@@ -10,25 +10,57 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
+import { validateFormSecurity, recordFormSubmission } from "@/utils/formSecurity";
+
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [websiteHp, setWebsiteHp] = useState("");
+  const [formLoadTime] = useState(() => Date.now());
   const [submitting, setSubmitting] = useState(false);
   const { settings, whatsappLink } = useSiteSettings();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
-    await supabase.from("leads").insert({
-      name: form.name,
+
+    const secCheck = validateFormSecurity({
+      honeypotValue: websiteHp,
+      formLoadTime,
       email: form.email,
-      phone: form.phone || null,
-      message: form.message,
     });
-    const msg = `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nMessage: ${form.message}`;
-    window.open(`${whatsappLink}?text=${encodeURIComponent(msg)}`, "_blank");
-    toast.success("Message sent! We'll get back to you soon.");
-    setForm({ name: "", email: "", phone: "", message: "" });
-    setSubmitting(false);
+
+    if (secCheck.isBot) {
+      // Fake success for bots to prevent retries
+      setForm({ name: "", email: "", phone: "", message: "" });
+      toast.success("Message sent! We'll get back to you soon.");
+      return;
+    }
+
+    if (!secCheck.isValid) {
+      toast.error(secCheck.error || "Invalid form submission.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("leads").insert({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        message: form.message.trim(),
+      });
+
+      if (error) throw error;
+
+      recordFormSubmission();
+      const msg = `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nMessage: ${form.message}`;
+      window.open(`${whatsappLink}?text=${encodeURIComponent(msg)}`, "_blank");
+      toast.success("Message sent! We'll get back to you soon.");
+      setForm({ name: "", email: "", phone: "", message: "" });
+    } catch (err) {
+      toast.error("Could not send message. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const breadcrumbSchema = {
@@ -60,6 +92,8 @@ const Contact = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Contact TIA Software Solutions | Free Consultation UK" />
         <meta property="og:description" content="Get in touch with TIA Software Solutions today. Partner with our team for custom web design, SEO, software development, and virtual assistants. Serving clients throughout the UK." />
+        <meta property="og:url" content="https://www.tiasoftwaresolutions.com/contact" />
+        <meta property="og:image" content="https://www.tiasoftwaresolutions.com/assets/logo.webp" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Contact TIA Software Solutions | Free Consultation UK" />
         <meta name="twitter:description" content="Get in touch with TIA Software Solutions today. Partner with our team for custom web design, SEO, software development, and virtual assistants. Serving clients throughout the UK." />
@@ -144,6 +178,17 @@ const Contact = () => {
               className="md:col-span-3"
             >
               <form onSubmit={handleSubmit} className="glass-card p-8 space-y-6">
+                {/* Honeypot field for bot protection — hidden from human users */}
+                <div style={{ display: "none", position: "absolute", left: "-9999px" }} aria-hidden="true">
+                  <input
+                    type="text"
+                    name="website_hp"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={websiteHp}
+                    onChange={(e) => setWebsiteHp(e.target.value)}
+                  />
+                </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">Name</label>

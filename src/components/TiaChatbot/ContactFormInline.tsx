@@ -2,7 +2,10 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LeadState } from "@/services/aiProvider";
+import { LeadState } from "@/services/aiTypes";
+
+import { validateFormSecurity, recordFormSubmission } from "@/utils/formSecurity";
+import { toast } from "sonner";
 
 interface ContactFormInlineProps {
   leadState: LeadState;
@@ -11,12 +14,30 @@ interface ContactFormInlineProps {
 
 const ContactFormInline = ({ leadState, onSubmitSuccess }: ContactFormInlineProps) => {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [websiteHp, setWebsiteHp] = useState("");
+  const [formLoadTime] = useState(() => Date.now());
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim()) return;
+
+    const secCheck = validateFormSecurity({
+      honeypotValue: websiteHp,
+      formLoadTime,
+      email: form.email,
+    });
+
+    if (secCheck.isBot) {
+      setSubmitted(true);
+      return;
+    }
+
+    if (!secCheck.isValid) {
+      toast.error(secCheck.error || "Invalid submission.");
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -38,12 +59,14 @@ Timeline: ${leadState.timeline || "N/A"}`;
 
       if (error) throw error;
 
+      recordFormSubmission();
       setSubmitted(true);
       setTimeout(() => {
         onSubmitSuccess(form.name.trim(), form.email.trim(), form.phone.trim());
       }, 2000);
     } catch (err) {
       console.error("Error saving lead:", err);
+      toast.error("Error saving lead. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -73,6 +96,17 @@ Timeline: ${leadState.timeline || "N/A"}`;
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-2.5">
+        {/* Honeypot field for bot protection — hidden from human users */}
+        <div style={{ display: "none", position: "absolute", left: "-9999px" }} aria-hidden="true">
+          <input
+            type="text"
+            name="website_hp"
+            tabIndex={-1}
+            autoComplete="off"
+            value={websiteHp}
+            onChange={(e) => setWebsiteHp(e.target.value)}
+          />
+        </div>
         <div>
           <label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">
             Name <span className="text-destructive">*</span>

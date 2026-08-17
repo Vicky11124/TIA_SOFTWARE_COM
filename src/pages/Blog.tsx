@@ -128,6 +128,8 @@ const Blog = () => {
         <meta property="og:title" content="The TIA Journal — Tech & Creative Insights" />
         <meta property="og:description" content="Stay ahead with regular guides, design inspiration, branding tips, and strategic tech insights from our digital studio." />
         <meta property="og:url" content="https://www.tiasoftwaresolutions.com/blog" />
+        <meta property="og:image" content="https://www.tiasoftwaresolutions.com/assets/logo.webp" />
+        <meta name="twitter:card" content="summary_large_image" />
         <script type="application/ld+json">
           {JSON.stringify(blogListSchema)}
         </script>

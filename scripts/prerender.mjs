@@ -23,7 +23,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = path.resolve(__dirname, "..", "dist");
-const PORT = 4173;
+let PORT = 4173;
 
 // ── Detect system browser ────────────────────────────────────────
 function findBrowser() {
@@ -112,22 +112,29 @@ function startServer(fallbackHtml) {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
       const url = new URL(req.url, `http://localhost:${PORT}`);
-      let fp = path.join(DIST_DIR, url.pathname);
+      if (url.pathname.startsWith("/rest/")) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end("[]");
+        return;
+      }
+      const ext = path.extname(url.pathname).toLowerCase();
+      const fp = path.join(DIST_DIR, url.pathname);
 
-      if (fs.existsSync(fp) && fs.statSync(fp).isDirectory())
-        fp = path.join(fp, "index.html");
-
-      if (fs.existsSync(fp) && fs.statSync(fp).isFile()) {
-        const ext = path.extname(fp).toLowerCase();
+      if (ext && MIME[ext] && fs.existsSync(fp) && fs.statSync(fp).isFile()) {
         res.writeHead(200, {
-          "Content-Type": MIME[ext] || "application/octet-stream",
+          "Content-Type": MIME[ext],
         });
         fs.createReadStream(fp).pipe(res);
       } else {
-        // SPA fallback — serve the saved SPA shell (not the file on disk
-        // which may have been overwritten by a previous prerendered route)
+        // SPA fallback — serve the original SPA shell for all HTML routes
         res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
         res.end(fallbackHtml);
+      }
+    });
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        PORT++;
+        server.listen(PORT);
       }
     });
     server.listen(PORT, () => resolve(server));
@@ -161,11 +168,12 @@ async function prerender() {
   const allRoutes = [...STATIC_ROUTES, ...blogRoutes];
   console.log(`  Total: ${allRoutes.length} routes\n`);
 
-  // 4. Save the original SPA shell before any overwrites
-  const spaShell = fs.readFileSync(
+  // 4. Save the original SPA shell before any overwrites (clean root div)
+  const rawShell = fs.readFileSync(
     path.join(DIST_DIR, "index.html"),
     "utf-8"
   );
+  const spaShell = rawShell.replace(/<div id="root">[\s\S]*?<\/div>/, '<div id="root"></div>');
 
   // 5. Start server (uses in-memory spaShell for SPA fallback)
   const server = await startServer(spaShell);
@@ -179,11 +187,12 @@ async function prerender() {
   });
 
   const page = await browser.newPage();
-  // Block unnecessary resources to speed up rendering
+  page.on("pageerror", (err) => console.error(`  [PAGE ERROR STACK] ${err.stack || err.message}`));
+  // Block external tracking scripts to speed up rendering without breaking local assets
   await page.setRequestInterception(true);
   page.on("request", (req) => {
-    const type = req.resourceType();
-    if (["image", "font", "media"].includes(type)) {
+    const url = req.url();
+    if (url.includes("connect.facebook.net") || url.includes("google-analytics.com") || url.includes("googletagmanager.com")) {
       req.abort();
     } else {
       req.continue();
@@ -197,11 +206,11 @@ async function prerender() {
   for (const route of allRoutes) {
     try {
       await page.goto(`http://localhost:${PORT}${route}`, {
-        waitUntil: "networkidle0",
-        timeout: 20000,
+        waitUntil: "domcontentloaded",
+        timeout: 15000,
       });
       // Wait for React to render content inside #root
-      await page.waitForSelector("#root > *", { timeout: 10000 });
+      await page.waitForSelector("#root > *", { timeout: 20000 });
       // Extra settle time for Helmet to update <head> + async renders
       await sleep(1000);
 

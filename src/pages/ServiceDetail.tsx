@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { motion } from "framer-motion";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -581,6 +582,7 @@ const serviceData: Record<string, {
 };
 
 const VirtualAssistancePage = () => {
+  const { whatsappLink } = useSiteSettings();
   const serviceSchema = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -680,7 +682,7 @@ const VirtualAssistancePage = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button variant="hero" size="lg" className="px-8" asChild>
-                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                   Get Started Today <ArrowRight className="ml-2" size={18} />
                 </a>
               </Button>
@@ -865,7 +867,7 @@ const VirtualAssistancePage = () => {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="hero" size="lg" className="px-10" asChild>
-                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                   Contact Us on WhatsApp <ArrowRight className="ml-2" size={18} />
                 </a>
               </Button>
@@ -884,6 +886,7 @@ const VirtualAssistancePage = () => {
 };
 
 const GenericServiceDetail = ({ service }: { service: typeof serviceData[string] }) => {
+  const { whatsappLink } = useSiteSettings();
   const { slug } = useParams<{ slug: string }>();
   const serviceUrl = `https://www.tiasoftwaresolutions.com/services/${slug}`;
 
@@ -1010,7 +1013,7 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
             </p>
             <div className="flex flex-wrap gap-4">
               <Button variant="hero" size="lg" className="px-8" asChild>
-                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                   Get Started Today <ArrowRight className="ml-2" size={18} />
                 </a>
               </Button>
@@ -1339,7 +1342,7 @@ const GenericServiceDetail = ({ service }: { service: typeof serviceData[string]
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="hero" size="lg" className="px-10" asChild>
-                <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                   Contact Us on WhatsApp <ArrowRight className="ml-2" size={18} />
                 </a>
               </Button>

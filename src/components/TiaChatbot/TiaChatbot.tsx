@@ -693,8 +693,8 @@ const TiaChatbot = () => {
               </div>
             )}
 
-            {/* Robot Image Base */}
-            <img src={tiaBotIcon} alt="TIA Mascot" className="w-full h-full object-cover select-none bg-transparent" width={64} height={64} />
+            {/* Robot Image Base (Clipped to trim image file edge lines) */}
+            <img src={tiaBotIcon} alt="TIA Mascot" className="w-full h-full object-cover select-none bg-transparent [clip-path:inset(3px)]" width={64} height={64} />
 
             {/* Dynamic Visor Overlay Screen */}
             <div className="absolute top-[28%] left-[17%] w-[66%] h-[34%] rounded-[30%] bg-[#08070d] flex flex-col items-center justify-between p-[9%_12%] overflow-hidden z-10 pointer-events-none border border-black/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]">

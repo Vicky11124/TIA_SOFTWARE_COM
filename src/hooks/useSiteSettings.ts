@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 
+interface SettingRow {
+  key: string;
+  value: string;
+}
+
 const defaults: Record<string, string> = {
   whatsapp_number: "447451255217",
   email: "sales@tiasoftwaresolutions.com",
@@ -29,7 +34,7 @@ function fetchSettings(): Promise<Record<string, string>> {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
       })
-      .then((data: any[]) => {
+      .then((data: SettingRow[]) => {
         const map = { ...defaults };
         if (data && data.length > 0) {
           data.forEach((d) => {

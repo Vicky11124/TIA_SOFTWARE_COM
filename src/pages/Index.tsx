@@ -95,7 +95,18 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
+        <title>Web Design & SEO Agency London | TIA Software Solutions</title>
+        <meta name="description" content="TIA Software Solutions is a London-based web design, software development, Virtual Assistance, and SEO agency delivering high-performance digital solutions." />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://www.tiasoftwaresolutions.com" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Web Design & SEO Agency London | TIA Software Solutions" />
+        <meta property="og:description" content="TIA Software Solutions is a London-based web design, software development, Virtual Assistance, and SEO agency delivering high-performance digital solutions." />
+        <meta property="og:url" content="https://www.tiasoftwaresolutions.com" />
+        <meta property="og:image" content="https://www.tiasoftwaresolutions.com/assets/logo.webp" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Web Design & SEO Agency London | TIA Software Solutions" />
+        <meta name="twitter:description" content="TIA Software Solutions is a London-based web design, software development, Virtual Assistance, and SEO agency delivering high-performance digital solutions." />
         <script type="application/ld+json">
           {JSON.stringify(organizationSchema)}
         </script>

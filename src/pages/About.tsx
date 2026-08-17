@@ -75,6 +75,8 @@ const About = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="About TIA Software Solutions" />
         <meta property="og:description" content="Discover our journey and mission. Helping businesses grow with custom websites, bespoke software, and virtual assistants. Serving clients throughout the UK." />
+        <meta property="og:url" content="https://www.tiasoftwaresolutions.com/about" />
+        <meta property="og:image" content="https://www.tiasoftwaresolutions.com/assets/logo.webp" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="About TIA Software Solutions" />
         <meta name="twitter:description" content="Discover our journey and mission. Helping businesses grow with custom websites, bespoke software, and virtual assistants. Serving clients throughout the UK." />

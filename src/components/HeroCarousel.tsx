@@ -7,6 +7,16 @@ import banner2 from "@/assets/banner-2.webp";
 import banner3 from "@/assets/banner-3.webp";
 import banner4 from "@/assets/banner-4.webp";
 
+interface BannerRow {
+  image_url?: string;
+  subtitle: string;
+  title: string;
+  highlight: string;
+  description: string;
+  cta_text?: string;
+  cta_link?: string;
+}
+
 const fallbackSlides = [
   {
     image: banner1,
@@ -76,7 +86,7 @@ const HeroCarousel = () => {
         if (!res.ok) throw new Error(res.statusText);
         return res.json();
       })
-      .then((data: any[]) => {
+      .then((data: BannerRow[]) => {
         if (data && data.length > 0) {
           setSlides(
             data.map((b) => ({
@@ -116,7 +126,7 @@ const HeroCarousel = () => {
     return () => clearInterval(timer);
   }, [next]);
 
-  const slide = slides[current];
+  const slide = slides[current] || fallbackSlides[0];
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -141,6 +151,8 @@ const HeroCarousel = () => {
         }`}
         width={1920}
         height={1080}
+        fetchpriority="high"
+        decoding="async"
       />
 
       {/* Lighter overlays so image is more visible */}

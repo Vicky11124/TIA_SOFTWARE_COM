@@ -22,14 +22,6 @@ const AdminLayout = () => {
 
   useEffect(() => {
     const checkAdmin = async () => {
-      // Check session storage bypass first
-      const isBypassed = sessionStorage.getItem("tia_admin_bypass") === "true";
-      if (isBypassed) {
-        setIsAdmin(true);
-        setLoading(false);
-        return;
-      }
-
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate("/admin/login");
@@ -52,7 +44,6 @@ const AdminLayout = () => {
   }, [navigate]);
 
   const handleLogout = async () => {
-    sessionStorage.removeItem("tia_admin_bypass");
     await supabase.auth.signOut();
     navigate("/admin/login");
   };

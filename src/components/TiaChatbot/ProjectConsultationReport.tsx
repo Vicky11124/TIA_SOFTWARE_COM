@@ -1,30 +1,4 @@
-import React, { useState } from "react";
-import { ReportData, ReportExplanations } from "@/services/aiProvider";
-import { supabase } from "@/integrations/supabase/client";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { 
-  FileText, 
-  CheckCircle2, 
-  Sparkles, 
-  ShieldCheck, 
-  TrendingUp, 
-  Lightbulb, 
-  Compass, 
-  Send, 
-  Copy, 
-  Check, 
-  MessageCircle, 
-  Download, 
-  Mail, 
-  Phone, 
-  Calendar,
-  Layers,
-  Clock,
-  Briefcase
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-import { getFallbackExplanations } from "@/services/aiProvider";
+import { ReportData, ReportExplanations, getFallbackExplanations } from "@/services/aiTypes";
 
 interface ProjectConsultationReportProps {
   data: ReportData;

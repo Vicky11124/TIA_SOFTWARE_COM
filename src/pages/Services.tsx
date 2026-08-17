@@ -229,6 +229,8 @@ const Services = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Web Development Services UK | TIA Software Solutions" />
         <meta property="og:description" content="Explore our premium digital solutions including custom web development, mobile apps, CRM/ERP software, SEO, and virtual assistance. Serving clients throughout the UK." />
+        <meta property="og:url" content="https://www.tiasoftwaresolutions.com/services" />
+        <meta property="og:image" content="https://www.tiasoftwaresolutions.com/assets/logo.webp" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Web Development Services UK | TIA Software Solutions" />
         <meta name="twitter:description" content="Explore our premium digital solutions including custom web development, mobile apps, CRM/ERP software, SEO, and virtual assistance. Serving clients throughout the UK." />

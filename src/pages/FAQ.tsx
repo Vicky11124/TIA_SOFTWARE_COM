@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -6,12 +7,48 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { faqs } from "@/data/faqData";
 
 const FAQ = () => {
   const { whatsappLink } = useSiteSettings();
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.flatMap((cat) =>
+      cat.items.map((item) => ({
+        "@type": "Question",
+        "name": item.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.a,
+        },
+      }))
+    ),
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <Helmet>
+        <title>Frequently Asked Questions | TIA Software Solutions</title>
+        <meta
+          name="description"
+          content="Find answers to common questions about TIA Software Solutions' services, pricing, Virtual Assistance, web development, and digital marketing."
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.tiasoftwaresolutions.com/faq" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Frequently Asked Questions | TIA Software Solutions" />
+        <meta
+          property="og:description"
+          content="Find answers to common questions about TIA Software Solutions' services, pricing, Virtual Assistance, web development, and digital marketing."
+        />
+        <meta property="og:url" content="https://www.tiasoftwaresolutions.com/faq" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
+      </Helmet>
       <Navbar />
 
       {/* Hero */}

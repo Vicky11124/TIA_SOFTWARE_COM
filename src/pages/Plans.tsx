@@ -360,6 +360,8 @@ const Plans = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Website Pricing UK | TIA Software Solutions" />
         <meta property="og:description" content="View transparent web development, digital marketing, and ad campaign pricing packages. Serving clients throughout the UK. No hidden fees. Get your quote today." />
+        <meta property="og:url" content="https://www.tiasoftwaresolutions.com/plans" />
+        <meta property="og:image" content="https://www.tiasoftwaresolutions.com/assets/logo.webp" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Website Pricing UK | TIA Software Solutions" />
         <meta name="twitter:description" content="View transparent web development, digital marketing, and ad campaign pricing packages. Serving clients throughout the UK. No hidden fees. Get your quote today." />

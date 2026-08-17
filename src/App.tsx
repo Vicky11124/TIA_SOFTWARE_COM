@@ -6,10 +6,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GeoProvider } from "@/contexts/GeoContext";
-import Index from "./pages/Index.tsx";
 import ScrollToTop from "./components/ScrollToTop";
 
-// Lazy-load non-home pages
+// Lazy-load all pages
+const Index = lazy(() => import("./pages/Index.tsx"));
 const About = lazy(() => import("./pages/About.tsx"));
 const Services = lazy(() => import("./pages/Services.tsx"));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail.tsx"));

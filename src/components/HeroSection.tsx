@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroBg from "@/assets/hero-bg.webp";
 import { ArrowRight } from "lucide-react";
 
 const HeroSection = () => {
+  const { whatsappLink } = useSiteSettings();
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
       {/* BG Image */}
@@ -13,6 +15,7 @@ const HeroSection = () => {
         className="absolute inset-0 w-full h-full object-cover opacity-40"
         width={1920}
         height={1080}
+        fetchpriority="high"
       />
 
       {/* Overlay gradient */}
@@ -22,20 +25,10 @@ const HeroSection = () => {
       <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] animate-float" />
 
       <div className="container relative z-10 pt-20">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-3xl"
-        >
-          <motion.span
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-block text-sm font-medium text-primary mb-6 tracking-widest uppercase"
-          >
+        <div className="max-w-3xl animate-fade-in">
+          <span className="inline-block text-sm font-medium text-primary mb-6 tracking-widest uppercase">
             Digital Solutions Agency
-          </motion.span>
+          </span>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6">
             Build Your Brand
@@ -51,17 +44,17 @@ const HeroSection = () => {
 
           <div className="flex flex-wrap gap-4">
             <Button variant="hero" size="lg" className="px-8 py-6 text-base" asChild>
-              <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                 Book Now <ArrowRight className="ml-2" size={18} />
               </a>
             </Button>
             <Button variant="hero-outline" size="lg" className="px-8 py-6 text-base" asChild>
-              <a href="https://wa.me/447451255217" target="_blank" rel="noopener noreferrer">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                 WhatsApp Us
               </a>
             </Button>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

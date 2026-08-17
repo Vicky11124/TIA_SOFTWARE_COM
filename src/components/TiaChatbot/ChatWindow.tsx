@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveProvider, LeadState, COUNTRY_CONFIG, extractCountryFromText } from "@/services/aiProvider";
+import { LeadState, COUNTRY_CONFIG, extractCountryFromText } from "@/services/aiTypes";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 const tiaBotIcon = "/assets/tia-bot.webp";
@@ -51,7 +51,7 @@ import {
 } from "lucide-react";
 
 // Icon lookup helper
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
   Globe, Smartphone, TrendingUp, Palette, MessageSquare,
   Utensils, HeartPulse, Home, Briefcase, Hammer, ShoppingBag,
   Sparkles, Dumbbell, Bed, GraduationCap, Code2, Store, Car,
@@ -768,11 +768,34 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     }
   };
 
-  // WhatsApp template redirect
-  const handleWhatsAppRedirect = () => {
+  // WhatsApp template redirect & auto-log lead to Supabase
+  const handleWhatsAppRedirect = async () => {
     const rec = getRecommendation(selections);
     const country = selections["country"] || "UK";
     const flag = country === "US" ? "🇺🇸" : country === "AU" ? "🇦🇺" : "🇬🇧";
+
+    // Auto-save lead into Supabase leads table so admin gets notified
+    try {
+      const detailMsg = `[CHATBOT INQUIRY VIA WHATSAPP]
+Service: ${selections["service"] || "N/A"}
+Industry: ${selections["industry"] || "N/A"}
+Scope: ${getMilestoneValue("Scope")}
+Budget: ${selections["budget"] || "N/A"}
+Timeline: ${selections["timeline"] || "N/A"}
+Location: ${country}
+Recommended Package: ${rec.packageName} (${rec.price})`;
+
+      await supabase.from("leads").insert({
+        name: proposalForm.name.trim() || "Chatbot Visitor (WhatsApp)",
+        email: proposalForm.email.trim() || "whatsapp_lead@tiasoftwaresolutions.com",
+        phone: proposalForm.phone.trim() || null,
+        message: detailMsg,
+        status: "new",
+      });
+    } catch (err) {
+      console.error("Auto log lead error:", err);
+    }
+
     const text = `Hi TIA Digital Studio, I completed your digital consultant wizard! ${flag}\n\n• Service: ${selections["service"]}\n• Industry: ${selections["industry"]}\n• Scope: ${getMilestoneValue("Scope")}\n• Budget: ${selections["budget"]}\n• Timeline: ${selections["timeline"] || "N/A"}\n\nRecommended: ${rec.packageName} (${rec.price}). I'd like to discuss our official project proposal!`;
     const encoded = encodeURIComponent(text);
     window.open(`${whatsappLink}?text=${encoded}`, "_blank", "noopener,noreferrer");
@@ -1098,17 +1121,106 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
           )}
 
           {phase === "completion" && (
-            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 scrollbar-thin">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 scrollbar-thin">
               
               {/* Header Splash */}
               <div className="text-center select-none">
                 <span className="text-[24px]">🎉</span>
-                <h2 className="text-base font-extrabold text-foreground mt-1">Consultation Complete</h2>
-                <p className="text-xs text-muted-foreground mt-0.5">Here's our recommendation tailored to your parameters.</p>
+                <h2 className="text-base font-extrabold text-foreground mt-0.5">Consultation Complete!</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Enter your details below to save your project proposal to our Admin team.</p>
               </div>
 
-              {/* Interactive Report View */}
-              {!showProposalForm && !showBookForm ? (
+              {/* PROMINENT TOP CLIENT LEAD CAPTURE FORM */}
+              <div className="border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card p-4 rounded-xl space-y-3 shadow-md animate-fade-in">
+                <div className="pb-2 border-b border-border/60">
+                  <h4 className="font-extrabold text-xs sm:text-sm text-foreground flex items-center gap-1.5">
+                    <Send size={14} className="text-primary animate-pulse" />
+                    Claim Your Proposal & Save to Admin
+                  </h4>
+                  <p className="text-[9.5px] text-muted-foreground">Fill in your contact info to receive your itemized project quote.</p>
+                </div>
+
+                {submittedProposal ? (
+                  <div className="flex flex-col items-center justify-center py-4 text-center select-none bg-emerald-500/10 border border-emerald-500/30 rounded-xl space-y-1 animate-scale-up">
+                    <CheckCircle2 className="text-emerald-500 w-8 h-8 animate-bounce" />
+                    <h4 className="font-extrabold text-xs text-foreground">Lead Successfully Saved in Admin!</h4>
+                    <p className="text-[10px] text-muted-foreground max-w-[280px]">
+                      Thank you {proposalForm.name || "Client"}! Your specifications are logged in our system. Our team will review and contact you shortly.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleProposalSubmit} className="space-y-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9.5px] font-bold text-foreground mb-0.5 block">Your Full Name *</label>
+                        <input
+                          type="text"
+                          required
+                          value={proposalForm.name}
+                          onChange={(e) => setProposalForm({ ...proposalForm, name: e.target.value })}
+                          className="w-full bg-background border border-primary/30 rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                          placeholder="e.g. Sarah Jenkins"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9.5px] font-bold text-foreground mb-0.5 block">Email Address *</label>
+                        <input
+                          type="email"
+                          required
+                          value={proposalForm.email}
+                          onChange={(e) => setProposalForm({ ...proposalForm, email: e.target.value })}
+                          className="w-full bg-background border border-primary/30 rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                          placeholder="sarah@company.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9.5px] font-bold text-muted-foreground mb-0.5 block">Phone Number (Optional)</label>
+                        <input
+                          type="tel"
+                          value={proposalForm.phone}
+                          onChange={(e) => setProposalForm({ ...proposalForm, phone: e.target.value })}
+                          className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                          placeholder="+44 7451 255217"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9.5px] font-bold text-muted-foreground mb-0.5 block">Project Notes (Optional)</label>
+                        <input
+                          type="text"
+                          value={proposalForm.notes}
+                          onChange={(e) => setProposalForm({ ...proposalForm, notes: e.target.value })}
+                          className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                          placeholder="Special features, launch date..."
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      disabled={submittingProposal || !proposalForm.name.trim() || !proposalForm.email.trim()}
+                      className="w-full text-xs font-black py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center gap-2 tracking-wide uppercase"
+                    >
+                      {submittingProposal ? (
+                        <>
+                          <Loader2 size={13} className="animate-spin" />
+                          Saving Lead to Admin...
+                        </>
+                      ) : (
+                        <>
+                          <Send size={13} />
+                          Submit Lead & Connect to Admin
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                )}
+              </div>
+
+              {/* Interactive Recommendation Details View */}
+              {!showBookForm ? (
                 <div className="space-y-4">
                   
                   {/* Recommendation Card */}
@@ -1199,108 +1311,23 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
                     </div>
                   </div>
 
-                  {/* Actions Choice Panel */}
-                  <div className="space-y-2 pt-2">
-                    <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider select-none">For more info contact us</h4>
+                  {/* WhatsApp Direct Option */}
+                  <div className="pt-1">
                     <button
                       onClick={handleWhatsAppRedirect}
-                      className="flex items-center gap-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/40 rounded-xl p-3.5 text-left transition-all w-full group"
+                      className="flex items-center gap-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/40 rounded-xl p-3 text-left transition-all w-full group"
                     >
-                      <div className="w-9 h-9 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-                        <Phone size={18} />
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                        <Phone size={16} />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-foreground group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">WhatsApp Us</h4>
-                        <p className="text-[9px] text-muted-foreground font-medium">Instantly message your project configuration details to our team.</p>
+                        <h4 className="text-xs font-bold text-foreground group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">WhatsApp Us Directly</h4>
+                        <p className="text-[9px] text-muted-foreground font-medium">Message your project configuration directly to our team on WhatsApp.</p>
                       </div>
                     </button>
                   </div>
                 </div>
-              ) : showProposalForm ? (
-                
-                // Proposal request form
-                <form onSubmit={handleProposalSubmit} className="border border-border/80 bg-card p-4 rounded-xl space-y-3.5 animate-fade-in">
-                  <div className="flex items-center justify-between pb-2 border-b border-border/40">
-                    <div>
-                      <h3 className="font-extrabold text-xs text-foreground">Request Project Proposal</h3>
-                      <p className="text-[9px] text-muted-foreground">Submit contact info to send specs to our sales engineers.</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowProposalForm(false)}
-                      className="text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-
-                  {submittedProposal ? (
-                    <div className="flex flex-col items-center justify-center py-6 text-center select-none">
-                      <CheckCircle2 className="text-emerald-500 w-10 h-10 mb-2 animate-bounce" />
-                      <h4 className="font-bold text-foreground text-xs">Request Received!</h4>
-                      <p className="text-[10px] text-muted-foreground max-w-[240px] mt-0.5">
-                        Your project configuration is sent. We will prepare your official proposal within 24 hours.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <div>
-                          <label className="text-[9px] font-bold text-muted-foreground mb-0.5 block">Name *</label>
-                          <input
-                            type="text"
-                            required
-                            value={proposalForm.name}
-                            onChange={(e) => setProposalForm({ ...proposalForm, name: e.target.value })}
-                            className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                            placeholder="John Doe"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[9px] font-bold text-muted-foreground mb-0.5 block">Email *</label>
-                          <input
-                            type="email"
-                            required
-                            value={proposalForm.email}
-                            onChange={(e) => setProposalForm({ ...proposalForm, email: e.target.value })}
-                            className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                            placeholder="john@example.com"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-bold text-muted-foreground mb-0.5 block">Phone Number</label>
-                        <input
-                          type="tel"
-                          value={proposalForm.phone}
-                          onChange={(e) => setProposalForm({ ...proposalForm, phone: e.target.value })}
-                          className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                          placeholder="+44 7..."
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[9px] font-bold text-muted-foreground mb-0.5 block">Additional Notes</label>
-                        <textarea
-                          value={proposalForm.notes}
-                          onChange={(e) => setProposalForm({ ...proposalForm, notes: e.target.value })}
-                          className="w-full bg-background border border-border rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-primary h-14 resize-none"
-                          placeholder="e.g. key integrations needed, competitor references..."
-                        />
-                      </div>
-
-                      <Button
-                        type="submit"
-                        disabled={submittingProposal}
-                        className="w-full text-xs font-bold bg-primary hover:bg-primary/95 text-primary-foreground shadow"
-                      >
-                        {submittingProposal ? <Loader2 size={12} className="animate-spin" /> : "Submit Proposal Request"}
-                      </Button>
-                    </div>
-                  )}
-                </form>
               ) : (
-                
-                // Book Consultation schedule form
                 <form onSubmit={handleBookSubmit} className="border border-border/80 bg-card p-4 rounded-xl space-y-3.5 animate-fade-in">
                   <div className="flex items-center justify-between pb-2 border-b border-border/40">
                     <div>

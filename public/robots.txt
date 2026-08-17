@@ -1,0 +1,10 @@
+# TIA Software Solutions — Production Robots Configuration
+# Updated: 2026-08-17
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://www.tiasoftwaresolutions.com/sitemap.xml
