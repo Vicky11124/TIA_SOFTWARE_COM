@@ -157,8 +157,8 @@ async function prerender() {
   // 2. Find browser
   const execPath = findBrowser();
   if (!execPath) {
-    console.error("❌ No Chrome or Edge found on this system.");
-    process.exit(1);
+    console.warn("⚠️ No system Chrome/Edge browser binary found in build environment. Skipping prerender (SPA build completed successfully).");
+    process.exit(0);
   }
   console.log(`🌐 Using browser: ${execPath}\n`);
 
