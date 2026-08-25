@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { LeadState } from "@/services/aiTypes";
 
 import { validateFormSecurity, recordFormSubmission } from "@/utils/formSecurity";
+import { identifyFreshworksContact } from "@/utils/freshworks";
 import { toast } from "sonner";
 
 interface ContactFormInlineProps {
@@ -58,6 +59,12 @@ Timeline: ${leadState.timeline || "N/A"}`;
       });
 
       if (error) throw error;
+
+      identifyFreshworksContact({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+      });
 
       recordFormSubmission();
       setSubmitted(true);

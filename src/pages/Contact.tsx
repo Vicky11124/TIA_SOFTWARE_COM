@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 import { validateFormSecurity, recordFormSubmission } from "@/utils/formSecurity";
+import { identifyFreshworksContact } from "@/utils/freshworks";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
@@ -50,6 +51,12 @@ const Contact = () => {
       });
 
       if (error) throw error;
+
+      identifyFreshworksContact({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+      });
 
       recordFormSubmission();
       const msg = `Name: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nMessage: ${form.message}`;
