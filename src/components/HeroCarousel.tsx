@@ -19,21 +19,21 @@ interface BannerRow {
 
 const fallbackSlides = [
   {
-    image: banner1,
-    subtitle: "Virtual Assistance Services",
-    title: "Simplify Your Work.",
-    highlight: "Maximize Your Growth",
-    desc: "Professional Virtual Assistance Services to streamline operations, reduce workload, and boost productivity for your business.",
-    cta_text: "Get Started",
-    cta_link: "",
-  },
-  {
     image: banner2,
     subtitle: "Digital Solutions Agency",
     title: "Build Your Brand With",
     highlight: "Precision & Power",
     desc: "We craft high-performance digital experiences that elevate your business and drive real growth.",
     cta_text: "Book Now",
+    cta_link: "",
+  },
+  {
+    image: banner1,
+    subtitle: "Virtual Assistance Services",
+    title: "Simplify Your Work.",
+    highlight: "Maximize Your Growth",
+    desc: "Professional Virtual Assistance Services to streamline operations, reduce workload, and boost productivity for your business.",
+    cta_text: "Get Started",
     cta_link: "",
   },
   {
@@ -70,6 +70,7 @@ const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
   const [prevImage, setPrevImage] = useState<string | null>(null);
   const [slides, setSlides] = useState<Slide[]>(fallbackSlides);
+  const [isFirstRender, setIsFirstRender] = useState(true);
   const { whatsappLink } = useSiteSettings();
 
   useEffect(() => {
@@ -90,7 +91,7 @@ const HeroCarousel = () => {
         if (data && data.length > 0) {
           setSlides(
             data.map((b) => ({
-              image: b.image_url || banner1,
+              image: b.image_url || banner2,
               subtitle: b.subtitle,
               title: b.title,
               highlight: b.highlight,
@@ -107,6 +108,7 @@ const HeroCarousel = () => {
   }, []);
 
   const changeSlide = useCallback((newIdx: number) => {
+    setIsFirstRender(false);
     setPrevImage(slides[current].image);
     setCurrent(newIdx);
   }, [current, slides]);
@@ -147,11 +149,12 @@ const HeroCarousel = () => {
         src={slide.image}
         alt=""
         className={`absolute inset-0 w-full h-full object-cover z-10 ${
-          prevImage ? "animate-hero-bg" : "opacity-55 scale-100"
+          prevImage && !isFirstRender ? "animate-hero-bg" : "opacity-55 scale-100"
         }`}
         width={1920}
         height={1080}
         fetchpriority="high"
+        loading="eager"
         decoding="async"
       />
 
@@ -174,27 +177,33 @@ const HeroCarousel = () => {
         <div className="max-w-3xl">
           <span
             key={`subtitle-${current}`}
-            className="inline-block text-sm font-semibold text-primary mb-6 tracking-widest uppercase animate-hero-subtitle"
+            className={`inline-block text-sm font-semibold text-primary mb-6 tracking-widest uppercase ${
+              isFirstRender ? "" : "animate-hero-subtitle"
+            }`}
           >
             {slide.subtitle}
           </span>
 
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-foreground">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-6 text-foreground">
             {slide.title}
             <br />
             <span className="gradient-text">{slide.highlight}</span>
-          </h2>
+          </h1>
 
           <p
             key={`desc-${current}`}
-            className="text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed animate-hero-desc"
+            className={`text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed ${
+              isFirstRender ? "" : "animate-hero-desc"
+            }`}
           >
             {slide.desc}
           </p>
 
           <div
             key={`actions-${current}`}
-            className="flex flex-wrap gap-4 animate-hero-actions"
+            className={`flex flex-wrap gap-4 ${
+              isFirstRender ? "" : "animate-hero-actions"
+            }`}
           >
             <Button variant="hero" size="lg" className="px-8 py-6 text-base shadow-lg" asChild>
               <a href={slide.cta_link || whatsappLink} target="_blank" rel="noopener noreferrer">

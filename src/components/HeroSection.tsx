@@ -25,7 +25,7 @@ const HeroSection = () => {
       <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[120px] animate-float" />
 
       <div className="container relative z-10 pt-20">
-        <div className="max-w-3xl animate-fade-in">
+        <div className="max-w-3xl">
           <span className="inline-block text-sm font-medium text-primary mb-6 tracking-widest uppercase">
             Digital Solutions Agency
           </span>

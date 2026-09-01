@@ -42,10 +42,35 @@ function findBrowser() {
   return null;
 }
 
-// ── Supabase public credentials (anon key — safe to embed) ───────
-const SUPABASE_URL = "https://dabsuflxmuafjfemxrtc.supabase.co";
+// ── Helper to load .env into process.env ──────────────────────────
+function loadEnv() {
+  const envPath = path.resolve(__dirname, "..", ".env");
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, "utf-8");
+    for (const line of content.split("\n")) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith("#")) {
+        const eqIdx = trimmed.indexOf("=");
+        if (eqIdx !== -1) {
+          const key = trimmed.slice(0, eqIdx).trim();
+          let val = trimmed.slice(eqIdx + 1).trim();
+          val = val.replace(/^["']|["']$/g, "");
+          if (!process.env[key]) {
+            process.env[key] = val;
+          }
+        }
+      }
+    }
+  }
+}
+loadEnv();
+
+// ── Supabase public credentials ──────────────────────────────────
+const SUPABASE_URL =
+  process.env.VITE_SUPABASE_URL || "https://tuixjvdojimkhtfilxce.supabase.co";
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhYnN1Zmx4bXVhZmpmZW14cnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NDExMTIsImV4cCI6MjA5MDUxNzExMn0.ayVDcsb_KOntc-BpCTcjwwF46p5Al0a4cuUZFzBQeOo";
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  "sb_publishable_Vd_j-5Sv89WukkAzSZkRUw_uu99NXhz";
 
 // ── Static routes ────────────────────────────────────────────────
 const STATIC_ROUTES = [
@@ -61,6 +86,9 @@ const STATIC_ROUTES = [
   "/services/seasonal-festive",
   "/services/event-launch-graphics",
   "/services/virtual-assistance",
+  "/services/website-development",
+  "/services/app-development",
+  "/services/software-development",
   "/plans",
   "/contact",
   "/blog",
@@ -82,7 +110,12 @@ async function fetchBlogSlugs() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const blogs = await res.json();
     console.log(`  Found ${blogs.length} published blog(s) in Supabase`);
-    return blogs.map((b) => `/blog/${b.slug}`);
+    return blogs
+      .map((b) => {
+        const clean = b.slug ? b.slug.replace(/^\/?(blog\/)?/, "") : "";
+        return clean ? `/blog/${clean}` : null;
+      })
+      .filter(Boolean);
   } catch (err) {
     console.warn(`  ⚠ Could not fetch blogs: ${err.message}`);
     console.warn(`  → Using fallback demo blog slug`);

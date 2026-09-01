@@ -123,7 +123,6 @@ const Index = () => {
           {JSON.stringify(breadcrumbSchema)}
         </script>
       </Helmet>
-      <h1 className="sr-only">Web Design & SEO Agency London — TIA Software Solutions</h1>
       <Navbar />
       <HeroCarousel />
       <ServicesHighlight />

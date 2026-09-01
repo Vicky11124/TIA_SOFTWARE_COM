@@ -233,6 +233,32 @@ const AdminBlogs = () => {
     }
   };
 
+  const handleTogglePublish = async (blog: Blog) => {
+    const newStatus = blog.status === "published" ? "draft" : "published";
+    const updateData = {
+      status: newStatus,
+      published_at: newStatus === "published" ? (blog.published_at || new Date().toISOString()) : blog.published_at,
+    };
+
+    if (isLocalStorageFallback) {
+      const local = getLocalBlogs();
+      const updated = local.map((b) => (b.id === blog.id ? { ...b, ...updateData } : b));
+      saveLocalBlogs(updated);
+      toast.success(`Blog status updated to ${newStatus} (Local Storage fallback)`);
+      fetchBlogs();
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("blogs").update(updateData).eq("id", blog.id);
+      if (error) throw error;
+      toast.success(`Blog status updated to ${newStatus} successfully`);
+      fetchBlogs();
+    } catch (e: unknown) {
+      toast.error("Failed to update status: " + (e instanceof Error ? e.message : String(e)));
+    }
+  };
+
   const filteredBlogs = blogs.filter((b) => {
     const matchesSearch = b.title.toLowerCase().includes(search.toLowerCase()) || 
                           b.content.toLowerCase().includes(search.toLowerCase()) ||
@@ -352,7 +378,26 @@ const AdminBlogs = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-2 w-full md:w-auto md:shrink-0 justify-end pt-4 md:pt-0 border-t md:border-t-0 border-border/50">
+                <div className="flex items-center gap-2 w-full md:w-auto md:shrink-0 justify-end pt-4 md:pt-0 border-t md:border-t-0 border-border/50">
+                  <button
+                    onClick={() => handleTogglePublish(b)}
+                    className={`flex items-center justify-center gap-1.5 px-3 h-10 rounded-lg text-xs font-semibold transition-all ${
+                      b.status === "published"
+                        ? "bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 border border-amber-500/20"
+                        : "bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-500 border border-emerald-500/20"
+                    }`}
+                    title={b.status === "published" ? "Unpublish blog" : "Publish blog"}
+                  >
+                    {b.status === "published" ? (
+                      <>
+                        <EyeOff size={15} /> <span className="hidden sm:inline">Unpublish</span>
+                      </>
+                    ) : (
+                      <>
+                        <Eye size={15} /> <span className="hidden sm:inline">Publish</span>
+                      </>
+                    )}
+                  </button>
                   <button
                     onClick={() => { setEditing(b); setShowForm(true); }}
                     className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"

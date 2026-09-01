@@ -7,16 +7,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Website Development, SEO & Digital Marketing Agency | TIA Software Solutions</title>
 
-    <!-- Performance Optimization: Preconnects & Preloads -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-97DXKC53G1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-97DXKC53G1');
+    </script>
+
+    <!-- Performance Optimization: Preconnects -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
-    <link rel="preload" href="/assets/tia-bot.webp" as="image" type="image/webp">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
 
-    <!-- Google Fonts (Non-blocking loading) -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- Google Fonts (Non-blocking font stylesheet) -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     </noscript>
 
     <!-- Meta Pixel Code (Deferred script load until user interaction) -->
@@ -63,8 +73,8 @@
     </script>
     <!-- End Meta Pixel Code -->
 
-    <!-- Freshworks Live Chat -->
-    <script src="//in.fw-cdn.com/31176394/538363.js" chat="true"></script>
+    <!-- Freshworks Live Chat (Deferred non-blocking load) -->
+    <script defer src="//in.fw-cdn.com/31176394/538363.js" chat="true"></script>
   </head>
   <body>
     <!-- Meta Pixel Noscript Fallback -->

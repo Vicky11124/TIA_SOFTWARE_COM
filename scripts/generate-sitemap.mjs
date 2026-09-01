@@ -23,12 +23,38 @@ const SERVICE_PAGES = [
   "stories-reels-assets",
   "seasonal-festive",
   "event-launch-graphics",
-  "virtual-assistance"
+  "virtual-assistance",
+  "website-development",
+  "app-development",
+  "software-development"
 ];
 
+// Helper to load .env into process.env if not already set
+function loadEnv() {
+  const envPath = path.resolve(process.cwd(), ".env");
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, "utf-8");
+    for (const line of content.split("\n")) {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith("#")) {
+        const eqIdx = trimmed.indexOf("=");
+        if (eqIdx !== -1) {
+          const key = trimmed.slice(0, eqIdx).trim();
+          let val = trimmed.slice(eqIdx + 1).trim();
+          val = val.replace(/^["']|["']$/g, "");
+          if (!process.env[key]) {
+            process.env[key] = val;
+          }
+        }
+      }
+    }
+  }
+}
+
 async function fetchDynamicBlogSlugs() {
-  const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://dabsuflxmuafjfemxrtc.supabase.co";
-  const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhYnN1Zmx4bXVhZmpmZW14cnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NDExMTIsImV4cCI6MjA5MDUxNzExMn0.ayVDcsb_KOntc-BpCTcjwwF46p5Al0a4cuUZFzBQeOo";
+  loadEnv();
+  const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://tuixjvdojimkhtfilxce.supabase.co";
+  const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_Vd_j-5Sv89WukkAzSZkRUw_uu99NXhz";
   
   if (!SUPABASE_KEY) {
     console.log("No Supabase key found in env, using default static blog slugs.");
@@ -36,7 +62,7 @@ async function fetchDynamicBlogSlugs() {
   }
 
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/blogs?select=slug&is_published=eq.true`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/blogs?select=slug&status=eq.published`, {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`
@@ -44,7 +70,7 @@ async function fetchDynamicBlogSlugs() {
     });
     if (!res.ok) throw new Error(res.statusText);
     const data = await res.json();
-    return data.map(b => b.slug);
+    return data.map(b => b.slug ? b.slug.replace(/^\/?(blog\/)?/, "") : "").filter(Boolean);
   } catch (err) {
     console.warn("Could not fetch dynamic blog slugs from Supabase, using fallback:", err.message);
     return ["webp-future-image-optimization"];
