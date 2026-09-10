@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GeoProvider } from "@/contexts/GeoContext";
+import { normalizeBlogSlug } from "@/utils/blogSlug";
 import ScrollToTop from "./components/ScrollToTop";
 
 // Lazy-load all pages
@@ -40,7 +41,9 @@ const OG_IMAGE =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3f4bcd31-a5c1-420a-b200-e811caec0b6d/id-preview-3a79d4ef--48407ef1-b28b-4b4e-bac1-aaad364a1361.lovable.app-1774944538908.png";
 
 const LegacyBlogRedirect = () => {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = normalizeBlogSlug(params["*"] || params.slug);
+
   return <Navigate to={slug ? `/blog/${slug}` : "/blog"} replace />;
 };
 
@@ -81,10 +84,8 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogDetail />} />
-              <Route path="/blogs" element={<LegacyBlogRedirect />} />
-              <Route path="/blogs/:slug" element={<LegacyBlogRedirect />} />
-              <Route path="/blogs/blog/:slug" element={<LegacyBlogRedirect />} />
-              <Route path="/blog/blog/:slug" element={<LegacyBlogRedirect />} />
+              <Route path="/blogs/*" element={<LegacyBlogRedirect />} />
+              <Route path="/blog/*" element={<LegacyBlogRedirect />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
