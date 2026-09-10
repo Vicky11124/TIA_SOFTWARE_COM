@@ -6,6 +6,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getBlogPath } from "@/utils/blogSlug";
 import { Search, Calendar, User, ArrowRight, BookOpen, Clock } from "lucide-react";
 
 type Blog = {
@@ -21,34 +22,7 @@ type Blog = {
   published_at: string | null;
 };
 
-// Fallback dummy blogs for LocalStorage when Supabase table isn't created yet
-const LOCAL_STORAGE_KEY = "tia_fallback_blogs";
-const getLocalBlogs = (): Blog[] => {
-  try {
-    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (data) {
-      const parsed = JSON.parse(data);
-      // Filter for published ones only
-      return parsed.filter((b: Blog & { status?: string }) => b.status === "published");
-    }
-  } catch (e) {
-    console.error("Local storage error:", e);
-  }
-  return [
-    {
-      id: "demo-1",
-      title: "Why WebP is the Future of Web Image Optimization",
-      slug: "webp-future-image-optimization",
-      cover_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
-      author: "TIA Tech Team",
-      content: "Image compression is key to modern web design...",
-      category: "Design",
-      tags: ["WebP", "SEO", "Optimization", "Design Systems"],
-      is_featured: true,
-      published_at: new Date().toISOString(),
-    }
-  ];
-};
+import { getFallbackBlogs } from "@/data/defaultBlogs";
 
 const Blog = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -70,16 +44,24 @@ const Blog = () => {
 
         if (error) {
           if (error.code === "42P01") {
-            setBlogs(getLocalBlogs());
+            setBlogs((getFallbackBlogs() as unknown) as Blog[]);
             setLoading(false);
             return;
           }
           throw error;
         }
-        setBlogs(data || []);
+
+        if (data && data.length > 0) {
+          // If Supabase has data, display DB blogs merged with fallback blogs if DB has fewer items
+          const dbSlugs = new Set(data.map((b) => b.slug));
+          const extraFallbacks = (getFallbackBlogs() as unknown as Blog[]).filter((b) => !dbSlugs.has(b.slug));
+          setBlogs([...data, ...extraFallbacks]);
+        } else {
+          setBlogs((getFallbackBlogs() as unknown) as Blog[]);
+        }
       } catch (err) {
         console.error("Error loading blogs from DB:", err);
-        setBlogs(getLocalBlogs());
+        setBlogs((getFallbackBlogs() as unknown) as Blog[]);
       } finally {
         setLoading(false);
       }
@@ -206,7 +188,7 @@ const Blog = () => {
                   transition={{ duration: 0.6 }}
                   className="mb-16"
                 >
-                  <Link to={`/blog/${featuredBlog.slug}`} className="group grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-card/20 rounded-2xl overflow-hidden border border-border/50 p-6 md:p-8 hover:border-primary/20 transition-all duration-300">
+                  <Link to={getBlogPath(featuredBlog.slug)} className="group grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-card/20 rounded-2xl overflow-hidden border border-border/50 p-6 md:p-8 hover:border-primary/20 transition-all duration-300">
                     <div className="lg:col-span-7 h-[250px] md:h-[400px] w-full rounded-xl overflow-hidden relative">
                       {featuredBlog.cover_image ? (
                         <img
@@ -263,7 +245,7 @@ const Blog = () => {
                       transition={{ delay: i * 0.05, duration: 0.5 }}
                       className="group bg-card/10 border border-border/50 rounded-2xl overflow-hidden hover:border-primary/20 transition-all duration-300 flex flex-col h-full"
                     >
-                      <Link to={`/blog/${blog.slug}`} className="flex flex-col h-full">
+                      <Link to={getBlogPath(blog.slug)} className="flex flex-col h-full">
                         <div className="h-48 w-full overflow-hidden relative">
                           {blog.cover_image ? (
                             <img

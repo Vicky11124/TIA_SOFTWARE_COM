@@ -110,16 +110,25 @@ async function fetchBlogSlugs() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const blogs = await res.json();
     console.log(`  Found ${blogs.length} published blog(s) in Supabase`);
-    return blogs
+    const slugs = blogs
       .map((b) => {
         const clean = b.slug ? b.slug.replace(/^\/?(blog\/)?/, "") : "";
         return clean ? `/blog/${clean}` : null;
       })
       .filter(Boolean);
+
+    const fallbacks = [
+      "/blog/custom-software-development-business",
+      "/blog/webp-future-image-optimization"
+    ];
+    return Array.from(new Set([...slugs, ...fallbacks]));
   } catch (err) {
     console.warn(`  ⚠ Could not fetch blogs: ${err.message}`);
-    console.warn(`  → Using fallback demo blog slug`);
-    return ["/blog/webp-future-image-optimization"];
+    console.warn(`  → Using fallback demo blog slugs`);
+    return [
+      "/blog/custom-software-development-business",
+      "/blog/webp-future-image-optimization"
+    ];
   }
 }
 

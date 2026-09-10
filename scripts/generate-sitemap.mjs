@@ -68,12 +68,13 @@ async function fetchDynamicBlogSlugs() {
         Authorization: `Bearer ${SUPABASE_KEY}`
       }
     });
-    if (!res.ok) throw new Error(res.statusText);
     const data = await res.json();
-    return data.map(b => b.slug ? b.slug.replace(/^\/?(blog\/)?/, "") : "").filter(Boolean);
+    const dbSlugs = data.map(b => b.slug ? b.slug.replace(/^\/?(blog\/)?/, "") : "").filter(Boolean);
+    const fallbacks = ["custom-software-development-business", "webp-future-image-optimization"];
+    return Array.from(new Set([...dbSlugs, ...fallbacks]));
   } catch (err) {
     console.warn("Could not fetch dynamic blog slugs from Supabase, using fallback:", err.message);
-    return ["webp-future-image-optimization"];
+    return ["custom-software-development-business", "webp-future-image-optimization"];
   }
 }
 

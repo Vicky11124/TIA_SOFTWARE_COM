@@ -6,6 +6,7 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { motion } from "framer-motion";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getBlogPath, getBlogSlugCandidates, normalizeBlogSlug } from "@/utils/blogSlug";
 import { Calendar, User, ArrowLeft, BookOpen, Clock, Tag } from "lucide-react";
 
 type Blog = {
@@ -24,42 +25,7 @@ type Blog = {
   published_at: string | null;
 };
 
-// Fallback dummy blogs for LocalStorage when Supabase table isn't created yet
-const LOCAL_STORAGE_KEY = "tia_fallback_blogs";
-const getLocalBlogs = (): Blog[] => {
-  try {
-    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (data) return JSON.parse(data);
-  } catch (e) {
-    console.error("Local storage error:", e);
-  }
-  return [
-    {
-      id: "demo-1",
-      title: "Why WebP is the Future of Web Image Optimization",
-      slug: "webp-future-image-optimization",
-      cover_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
-      author: "TIA Tech Team",
-      content: `# Why WebP is the Future of Web Image Optimization
-
-Image compression is key to modern web design. In this post, we discuss how WebP provides high-quality graphics at a fraction of PNG/JPG file sizes.
-
-## Key Benefits of WebP:
-- **Up to 30% smaller file sizes** compared to JPEG.
-- **Transparency support** similar to PNG.
-- **Animation support** replacing heavy GIFs.
-
-Implementing WebP on your business website can boost SEO and search ranking dramatically by increasing load speed!`,
-      category: "Design",
-      tags: ["WebP", "SEO", "Optimization", "Design Systems"],
-      meta_title: "WebP Image Optimization Guide | TIA Blog",
-      meta_description: "Learn why WebP is crucial for modern web optimization, performance, and search ranking.",
-      meta_keywords: "webp, image optimization, speed up website, seo",
-      canonical_url: "",
-      published_at: new Date().toISOString(),
-    }
-  ];
-};
+import { getFallbackBlogs } from "@/data/defaultBlogs";
 
 const BlogDetail = () => {
   const { slug } = useParams();
@@ -69,31 +35,54 @@ const BlogDetail = () => {
 
   useEffect(() => {
     const fetchBlog = async () => {
+      const normalizedSlug = normalizeBlogSlug(slug);
+      const slugCandidates = getBlogSlugCandidates(slug);
+
+      if (!normalizedSlug) {
+        setBlog(null);
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const { data, error } = await supabase
           .from("blogs")
           .select("*")
-          .eq("slug", slug)
+          .in("slug", slugCandidates)
           .eq("status", "published")
-          .single();
+          .limit(1);
 
         if (error) {
           if (error.code === "42P01") {
-            const local = getLocalBlogs();
-            const found = local.find((b) => b.slug === slug);
-            setBlog(found || null);
+            const local = getFallbackBlogs();
+            const found = local.find(
+              (b) => slugCandidates.includes(b.slug) || normalizeBlogSlug(b.slug) === normalizedSlug
+            );
+            setBlog((found as Blog) || null);
             setLoading(false);
             return;
           }
           throw error;
         }
-        setBlog(data);
+
+        if (data && data.length > 0) {
+          setBlog(data[0]);
+        } else {
+          // If no blog row in Supabase, search fallback blogs
+          const local = getFallbackBlogs();
+          const found = local.find(
+            (b) => slugCandidates.includes(b.slug) || normalizeBlogSlug(b.slug) === normalizedSlug
+          );
+          setBlog((found as Blog) || null);
+        }
       } catch (err) {
         console.error("Error reading blog by slug:", err);
-        const local = getLocalBlogs();
-        const found = local.find((b) => b.slug === slug);
-        setBlog(found || null);
+        const local = getFallbackBlogs();
+        const found = local.find(
+          (b) => slugCandidates.includes(b.slug) || normalizeBlogSlug(b.slug) === normalizedSlug
+        );
+        setBlog((found as Blog) || null);
       } finally {
         setLoading(false);
       }
@@ -105,7 +94,7 @@ const BlogDetail = () => {
   const blogTitle = blog?.meta_title || (blog ? `${blog.title} | TIA Software Solutions` : "TIA Software Solutions — Blog");
   const blogDesc = blog?.meta_description || (blog ? blog.content.substring(0, 160).replace(/[#*`_\n]/g, " ").trim() : "");
   const blogImage = blog?.cover_image || "";
-  const blogUrl = blog?.canonical_url || (blog ? `https://www.tiasoftwaresolutions.com/blog/${blog.slug}` : "");
+  const blogUrl = blog?.canonical_url || (blog ? `https://www.tiasoftwaresolutions.com${getBlogPath(blog.slug)}` : "");
 
   const jsonLdSchema = blog ? JSON.stringify({
     "@context": "https://schema.org",
@@ -274,5 +263,5 @@ const BlogDetail = () => {
   );
 };
 
-export default Blog;
+export default BlogDetail;
 export { BlogDetail };

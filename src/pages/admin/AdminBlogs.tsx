@@ -24,43 +24,12 @@ type Blog = {
   updated_at?: string;
 };
 
-// Fallback dummy blogs for LocalStorage when Supabase table isn't created yet
+import { getFallbackBlogs } from "@/data/defaultBlogs";
+
 const LOCAL_STORAGE_KEY = "tia_fallback_blogs";
+
 const getLocalBlogs = (): Blog[] => {
-  try {
-    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (data) return JSON.parse(data);
-  } catch (e) {
-    console.error("Local storage error:", e);
-  }
-  return [
-    {
-      id: "demo-1",
-      title: "Why WebP is the Future of Web Image Optimization",
-      slug: "webp-future-image-optimization",
-      cover_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
-      author: "TIA Tech Team",
-      content: `# Why WebP is the Future of Web Image Optimization
-
-Image compression is key to modern web design. In this post, we discuss how WebP provides high-quality graphics at a fraction of PNG/JPG file sizes.
-
-## Key Benefits of WebP:
-- **Up to 30% smaller file sizes** compared to JPEG.
-- **Transparency support** similar to PNG.
-- **Animation support** replacing heavy GIFs.
-
-Implementing WebP on your business website can boost SEO and search ranking dramatically by increasing load speed!`,
-      category: "Design",
-      tags: ["WebP", "SEO", "Optimization", "Design Systems"],
-      meta_title: "WebP Image Optimization Guide | TIA Blog",
-      meta_description: "Learn why WebP is crucial for modern web optimization, performance, and search ranking.",
-      meta_keywords: "webp, image optimization, speed up website, seo",
-      canonical_url: "",
-      is_featured: true,
-      status: "published",
-      published_at: new Date().toISOString(),
-    }
-  ];
+  return getFallbackBlogs() as unknown as Blog[];
 };
 
 const saveLocalBlogs = (blogs: Blog[]) => {
