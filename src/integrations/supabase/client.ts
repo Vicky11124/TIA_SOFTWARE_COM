@@ -3,8 +3,16 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 // The publishable key is intentionally safe for browser use; RLS protects data access.
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://tuixjvdojimkhtfilxce.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_Vd_j-5Sv89WukkAzSZkRUw_uu99NXhz";
+const NEW_SUPABASE_URL = "https://tuixjvdojimkhtfilxce.supabase.co";
+const NEW_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Vd_j-5Sv89WukkAzSZkRUw_uu99NXhz";
+const LEGACY_SUPABASE_URL = "https://dabsuflxmuafjfemxrtc.supabase.co";
+const configuredUrl = import.meta.env.VITE_SUPABASE_URL;
+const usesLegacyProject = configuredUrl === LEGACY_SUPABASE_URL;
+
+const SUPABASE_URL = usesLegacyProject ? NEW_SUPABASE_URL : configuredUrl || NEW_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = usesLegacyProject
+  ? NEW_SUPABASE_PUBLISHABLE_KEY
+  : import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || NEW_SUPABASE_PUBLISHABLE_KEY;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
