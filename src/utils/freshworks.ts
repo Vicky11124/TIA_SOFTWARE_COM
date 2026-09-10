@@ -1,7 +1,7 @@
 declare global {
   interface Window {
     fwcrm?: {
-      identify: (identifier: string, contactData: Record<string, any>) => void;
+      identify: (identifier: string, contactData: Record<string, unknown>) => void;
     };
   }
 }
@@ -12,7 +12,7 @@ export interface FreshworksContactInput {
   phone?: string;
   companyName?: string;
   companyWebsite?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const identifyFreshworksContact = (data: FreshworksContactInput) => {
@@ -22,7 +22,7 @@ export const identifyFreshworksContact = (data: FreshworksContactInput) => {
   const firstName = nameParts[0] || "";
   const lastName = nameParts.slice(1).join(" ") || "";
 
-  const new_contact: Record<string, any> = {
+  const new_contact: Record<string, unknown> = {
     "First name": firstName,
     "Last name": lastName,
     "Email": data.email.trim(),

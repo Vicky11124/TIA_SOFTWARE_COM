@@ -253,7 +253,7 @@ const Plans = () => {
 
     // Lookup prices from planPricing based on geo
     const pricing = planPricing[plan.name.toLowerCase()]?.[geo];
-    const price = pricing ? pricing.price : (geo === "US" && plan.price_usd ? plan.price_usd : plan.price);
+    const price = pricing?.original ?? (geo === "US" && plan.price_usd ? plan.price_usd : plan.price);
     return (
       <motion.div
         initial={{ opacity: 0, y: 30 }}
@@ -283,11 +283,6 @@ const Plans = () => {
           <span className="text-3xl font-extrabold text-foreground">
             {currencySymbol}{price}
           </span>
-          {pricing?.original && (
-            <span className="text-sm text-muted-foreground/60 line-through">
-              {currencySymbol}{pricing.original}
-            </span>
-          )}
         </div>
 
         <ul className="space-y-3 mb-8 flex-1">

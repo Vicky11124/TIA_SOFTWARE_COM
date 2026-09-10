@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { LeadState, COUNTRY_CONFIG, extractCountryFromText } from "@/services/aiTypes";
+import { LeadState, COUNTRY_CONFIG, extractCountryFromText } from "@/services/chatbotTypes";
 import { Button } from "@/components/ui/button";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 const tiaBotIcon = "/assets/tia-bot.webp";
@@ -47,11 +47,12 @@ import {
   CheckCircle2,
   Instagram,
   Facebook,
-  Linkedin
+  Linkedin,
+  type LucideIcon
 } from "lucide-react";
 
 // Icon lookup helper
-const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+const iconMap: Record<string, LucideIcon> = {
   Globe, Smartphone, TrendingUp, Palette, MessageSquare,
   Utensils, HeartPulse, Home, Briefcase, Hammer, ShoppingBag,
   Sparkles, Dumbbell, Bed, GraduationCap, Code2, Store, Car,
@@ -133,14 +134,14 @@ export const tryDirectReactExtraction = (
     const config = COUNTRY_CONFIG[c];
     const sym = config.symbol;
 
-    if (lower.includes("basic") || lower.includes("199") || lower.includes("249") || lower.includes("349")) {
-      updates.budget = `Basic Plan (${sym}${c === 'UK' ? '199.99' : c === 'US' ? '249.99' : '349.99'}/mo)`;
-    } else if (lower.includes("standard") || lower.includes("399") || lower.includes("499") || lower.includes("699")) {
-      updates.budget = `Standard Plan (${sym}${c === 'UK' ? '399.99' : c === 'US' ? '499.99' : '699.99'}/mo)`;
-    } else if (lower.includes("pro") || lower.includes("649") || lower.includes("799") || lower.includes("1099")) {
-      updates.budget = `Pro Plan (${sym}${c === 'UK' ? '649.99' : c === 'US' ? '799.99' : '1099.99'}/mo)`;
-    } else if (lower.includes("premium") || lower.includes("899") || lower.includes("1099") || lower.includes("1499")) {
-      updates.budget = `Premium Plan (${sym}${c === 'UK' ? '899.99' : c === 'US' ? '1099.99' : '1499.99'}/mo)`;
+    if (lower.includes("basic") || lower.includes("249") || lower.includes("299") || lower.includes("399")) {
+      updates.budget = `Basic Plan (${sym}${c === 'UK' ? '249.99' : c === 'US' ? '299.99' : '399.99'}/mo)`;
+    } else if (lower.includes("standard") || lower.includes("449") || lower.includes("599") || lower.includes("799")) {
+      updates.budget = `Standard Plan (${sym}${c === 'UK' ? '449.99' : c === 'US' ? '599.99' : '799.99'}/mo)`;
+    } else if (lower.includes("pro") || lower.includes("699") || lower.includes("899") || lower.includes("1299")) {
+      updates.budget = `Pro Plan (${sym}${c === 'UK' ? '699.99' : c === 'US' ? '899.99' : '1299.99'}/mo)`;
+    } else if (lower.includes("premium") || lower.includes("999") || lower.includes("1299") || lower.includes("1799")) {
+      updates.budget = `Premium Plan (${sym}${c === 'UK' ? '999.99' : c === 'US' ? '1299.99' : '1799.99'}/mo)`;
     } else {
       const affirmatives = ["yes", "sure", "ok", "okay", "thats good", "that's good", "perfect", "good", "yep", "sounds good", "sounds perfect", "sounds great", "fine", "agree", "cool", "that works", "this works"];
       if (affirmatives.includes(lower) || affirmatives.some(aff => lower.startsWith(aff))) {
@@ -152,8 +153,8 @@ export const tryDirectReactExtraction = (
             hasFivePages = count <= 5;
           }
         }
-        const basicPrice = c === 'UK' ? '£199.99/mo' : c === 'US' ? '$249.99/mo' : 'A$349.99/mo';
-        const standardPrice = c === 'UK' ? '£399.99/mo' : c === 'US' ? '$499.99/mo' : 'A$699.99/mo';
+        const basicPrice = c === 'UK' ? '£249.99/mo' : c === 'US' ? '$299.99/mo' : 'A$399.99/mo';
+        const standardPrice = c === 'UK' ? '£449.99/mo' : c === 'US' ? '$599.99/mo' : 'A$799.99/mo';
         updates.budget = hasFivePages ? `Basic Plan (${basicPrice})` : `Standard Plan (${standardPrice})`;
       } else {
         const numMatch = resolvedText.match(/\b\d+\b/);
@@ -445,9 +446,9 @@ export function getRecommendation(selections: Record<string, string>): Recommend
   const budget = selections["budget"] || "Standard";
 
   const prices: Record<string, Record<string, string>> = {
-    UK: { Basic: "£149.99/mo", Standard: "£299.99/mo", Pro: "£499.99/mo", Premium: "£699.99/mo" },
-    US: { Basic: "$199.99/mo", Standard: "$399.99/mo", Pro: "$649.99/mo", Premium: "$899.99/mo" },
-    AU: { Basic: "A$299.99/mo", Standard: "A$599.99/mo", Pro: "A$999.99/mo", Premium: "A$1,399.99/mo" }
+    UK: { Basic: "£249.99/mo", Standard: "£449.99/mo", Pro: "£699.99/mo", Premium: "£999.99/mo" },
+    US: { Basic: "$299.99/mo", Standard: "$599.99/mo", Pro: "$899.99/mo", Premium: "$1,299.99/mo" },
+    AU: { Basic: "A$399.99/mo", Standard: "A$799.99/mo", Pro: "A$1,299.99/mo", Premium: "A$1,799.99/mo" }
   };
 
   const selectedPrices = prices[country] || prices.UK;
@@ -563,12 +564,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [activeStepId, setActiveStepId] = useState<string>("service");
   const [stepHistory, setStepHistory] = useState<string[]>([]);
-  const [phase, setPhase] = useState<"onboarding" | "completion" | "chat" | "contact">("onboarding");
-
-  // Chat follow-up states
-  const [chatMessages, setChatMessages] = useState<{ role: "user" | "model"; content: string }[]>([]);
-  const [chatInput, setChatInput] = useState("");
-  const [isChatTyping, setIsChatTyping] = useState(false);
+  const [phase, setPhase] = useState<"onboarding" | "completion" | "contact">("onboarding");
 
   // Proposal contact form states
   const [showProposalForm, setShowProposalForm] = useState(false);
@@ -579,8 +575,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   // Book Consultation state
   const [showBookForm, setShowBookForm] = useState(false);
   const [bookSuccess, setBookSuccess] = useState(false);
-
-  const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Trigger onboarding active state for Mascot
   useEffect(() => {
@@ -605,13 +599,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
       window.dispatchEvent(new CustomEvent("tia-chatbot-closed"));
     };
   }, []);
-
-  // Auto-scroll chat to bottom
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chatMessages, isChatTyping]);
 
   const activeStep = STEPS.find(s => s.id === activeStepId) || STEPS[0];
   const service = selections["service"] || "Website";
@@ -719,7 +706,6 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     setActiveStepId("service");
     setStepHistory([]);
     setPhase("onboarding");
-    setChatMessages([]);
     setShowProposalForm(false);
     setShowBookForm(false);
     setBookSuccess(false);
@@ -864,91 +850,6 @@ Selections: Service: ${selections["service"]}, Industry: ${selections["industry"
     }, 3000);
   };
 
-  // Conversational AI Streaming Chat Trigger
-  const handleSendChat = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!chatInput.trim() || isChatTyping) return;
-
-    const userText = chatInput.trim();
-    setChatInput("");
-
-    const newMsgs = [...chatMessages, { role: "user" as const, content: userText }];
-    setChatMessages(newMsgs);
-    setIsChatTyping(true);
-
-    try {
-      const rec = getRecommendation(selections);
-      const systemPrompt = `You are TIA AI, the Senior Digital Solutions Consultant at TIA Software Solutions.
-The user has completed our interactive project configurator. Here are their selections:
-- Service: ${selections["service"] || "N/A"}
-- Industry: ${selections["industry"] || "N/A"}
-- Scope details: ${getMilestoneValue("Scope")}
-- Budget Preference: ${selections["budget"] || "N/A"}
-- Timeline: ${selections["timeline"] || "N/A"}
-- Country: ${selections["country"] || "N/A"}
-
-Recommended Package: ${rec.packageName} (${rec.price})
-Estimated Timeline: ${rec.timeline}
-
-Your task is to answer follow-up questions about this project and explain how TIA can execute it.
-Speak with executive confidence, clarity, and genuine consultative insight. Keep answers brief (2-3 concise paragraphs maximum).
-Never suggest we can't do the project. Always guide them toward scheduling a discovery call.`;
-
-      // Seeding prompt
-      const apiMessages = [
-        { role: "system" as const, content: systemPrompt },
-        ...newMsgs.map(m => ({ role: m.role === "user" ? ("user" as const) : ("model" as const), content: m.content }))
-      ];
-
-      const mappedLeadState: LeadState = {
-        country: (selections["country"] as "UK" | "US" | "AU") || null,
-        service: selections["service"] || null,
-        businessType: selections["industry"] || null,
-        pages: selections["service"] === "Website" ? selections["website_scope"] : null,
-        features: selections["service"] === "Mobile App" ? [selections["app_features"]] : [],
-        budget: selections["budget"] || null,
-        timeline: selections["timeline"] || null,
-      };
-
-      const provider = getActiveProvider();
-      let botReply = "";
-
-      // Append typing item placeholder
-      setChatMessages(prev => [...prev, { role: "model", content: "" }]);
-
-      await provider.streamChat(
-        apiMessages,
-        mappedLeadState,
-        null,
-        {
-          onChunk: (chunk) => {
-            botReply += chunk;
-            setChatMessages(prev => {
-              const updated = [...prev];
-              updated[updated.length - 1].content = botReply;
-              return updated;
-            });
-          },
-          onFinish: (text) => {
-            setIsChatTyping(false);
-          },
-          onError: (err) => {
-            console.error("Streaming chat error:", err);
-            setIsChatTyping(false);
-            setChatMessages(prev => {
-              const updated = [...prev];
-              updated[updated.length - 1].content = "I encountered a minor connection issue, but our team is ready to discuss your project! Let's book a consultation.";
-              return updated;
-            });
-          }
-        }
-      );
-    } catch (err) {
-      console.error("Failed to execute chat stream:", err);
-      setIsChatTyping(false);
-    }
-  };
-
   // Recommendation details for completion card
   const recommendation = getRecommendation(selections);
 
@@ -996,7 +897,7 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
       <div className="flex-1 flex overflow-hidden bg-background/40">
         
         {/* Left Side: Live Project Summary Checklist (Tesla/Linear style) */}
-        {phase !== "chat" && phase !== "contact" && (
+        {phase !== "contact" && (
           <div className="hidden sm:flex w-[220px] bg-muted/20 border-r border-border/50 p-4 flex-col justify-between shrink-0 select-none">
             <div className="space-y-4">
               <div>
@@ -1541,87 +1442,6 @@ Never suggest we can't do the project. Always guide them toward scheduling a dis
             </div>
           )}
 
-          {phase === "chat" && (
-            <div className="flex-1 flex flex-col overflow-hidden bg-background/5 p-4 justify-between">
-              
-              {/* Chat Header Navigation back to report */}
-              <div className="flex items-center justify-between pb-2 border-b border-border/40 shrink-0 select-none">
-                <button
-                  onClick={() => setPhase("completion")}
-                  className="text-xs font-bold text-primary flex items-center gap-1 hover:underline"
-                >
-                  <ArrowLeft size={12} />
-                  Back to Consultation Report
-                </button>
-                <span className="text-[10px] text-muted-foreground">TIA Assistant Agent</span>
-              </div>
-
-              {/* Message scroll container */}
-              <div className="flex-1 overflow-y-auto py-3 space-y-3.5 pr-1 scrollbar-thin">
-                {chatMessages.map((msg, index) => (
-                  <div
-                    key={index}
-                    className={`flex gap-2.5 max-w-[85%] ${msg.role === "user" ? "self-end flex-row-reverse ml-auto" : "self-start"}`}
-                  >
-                    {msg.role !== "user" && (
-                      <div className="w-7 h-7 rounded-full bg-white border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden select-none">
-                        <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" width={28} height={28} />
-                      </div>
-                    )}
-                    <div className={`rounded-xl px-3 py-2 text-xs leading-relaxed shadow-sm whitespace-pre-line ${
-                      msg.role === "user"
-                        ? "bg-primary text-primary-foreground rounded-tr-none font-medium"
-                        : "bg-card border border-border text-foreground rounded-tl-none font-medium"
-                    }`}>
-                      {msg.content === "" ? (
-                        <div className="flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce delay-75" />
-                          <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce delay-150" />
-                          <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce delay-300" />
-                        </div>
-                      ) : (
-                        msg.content
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {isChatTyping && chatMessages[chatMessages.length - 1]?.content !== "" && (
-                  <div className="flex gap-2.5 max-w-[85%] self-start animate-pulse">
-                    <div className="w-7 h-7 rounded-full bg-white border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden">
-                      <img src={tiaBotIcon} alt="TIA AI" className="w-full h-full object-cover" width={28} height={28} />
-                    </div>
-                    <div className="rounded-xl px-3.5 py-2.5 bg-card border border-border text-foreground rounded-tl-none shadow-sm flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce delay-75" />
-                      <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce delay-150" />
-                      <span className="w-1.5 h-1.5 bg-muted-foreground/60 rounded-full animate-bounce delay-300" />
-                    </div>
-                  </div>
-                )}
-                <div ref={chatEndRef} />
-              </div>
-
-              {/* Chat Input form */}
-              <form onSubmit={handleSendChat} className="flex gap-2 pt-2 border-t border-border shrink-0 select-none">
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  className="flex-1 bg-background border border-border rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-                  placeholder="Ask about plan details, stack, hosting..."
-                  maxLength={400}
-                />
-                <Button
-                  type="submit"
-                  disabled={!chatInput.trim() || isChatTyping}
-                  size="icon"
-                  className="w-8.5 h-8.5 rounded-xl shrink-0 bg-primary hover:bg-primary/95 text-primary-foreground shadow"
-                >
-                  <Send size={11} />
-                </Button>
-              </form>
-
-            </div>
-          )}
         </div>
       </div>
     </div>

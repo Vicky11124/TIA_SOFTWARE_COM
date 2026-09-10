@@ -15,7 +15,7 @@ const HeroSection = () => {
         className="absolute inset-0 w-full h-full object-cover opacity-40"
         width={1920}
         height={1080}
-        fetchpriority="high"
+        fetchPriority="high"
       />
 
       {/* Overlay gradient */}

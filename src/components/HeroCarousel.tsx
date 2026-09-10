@@ -153,7 +153,7 @@ const HeroCarousel = () => {
         }`}
         width={1920}
         height={1080}
-        fetchpriority="high"
+        fetchPriority="high"
         loading="eager"
         decoding="async"
       />
@@ -255,4 +255,3 @@ const HeroCarousel = () => {
 };
 
 export default HeroCarousel;
-

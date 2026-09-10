@@ -2,7 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LeadState } from "@/services/aiTypes";
+import { LeadState } from "@/services/chatbotTypes";
 
 import { validateFormSecurity, recordFormSubmission } from "@/utils/formSecurity";
 import { identifyFreshworksContact } from "@/utils/freshworks";

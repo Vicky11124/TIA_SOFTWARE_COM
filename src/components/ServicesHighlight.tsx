@@ -1,9 +1,9 @@
 import { useInView } from "@/hooks/useInView";
 import { Link } from "react-router-dom";
-import { Palette, PartyPopper, Megaphone, Layout, Film, Sparkles, Camera, CalendarDays, ArrowRight, Headphones } from "lucide-react";
+import { Palette, PartyPopper, Megaphone, Layout, Film, Sparkles, Camera, CalendarDays, ArrowRight, Headphones, type LucideIcon } from "lucide-react";
 
 type ServiceItem = {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   title: string;
   desc: string;
   slug: string;

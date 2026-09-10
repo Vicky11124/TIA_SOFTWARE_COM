@@ -33,9 +33,6 @@ export default defineConfig(({ mode }) => ({
             if (id.includes("@supabase")) {
               return "supabase";
             }
-            if (id.includes("@google/generative-ai")) {
-              return "gemini";
-            }
             if (id.includes("lucide-react")) {
               return "lucide";
             }

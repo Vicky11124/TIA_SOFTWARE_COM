@@ -1,4 +1,4 @@
-import { LeadState } from "@/services/aiTypes";
+import { LeadState } from "@/services/chatbotTypes";
 import { Check, Hourglass, ClipboardList, ShieldCheck, Sparkles, Zap } from "lucide-react";
 
 interface ProjectSummaryCardProps {

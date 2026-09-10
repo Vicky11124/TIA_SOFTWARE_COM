@@ -38,6 +38,7 @@ build
 # Vite / bundler cache
 .vite
 .cache
+vite.config.ts.timestamp-*.mjs
 
 # Testing
 coverage
@@ -73,9 +74,6 @@ desktop.ini
 # Supabase local
 .supabase
 
-# Gemini / AI tooling
-.gemini
-
 # Scratch and test utility files
 scripts/test_query.js
 src/scratch_test.ts
@@ -88,4 +86,3 @@ measure_cdp.cjs
 # SEO / generated files
 !public/sitemap.xml
 !public/robots.txt
-

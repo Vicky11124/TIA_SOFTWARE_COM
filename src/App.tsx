@@ -1,7 +1,7 @@
 import { Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -38,6 +38,11 @@ const queryClient = new QueryClient();
 
 const OG_IMAGE =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3f4bcd31-a5c1-420a-b200-e811caec0b6d/id-preview-3a79d4ef--48407ef1-b28b-4b4e-bac1-aaad364a1361.lovable.app-1774944538908.png";
+
+const LegacyBlogRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={slug ? `/blog/${slug}` : "/blog"} replace />;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -76,6 +81,10 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogDetail />} />
+              <Route path="/blogs" element={<LegacyBlogRedirect />} />
+              <Route path="/blogs/:slug" element={<LegacyBlogRedirect />} />
+              <Route path="/blogs/blog/:slug" element={<LegacyBlogRedirect />} />
+              <Route path="/blog/blog/:slug" element={<LegacyBlogRedirect />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>

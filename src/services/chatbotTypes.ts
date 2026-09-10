@@ -122,9 +122,9 @@ export interface ReportExplanations {
 }
 
 const REGIONAL_PRICES = {
-  UK: { basic: "£199.99/mo", standard: "£399.99/mo", pro: "£649.99/mo", premium: "£899.99/mo" },
-  US: { basic: "$249.99/mo", standard: "$499.99/mo", pro: "$799.99/mo", premium: "$1,099.99/mo" },
-  AU: { basic: "A$349.99/mo", standard: "A$699.99/mo", pro: "A$1,099.99/mo", premium: "A$1,499.99/mo" }
+  UK: { basic: "£249.99/mo", standard: "£449.99/mo", pro: "£699.99/mo", premium: "£999.99/mo" },
+  US: { basic: "$299.99/mo", standard: "$599.99/mo", pro: "$899.99/mo", premium: "$1,299.99/mo" },
+  AU: { basic: "A$399.99/mo", standard: "A$799.99/mo", pro: "A$1,299.99/mo", premium: "A$1,799.99/mo" }
 };
 
 export function recommendPackage(leadState: LeadState): RecommendedPackage {
@@ -210,8 +210,8 @@ export function sanitizeLeadState(state: Record<string, unknown> | null | undefi
     "AI Automation"
   ];
 
-  let service = state?.service;
-  if (typeof service === "string") {
+  let service: string | null = typeof state?.service === "string" ? state.service : null;
+  if (service) {
     const trimmed = service.trim();
     const matched = validServices.find(s => s.toLowerCase() === trimmed.toLowerCase());
     if (matched) {
@@ -234,8 +234,6 @@ export function sanitizeLeadState(state: Record<string, unknown> | null | undefi
         service = null;
       }
     }
-  } else {
-    service = null;
   }
 
   return {
