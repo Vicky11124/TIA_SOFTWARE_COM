@@ -1,4 +1,4 @@
-# Last Updated: 2026-08-08
+# Last Updated: 2026-09-13
 # Logs
 logs
 *.log
@@ -32,13 +32,13 @@ build
 !.env.example
 *.local
 
-# Prewarm / cache files
+# Prewarm / cache / temporary files
 .prewarm
-
-# Vite / bundler cache
 .vite
 .cache
 vite.config.ts.timestamp-*.mjs
+*.tmp
+*.temp
 
 # Testing
 coverage
@@ -46,7 +46,7 @@ coverage
 playwright-report
 test-results
 
-# Lock files (keep only one)
+# Lock files
 bun.lockb
 bun.lock
 
@@ -77,6 +77,7 @@ desktop.ini
 # Scratch and test utility files
 scripts/test_query.js
 src/scratch_test.ts
+scratch/
 
 # Lighthouse / performance diagnostics
 lighthouse-report*.html

@@ -148,9 +148,8 @@ const HeroCarousel = () => {
         key={`current-${current}`}
         src={slide.image}
         alt=""
-        className={`absolute inset-0 w-full h-full object-cover z-10 ${
-          prevImage && !isFirstRender ? "animate-hero-bg" : "opacity-55 scale-100"
-        }`}
+        className={`absolute inset-0 w-full h-full object-cover z-10 ${prevImage && !isFirstRender ? "animate-hero-bg" : "opacity-55 scale-100"
+          }`}
         width={1920}
         height={1080}
         fetchPriority="high"
@@ -163,12 +162,12 @@ const HeroCarousel = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/20 to-transparent z-20" />
 
       {/* Decorative elements */}
-      <div 
-        className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none z-20" 
+      <div
+        className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none z-20"
         style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.05) 0%, transparent 70%)" }}
       />
-      <div 
-        className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] rounded-full pointer-events-none z-20" 
+      <div
+        className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] rounded-full pointer-events-none z-20"
         style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.3) 0%, transparent 70%)" }}
       />
 
@@ -177,9 +176,8 @@ const HeroCarousel = () => {
         <div className="max-w-3xl">
           <span
             key={`subtitle-${current}`}
-            className={`inline-block text-sm font-semibold text-primary mb-6 tracking-widest uppercase ${
-              isFirstRender ? "" : "animate-hero-subtitle"
-            }`}
+            className={`inline-block text-sm font-semibold text-primary mb-6 tracking-widest uppercase ${isFirstRender ? "" : "animate-hero-subtitle"
+              }`}
           >
             {slide.subtitle}
           </span>
@@ -192,18 +190,16 @@ const HeroCarousel = () => {
 
           <p
             key={`desc-${current}`}
-            className={`text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed ${
-              isFirstRender ? "" : "animate-hero-desc"
-            }`}
+            className={`text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed ${isFirstRender ? "" : "animate-hero-desc"
+              }`}
           >
             {slide.desc}
           </p>
 
           <div
             key={`actions-${current}`}
-            className={`flex flex-wrap gap-4 ${
-              isFirstRender ? "" : "animate-hero-actions"
-            }`}
+            className={`flex flex-wrap gap-4 ${isFirstRender ? "" : "animate-hero-actions"
+              }`}
           >
             <Button variant="hero" size="lg" className="px-8 py-6 text-base shadow-lg" asChild>
               <a href={slide.cta_link || whatsappLink} target="_blank" rel="noopener noreferrer">
@@ -224,9 +220,8 @@ const HeroCarousel = () => {
             <button
               key={i}
               onClick={() => changeSlide(i)}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                i === current ? "w-10 bg-primary" : "w-4 bg-muted-foreground/30"
-              }`}
+              className={`h-1.5 rounded-full transition-all duration-500 ${i === current ? "w-10 bg-primary" : "w-4 bg-muted-foreground/30"
+                }`}
               aria-label={`Go to slide ${i + 1}`}
             />
           ))}

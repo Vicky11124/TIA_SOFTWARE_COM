@@ -1,10 +1,20 @@
 # TIA Software Solutions — Production Robots Configuration
-# Updated: 2026-08-28
+# Updated: 2026-09-13
 
 User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /admin/
 Disallow: /api/
+Disallow: /*?*
+
+# Allow search engine crawlers full access to static assets
+Allow: /assets/
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.webp$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.svg$
 
 Sitemap: https://www.tiasoftwaresolutions.com/sitemap.xml
