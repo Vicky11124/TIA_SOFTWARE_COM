@@ -306,8 +306,8 @@ const AdminBlogs = () => {
                   key={status}
                   onClick={() => setStatusFilter(status)}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${statusFilter === status
-                      ? "bg-primary text-primary-foreground shadow"
-                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                    ? "bg-primary text-primary-foreground shadow"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
                     }`}
                 >
                   {status}
@@ -356,8 +356,8 @@ const AdminBlogs = () => {
                   <button
                     onClick={() => handleTogglePublish(b)}
                     className={`flex items-center justify-center gap-1.5 px-3 h-10 rounded-lg text-xs font-semibold transition-all ${b.status === "published"
-                        ? "bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 border border-amber-500/20"
-                        : "bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-500 border border-emerald-500/20"
+                      ? "bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 border border-amber-500/20"
+                      : "bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-500 border border-emerald-500/20"
                       }`}
                     title={b.status === "published" ? "Unpublish blog" : "Publish blog"}
                   >

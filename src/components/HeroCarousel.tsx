@@ -116,12 +116,12 @@ const HeroCarousel = () => {
   const next = useCallback(() => {
     const nextIdx = (current + 1) % slides.length;
     changeSlide(nextIdx);
-  }, [slides.length, changeSlide]);
+  }, [current, slides.length, changeSlide]);
 
   const prev = useCallback(() => {
     const prevIdx = (current - 1 + slides.length) % slides.length;
     changeSlide(prevIdx);
-  }, [slides.length, changeSlide]);
+  }, [current, slides.length, changeSlide]);
 
   useEffect(() => {
     const timer = setInterval(next, 5000);

@@ -17,7 +17,7 @@ const ServiceDetail = lazy(() => import("./pages/ServiceDetail.tsx"));
 const Plans = lazy(() => import("./pages/Plans.tsx"));
 const Contact = lazy(() => import("./pages/Contact.tsx"));
 const Blog = lazy(() => import("./pages/Blog.tsx"));
-const BlogDetail = lazy(() => import("./pages/BlogDetail.tsx").then(m => ({ default: m.BlogDetail })));
+const BlogDetail = lazy(() => import("./pages/BlogDetail.tsx"));
 const FAQ = lazy(() => import("./pages/FAQ.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
