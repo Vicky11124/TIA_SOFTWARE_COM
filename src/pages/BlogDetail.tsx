@@ -203,7 +203,8 @@ const BlogDetail = () => {
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-foreground">
               {blog.title}
             </h1>
-            
+
+
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground pt-4">
               <span className="flex items-center gap-1.5"><User size={16} className="text-primary" /> {blog.author}</span>
               <span className="flex items-center gap-1.5"><Calendar size={16} /> {blog.published_at ? new Date(blog.published_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""}</span>

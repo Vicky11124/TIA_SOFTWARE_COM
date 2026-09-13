@@ -71,7 +71,7 @@ const Blog = () => {
 
   const filteredBlogs = blogs.filter((b) => {
     const matchesSearch = b.title.toLowerCase().includes(search.toLowerCase()) ||
-                          b.category.toLowerCase().includes(search.toLowerCase());
+      b.category.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = activeCategory === "all" || b.category.toLowerCase() === activeCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
@@ -144,7 +144,7 @@ const Blog = () => {
       {/* Content Section */}
       <section className="section-padding pt-0">
         <div className="container">
-          
+
           {/* Controls: Category Selector & Search */}
           <div className="flex flex-col md:flex-row gap-6 justify-between items-center mb-16 pb-8 border-b border-border/50">
             <div className="flex gap-2 flex-wrap justify-center md:justify-start">
@@ -152,11 +152,10 @@ const Blog = () => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all border ${
-                    activeCategory === cat
+                  className={`px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all border ${activeCategory === cat
                       ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/25"
                       : "bg-muted/40 text-muted-foreground border-border hover:bg-muted hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -216,7 +215,7 @@ const Blog = () => {
                       <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3">
                         {featuredBlog.content.replace(/[#*`_]/g, "").substring(0, 180)}...
                       </p>
-                      
+
                       <div className="flex items-center gap-6 text-xs text-muted-foreground pt-4 border-t border-border/30">
                         <span className="flex items-center gap-1.5"><User size={14} /> {featuredBlog.author}</span>
                         <span className="flex items-center gap-1.5"><Calendar size={14} /> {featuredBlog.published_at ? new Date(featuredBlog.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}</span>

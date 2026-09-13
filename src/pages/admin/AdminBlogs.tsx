@@ -24,11 +24,18 @@ type Blog = {
   updated_at?: string;
 };
 
+// Fallback dummy blogs for LocalStorage when Supabase table isn't created yet
 import { getFallbackBlogs } from "@/data/defaultBlogs";
 
 const LOCAL_STORAGE_KEY = "tia_fallback_blogs";
 
 const getLocalBlogs = (): Blog[] => {
+  try {
+    const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (data) return JSON.parse(data);
+  } catch (e) {
+    console.error("Local storage error:", e);
+  }
   return getFallbackBlogs() as unknown as Blog[];
 };
 
@@ -229,9 +236,9 @@ const AdminBlogs = () => {
   };
 
   const filteredBlogs = blogs.filter((b) => {
-    const matchesSearch = b.title.toLowerCase().includes(search.toLowerCase()) || 
-                          b.content.toLowerCase().includes(search.toLowerCase()) ||
-                          b.category.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = b.title.toLowerCase().includes(search.toLowerCase()) ||
+      b.content.toLowerCase().includes(search.toLowerCase()) ||
+      b.category.toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "all" || b.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -298,11 +305,10 @@ const AdminBlogs = () => {
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
-                    statusFilter === status
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${statusFilter === status
                       ? "bg-primary text-primary-foreground shadow"
                       : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                  }`}
+                    }`}
                 >
                   {status}
                 </button>
@@ -331,9 +337,8 @@ const AdminBlogs = () => {
                         ★ Featured
                       </span>
                     )}
-                    <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
-                      b.status === "published" ? "bg-emerald-500/10 text-emerald-500" : "bg-zinc-500/10 text-zinc-500"
-                    }`}>
+                    <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${b.status === "published" ? "bg-emerald-500/10 text-emerald-500" : "bg-zinc-500/10 text-zinc-500"
+                      }`}>
                       {b.status}
                     </span>
                   </div>
@@ -350,11 +355,10 @@ const AdminBlogs = () => {
                 <div className="flex items-center gap-2 w-full md:w-auto md:shrink-0 justify-end pt-4 md:pt-0 border-t md:border-t-0 border-border/50">
                   <button
                     onClick={() => handleTogglePublish(b)}
-                    className={`flex items-center justify-center gap-1.5 px-3 h-10 rounded-lg text-xs font-semibold transition-all ${
-                      b.status === "published"
+                    className={`flex items-center justify-center gap-1.5 px-3 h-10 rounded-lg text-xs font-semibold transition-all ${b.status === "published"
                         ? "bg-amber-500/10 hover:bg-amber-500 hover:text-white text-amber-500 border border-amber-500/20"
                         : "bg-emerald-500/10 hover:bg-emerald-500 hover:text-white text-emerald-500 border border-emerald-500/20"
-                    }`}
+                      }`}
                     title={b.status === "published" ? "Unpublish blog" : "Publish blog"}
                   >
                     {b.status === "published" ? (
@@ -460,13 +464,13 @@ const BlogForm = ({
     <div className="space-y-6">
       {/* 2-Column fields layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* Left Column - Main Details & Editor */}
         <div className="lg:col-span-2 space-y-4">
-          <Input 
-            label="Blog Title" 
-            value={form.title} 
-            onChange={(v) => setForm({ ...form, title: v })} 
+          <Input
+            label="Blog Title"
+            value={form.title}
+            onChange={(v) => setForm({ ...form, title: v })}
             placeholder="e.g. 10 Ways to Scale Your Remote Design Workflow"
           />
 
@@ -492,10 +496,10 @@ const BlogForm = ({
               </div>
             </div>
 
-            <Input 
-              label="Author Name" 
-              value={form.author} 
-              onChange={(v) => setForm({ ...form, author: v })} 
+            <Input
+              label="Author Name"
+              value={form.author}
+              onChange={(v) => setForm({ ...form, author: v })}
             />
           </div>
 
@@ -559,7 +563,7 @@ const BlogForm = ({
 
         {/* Right Column - Sidebar Settings (Cover Image, Meta SEO, Categories) */}
         <div className="space-y-4">
-          
+
           {/* Metadata section */}
           <div className="glass-card p-5 space-y-4">
             <h3 className="font-bold text-sm border-b border-border/50 pb-2 flex items-center gap-1.5">
@@ -629,13 +633,13 @@ const BlogForm = ({
           {/* Cover image uploader */}
           <div className="glass-card p-5 space-y-4">
             <h3 className="font-bold text-sm border-b border-border/50 pb-2">Cover Image</h3>
-            
+
             <div>
-              <input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleFileChange} 
-                className="w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" 
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full text-xs text-muted-foreground file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
               />
               {uploading && <div className="text-xs text-primary mt-1 animate-pulse">Uploading cover image...</div>}
             </div>
@@ -656,10 +660,10 @@ const BlogForm = ({
           <div className="glass-card p-5 space-y-4">
             <h3 className="font-bold text-sm border-b border-border/50 pb-2">SEO Optimization</h3>
 
-            <Input 
-              label="SEO Meta Title" 
-              value={form.meta_title || ""} 
-              onChange={(v) => setForm({ ...form, meta_title: v })} 
+            <Input
+              label="SEO Meta Title"
+              value={form.meta_title || ""}
+              onChange={(v) => setForm({ ...form, meta_title: v })}
               placeholder="Highly descriptive search page title"
             />
 
@@ -674,17 +678,17 @@ const BlogForm = ({
               />
             </div>
 
-            <Input 
-              label="Keywords" 
-              value={form.meta_keywords || ""} 
-              onChange={(v) => setForm({ ...form, meta_keywords: v })} 
+            <Input
+              label="Keywords"
+              value={form.meta_keywords || ""}
+              onChange={(v) => setForm({ ...form, meta_keywords: v })}
               placeholder="e.g. software solutions, london agency"
             />
 
-            <Input 
-              label="Canonical URL" 
-              value={form.canonical_url || ""} 
-              onChange={(v) => setForm({ ...form, canonical_url: v })} 
+            <Input
+              label="Canonical URL"
+              value={form.canonical_url || ""}
+              onChange={(v) => setForm({ ...form, canonical_url: v })}
               placeholder="e.g. https://www.tiasoftwaresolutions.com/blog/url"
             />
           </div>

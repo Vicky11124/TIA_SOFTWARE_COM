@@ -123,3 +123,4 @@ export const getFallbackBlogs = (): DefaultBlog[] => {
   }
   return DEFAULT_FALLBACK_BLOGS;
 };
+

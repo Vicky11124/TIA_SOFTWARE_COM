@@ -55,7 +55,7 @@ async function fetchDynamicBlogSlugs() {
   loadEnv();
   const SUPABASE_URL = process.env.VITE_SUPABASE_URL || "https://tuixjvdojimkhtfilxce.supabase.co";
   const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || "sb_publishable_Vd_j-5Sv89WukkAzSZkRUw_uu99NXhz";
-  
+
   if (!SUPABASE_KEY) {
     console.log("No Supabase key found in env, using default static blog slugs.");
     return ["webp-future-image-optimization"];
@@ -68,6 +68,7 @@ async function fetchDynamicBlogSlugs() {
         Authorization: `Bearer ${SUPABASE_KEY}`
       }
     });
+    if (!res.ok) throw new Error(res.statusText);
     const data = await res.json();
     const dbSlugs = data.map(b => b.slug ? b.slug.replace(/^\/?(blog\/)?/, "") : "").filter(Boolean);
     const fallbacks = ["custom-software-development-business", "webp-future-image-optimization"];

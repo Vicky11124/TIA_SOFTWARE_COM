@@ -263,10 +263,10 @@ async function prerender() {
         route === "/"
           ? path.join(DIST_DIR, "index.html")
           : path.join(
-              DIST_DIR,
-              ...route.split("/").filter(Boolean),
-              "index.html"
-            );
+            DIST_DIR,
+            ...route.split("/").filter(Boolean),
+            "index.html"
+          );
 
       fs.mkdirSync(path.dirname(outFile), { recursive: true });
       fs.writeFileSync(outFile, html, "utf-8");
