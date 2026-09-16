@@ -231,7 +231,14 @@ const Plans = () => {
       .order("sort_order")
       .then(({ data }) => {
         if (data && data.length > 0) {
-          setPlans(data);
+          const sanitized = data.map((p) => ({
+            ...p,
+            features: (p.features || []).filter((f: string) => {
+              const lower = f.toLowerCase();
+              return !lower.includes("basic website (hosting") && !lower.includes("erp tool");
+            }),
+          }));
+          setPlans(sanitized);
         }
       });
   }, []);
@@ -283,24 +290,29 @@ const Plans = () => {
         </div>
 
         <ul className="space-y-3 mb-8 flex-1">
-          {plan.features.map((f) => {
-            const isExcluded = f.startsWith("not:");
-            const text = isExcluded ? f.substring(4) : f;
-            return (
-              <li
-                key={f}
-                className={`flex items-start gap-3 text-sm ${isExcluded ? "text-muted-foreground/40" : "text-muted-foreground"
-                  }`}
-              >
-                {isExcluded ? (
-                  <X size={16} className="text-muted-foreground/30 shrink-0 mt-0.5" />
-                ) : (
-                  <Check size={16} className="text-primary shrink-0 mt-0.5" />
-                )}
-                {text}
-              </li>
-            );
-          })}
+          {plan.features
+            .filter((f) => {
+              const lower = f.toLowerCase();
+              return !lower.includes("basic website (hosting") && !lower.includes("erp tool");
+            })
+            .map((f) => {
+              const isExcluded = f.startsWith("not:");
+              const text = isExcluded ? f.substring(4) : f;
+              return (
+                <li
+                  key={f}
+                  className={`flex items-start gap-3 text-sm ${isExcluded ? "text-muted-foreground/40" : "text-muted-foreground"
+                    }`}
+                >
+                  {isExcluded ? (
+                    <X size={16} className="text-muted-foreground/30 shrink-0 mt-0.5" />
+                  ) : (
+                    <Check size={16} className="text-primary shrink-0 mt-0.5" />
+                  )}
+                  {text}
+                </li>
+              );
+            })}
         </ul>
 
         <Button
