@@ -123,8 +123,7 @@ const fallbackOldPlans: Plan[] = [
       "Basic Brand Identity",
       "2 Rounds of Revisions",
       "Social Media Graphics",
-      "Standard Turnaround Time",
-      "Basic Website (Hosting, Domain & 2 Emails)"
+      "Standard Turnaround Time"
     ],
     is_popular: false
   },
@@ -166,8 +165,7 @@ const fallbackOldPlans: Plan[] = [
       "Everything in the Pro Plan",
       "UX/UI Design for Apps & Websites",
       "Virtual Assistance",
-      "Dedicated Account Manager",
-      "ERP Tool (Any one module)"
+      "Dedicated Account Manager"
     ],
     is_popular: false
   }
