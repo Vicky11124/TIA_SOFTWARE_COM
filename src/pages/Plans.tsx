@@ -258,9 +258,8 @@ const Plans = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: i * 0.1, duration: 0.5 }}
-        className={`glass-card p-8 relative hover-lift flex flex-col ${
-          plan.is_popular ? "glow-border border-primary/30" : ""
-        }`}
+        className={`glass-card p-8 relative hover-lift flex flex-col ${plan.is_popular ? "glow-border border-primary/30" : ""
+          }`}
       >
         {plan.is_popular && (
           <div className="absolute top-4 right-4 bg-pink-100 text-pink-700 dark:bg-pink-950/40 dark:text-pink-300 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-md border border-pink-200 dark:border-pink-900/30">
@@ -273,7 +272,7 @@ const Plans = () => {
         {/* Subtitle / desc */}
         <p className="text-xs text-muted-foreground/80 mt-1.5 mb-4">
           {plan.name.toLowerCase().includes("premium") || plan.name.toLowerCase() === "pro"
-            ? "Complete solution for business growth" 
+            ? "Complete solution for business growth"
             : "Perfect for businesses getting started online"}
         </p>
 
@@ -290,9 +289,8 @@ const Plans = () => {
             return (
               <li
                 key={f}
-                className={`flex items-start gap-3 text-sm ${
-                  isExcluded ? "text-muted-foreground/40" : "text-muted-foreground"
-                }`}
+                className={`flex items-start gap-3 text-sm ${isExcluded ? "text-muted-foreground/40" : "text-muted-foreground"
+                  }`}
               >
                 {isExcluded ? (
                   <X size={16} className="text-muted-foreground/30 shrink-0 mt-0.5" />
